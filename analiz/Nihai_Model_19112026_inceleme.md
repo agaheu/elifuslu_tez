@@ -136,11 +136,11 @@ Aşağıdaki değerler metindeki katsayılardan bağımsız olarak yeniden hesap
 | Tablo 5.15 sayımları (7 adet p<0,05; 13 adet p<0,10; Fransa hariç) | — | aynı | ✓ |
 | Tablo 5.15 Almanya satırı = Tablo 5.14 (c) Poisson | 0,1323 / 0,2597 / 0,0359 | aynı | ✓ |
 
-**Şüpheli güven aralıkları (Tablo 5.11):**
+**Tablo 5.11'deki asimetrik güven aralıkları (veri setiyle doğrulandı — bkz. Kısım 6.3):**
 
-- *Enerji ithalat bağımlılığı*, NB: katsayı 0,0022, SH 0,0026, BC aralığı [−0,0000; **0,0241**]. Üst sınır nokta tahminin **8,4 SH** üstünde; Poisson'da da [−0,0012; **0,0195**] üst sınır 5,2 SH üstünde. Bu aralıklar bootstrap SH ile bağdaşmıyor; büyük olasılıkla yazım hatası (0,0071 / 0,0095 gibi) ya da yanlış satırdan kopyalama. Stata çıktısıyla karşılaştırın.
-- *Ticaret açıklığı*, NB: z = −1,96 (p = 0,050), BC aralığı üst sınırı tam −0,0000. Bu "**" (p<0,05) işareti sınırda; "*" olarak işaretlemek ya da metinde "sınırda anlamlı" demek daha dürüst olur. Aynı durum Model 2'de de var (−0,0051 / 0,0026).
-- *İmalat payı*, NB: aralık [−0,0392; 0,0422], nokta tahminine göre çok asimetrik (−1,3 SH / +2,9 SH). BC aralıkları asimetrik olabilir ama kontrol edilmeli.
+- *Enerji ithalat bağımlılığı*, NB: katsayı 0,0022, SH 0,0026, BC aralığı [−0,0000; **0,0241**]. Üst sınır nokta tahminin 8 SH üstünde. İlk okumada yazım hatası sanmıştım; veriyle yaptığım bootstrap aynı biçimi veriyor ([0,0001; 0,0197]). Yani hata değil, **BC yönteminin bu veri setinde kararsız çalıştığının** işareti: bootstrap dağılımı çok çarpık (çarpıklık 1,5) ve medyan sapması büyük (z₀ ≈ 0,46). Aşağıda 6.3'te açıklanıyor.
+- *Ticaret açıklığı*, NB: z = −1,96 (p = 0,050), BC aralığı üst sınırı tam −0,0000; yüzdelik aralık ise sıfırı içeriyor ([−0,0066; 0,0020]). "**" işareti savunulamaz; en fazla "*" ya da "sınırda". Aynı durum Model 2'de de var.
+- *İmalat payı*, NB: [−0,0392; 0,0422] asimetrik aralık da aynı BC kararsızlığının ürünü (replikasyon: [−0,0389; 0,0444]).
 
 ---
 
@@ -185,12 +185,107 @@ Satır 81 "Hausman ve diğ.(1984)", "(Allison&Waterman, 2002)"; satır 109 "(Efr
 
 ---
 
-## 5. Öncelikli yapılacaklar (özet)
+## 6. Veri seti değerlendirmesi ve replikasyon (AB14_nihai_veri.xlsx)
+
+Veri seti `veri/AB14_nihai_veri.xlsx` olarak repoya eklendi; tüm hesaplar `analiz/py/replikasyon.py` ile yeniden üretilebilir (çıktı: `analiz/py/replikasyon_cikti.txt`).
+
+### 6.1 Veri setinin yapısı ve kalitesi
+
+- 3 sayfa: `Veri` (14 ülke × 1990–2020 = 434 satır, 10 sütun), `Yesil_stok` (stok hesabı, formüller ve parametreler), `Kaynaklar` (değişken tanımları). Düzenli ve belgelenmiş; panel tam dengeli.
+- **Eksik değerler yalnızca 1990–1995'te** (gdp_real, manuf, gdp_growth) — tahmin örneklemini (1997–2020) ve gecikmeleri etkilemiyor. Stok için gereken `ccm` 1990'dan itibaren eksiksiz.
+- `ccm_frac` (kesirli) ve `ccm` (yuvarlanmış) birlikte tutulmuş — iyi uygulama. `Kaynaklar` sayfasında "0,5 yukarı yuvarlandı" yazıyor; metinde "en yakın tam sayıya" deniyor. 62 gözlemde tam .5 var; ikisi aynı şey değil, metinde "yarım değerler yukarı yuvarlanmıştır" diye netleştirin. Kesirli seriyle Poisson tahmini neredeyse aynı (F1 0,0774; F2 0,1955; F3 −0,0927) — bunu bir cümleyle belirtmek yuvarlama sorusunu kapatır.
+- Tek sıfır gözlem: Portekiz 1990 (yalnızca stok başlangıcında kullanılıyor; K₁₉₉₀ = 0 oluyor, sorun değil).
+- Stok hesabı: Excel'deki K değerleri ile Python'da sıfırdan hesaplanan değerler arasındaki en büyük fark 5×10⁻¹¹ — **stok doğru hesaplanmış**; g = 0,0691 ✓.
+- Veri kaynağı tutarlılığı: Tablo 5.1 ile `Kaynaklar` sayfası birebir uyumlu (Eurostat nama_10_gdp, nrg_ind_id; WDI EG.FEC.RNEW.ZS, NV.IND.MANF.ZS, NE.TRD.GNFS.ZS).
+
+### 6.2 Tezdeki tablo ve katsayıların yeniden üretimi
+
+| Tez | Replikasyon | Sonuç |
+|---|---|---|
+| Tablo 5.2 (tüm ortalama/sapma/min/maks) | aynı (3 ondalık) | ✓ |
+| Medyan 142,5; çarpıklık 3,1; toplam 107.759; Almanya %45, Fransa %18 | aynı | ✓ |
+| Tablo 5.3 patent, yoğunluk, stok sütunları | aynı | ✓ |
+| Tablo 5.3 kontrol sütunları | **eşzamanlı (t)** değerlerle eşleşiyor, gecikmeli değil | Tablo notu ekleyin: "kontrol değişkenleri eşzamanlı; modelde t−1" — Tablo 5.4 notu "tümü t−1" dediği için okuyucu karışır |
+| Tablo 5.4 korelasyonlar | aynı | ✓ (ama bkz. 6.4) |
+| Tablo 5.6 VIF (ülke-içi) | aynı (9 değer) | ✓ |
+| Tablo 5.11 — Poisson ve NB **tüm katsayılar** | 4 ondalığa kadar aynı | ✓ |
+| α = 0,0178; LR = 669,77 | aynı | ✓ |
+| Tablo 5.13 — Model 2 tüm katsayılar, α = 0,0161, LR = 564,59 | aynı | ✓ |
+| Tablo 5.14 (a), (b), (c) katsayıları; GSYİH esnekliği 0,393 / 0,371 | aynı | ✓ |
+| Yıl etkileri (2006: 0,102; 2007: 0,156; 2008: 0,195; 2009: 0,308; stok 0,810) | aynı | ✓ |
+| Bootstrap SH (Poisson): 0,0383 / 0,0651 / 0,1048 | 0,0375 / 0,0638 / 0,1043 | ✓ (farklı RNG) |
+| Bootstrap SH (NB): 0,0580 / 0,0842 / 0,1264 | 0,0563 / 0,0853 / 0,1271 | ✓ |
+| BC aralıkları Faz 1–2 (NB): [0,0578; 0,2864], [0,1188; 0,4441] | [0,0523; 0,2834], [0,1056; 0,4433] | ✓ |
+
+**Sonuç: Stata'da üretilen tüm nokta tahminleri, testler ve bootstrap SH'ler bağımsız yazılımla doğrulandı. Hesaplama hatası yok.**
+
+### 6.3 Bootstrap dağılımları hakkında bulgu (yeni)
+
+Kümelenmiş eşli bootstrap'ta Almanya'nın hiç seçilmediği tekrar oranı (13/14)¹⁴ ≈ %35. Bu, bootstrap dağılımlarını çarpık ve yanlı yapıyor:
+
+| Katsayı (Poisson) | Nokta tahmin | Bootstrap ortalaması | z₀ (medyan sapması) |
+|---|---|---|---|
+| Faz 1 | 0,0772 | 0,0971 | −0,49 |
+| ln(1+K) | 0,6127 | 0,5618 | +0,55 |
+| Enerji ithalat bağ. | 0,0029 | 0,0016 | +0,46 (çarpıklık 1,5) |
+
+z₀ değerlerinin 0,5'e yaklaşması BC yüzdeliklerini aşırı kaydırıyor (ln(1+K) için üst yüzdelik %99,9'a çıkıyor). Efron & Tibshirani bu büyüklükte sapmada BCa ya da percentile-t önerir. Tezde BC aralıklarının kullanıldığı yerlerde bu kararsızlık belirtilmeli; ana çıkarsama aracı olarak BC yerine **percentile-t (bootstrap-t)** ya da aşağıdaki jackknife daha savunulabilir.
+
+### 6.4 Çıkarsama yöntemine duyarlılık (yeni — raporun 2.2–2.3 maddelerinin sayısal karşılığı)
+
+Model 1 faz katsayıları için farklı standart hata yöntemleri:
+
+| | Faz 1 Poisson p | Faz 2 Poisson p | Faz 1 NB p | Faz 2 NB p |
+|---|---|---|---|---|
+| Asimptotik küme (ülke) | 0,000 | 0,000 | 0,016 | 0,001 |
+| Eşli bootstrap-SE (tezdeki) | 0,040 | 0,002 | 0,017 | 0,002 |
+| **İki yönlü küme (ülke & yıl)** | **0,084** | 0,004 | — | — |
+| **Küme jackknife CV3, t(13)** (MacKinnon, Nielsen & Webb, 2023) | **0,228** | **0,068** | **0,041** | **0,022** |
+
+Yorum:
+- **Faz 2 bulgusu dayanıklı**: her yöntemde en az %10'da, çoğunda %1'de anlamlı; NB'de her yöntemde %5'te anlamlı.
+- **Faz 1 bulgusu kırılgan**: yatay kesit bağımlılığını hesaba katan iki yönlü kümelemede %10'a, az-küme için önerilen CV3 jackknife'ta Poisson'da anlamsıza düşüyor. NB'de %5'te kalıyor. H2'nin "desteklenmektedir" yargısı "NB'de desteklenmekte, Poisson'da çıkarsama yöntemine duyarlı" biçiminde yumuşatılmalı.
+- Wald δ₁=δ₂ testi NB'de asimptotik küme SH ile p = 0,052 (tezde bootstrap ile 0,037) — H3 de sınırda.
+- Model 2'de yıl kümelemesi SH'leri ülke kümelemesinden küçük çıkıyor (S1: 0,009 vs 0,016); yani ITS bulguları (φ₁, λ₂) iki yönlü kümelemede de güçlü kalır.
+
+### 6.5 Stoksuz Model 2 (tezde eksik; H5 için kritik)
+
+| | Poisson | NB |
+|---|---|---|
+| ETS öncesi eğilim (t*) — **stoklu** | −0,0225 (p=0,10) | −0,0068 (p=0,61) |
+| ETS öncesi eğilim (t*) — **stoksuz** | **+0,0354 (p<0,001)** | **+0,0486 (p<0,001)** |
+| φ₁ (Faz 1 eğim) — stoksuz | 0,0694 (p=0,004) | 0,1175 (p=0,001) |
+| λ₂ (Faz 2 düzey) — stoksuz | 0,2517 (p<0,001) | 0,3692 (p=0,001) |
+| φ₃ (Faz 3 eğim) — stoksuz | **−0,0249 (p=0,002)** | −0,0192 (p=0,33) |
+
+Yalnızca 1997–2004 alt örnekleminde de aynı: stoksuz eğilim 0,077 (p<0,001), stoklu 0,057 (p=0,03).
+
+Sonuç: "ETS öncesinde anlamlı eğilim yok" (satır 645) ifadesi **yalnızca stok kontrol edildiğinde** doğru; ham/stoksuz tanımda yılda ≈%3,5–5 artış eğilimi var. İyi haber: Faz 1 eğim ve Faz 2 düzey etkileri stoksuz ITS'de de güçlü — yani bulgular eğilimin stok tarafından emilmesine bağlı değil. H5'i buna göre yeniden yazın ve bu tabloyu Tablo 5.14'e ekleyin. Stoksuz Poisson'da Faz 3 eğiminin **negatif ve anlamlı** olması tartışma bölümünde ele alınmalı (Probst ve diğ., 2021 ile uyumlu).
+
+### 6.6 Tablo 5.4'ün yanıltıcılığı (yeni)
+
+Tablo 5.4 ham korelasyonları veriyor (|r| ≤ 0,35). Model ülke-içi değişimden tahmin edildiğinden ilgili korelasyonlar **ülke-içi** olanlardır:
+
+| | ln(1+K) | Yenilenebilir | Ticaret |
+|---|---|---|---|
+| ln(1+K) | 1 | **0,81** | **0,64** |
+| İmalat | −0,53 | −0,42 | −0,12 |
+
+"Ciddi çoklu doğrusallık sorunu yok" cümlesi ham korelasyonlara dayanıyor; ülke-içi veride stok–yenilenebilir korelasyonu 0,81. Bu, yenilenebilir enerji payının modelde neden anlamsız çıktığını da açıklıyor (stokla eş hareket). Tablo 5.4'ü ülke-içi değerlerle değiştirin ya da iki paneli birlikte verin; VIF tablosu zaten doğru yaklaşımı kullanıyor.
+
+### 6.7 H1 için doğrudan test (yeni)
+
+Tek ETS kuklasıyla (2005–2020 = 1) ana model: Poisson 0,248 (p<0,001), NB 0,255 (p<0,001); stoksuz Poisson 0,334. H1 bu şekilde ana modelle doğrudan desteklenebilir — Tablo 5.17'de (a) modeline başvurmaya gerek kalmaz.
+
+---
+
+## 7. Öncelikli yapılacaklar (özet)
 
 1. **"Sınırlılıklar" alt bölümü** yazın: kontrol grubu yokluğu, ortak şoklar (özellikle Kyoto 2008–2012), yatay kesit bağımlılığı, 14 küme, beklenti etkisi, plasebo gücü.
-2. **İki yönlü kümeleme / Driscoll-Kraay** ile ana tabloyu yeniden raporlayın.
-3. **Wild cluster bootstrap-t** (en azından Poisson için) ekleyin; 5.1.8'deki anlatımı uygulananla eşleştirin.
-4. **Stoksuz Model 2** tahmin edip H5'i buna göre yeniden değerlendirin.
-5. Tablo 5.11'deki **enerji ithalat bağımlılığı güven aralıklarını** Stata çıktısıyla karşılaştırıp düzeltin; ticaret açıklığı anlamlılık işaretini gözden geçirin.
-6. Poisson Faz 1 ortak test p değerini 0,000 yapın; Tablo 5.5→5.6 düzeltin; başlık stilleri, boş başlıklar, vurgulu metinler, atıf boşlukları.
-7. Örneklemin "AB-15 − Birleşik Krallık" olduğunu ve 2004 sonrası üyelerin neden dışlandığını yazın.
+2. **Çıkarsama duyarlılık tablosu** ekleyin (6.4'teki tablo hazır): iki yönlü kümeleme ve CV3 jackknife; Faz 1 / H2 yargısını yumuşatın. 5.1.8'deki wild-bootstrap anlatımını uygulananla eşleştirin; BC yerine percentile-t'yi değerlendirin (6.3).
+3. **Stoksuz Model 2**'yi Tablo 5.14'e ekleyin (6.5'te hazır); H5'i "stok kontrol edildiğinde" diye sınırlayın.
+4. **Tablo 5.4**'ü ülke-içi korelasyonlarla değiştirin (6.6); "çoklu doğrusallık yok" cümlesini düzeltin.
+5. **H1** için tek ETS kuklalı modeli raporlayın (6.7); Tablo 5.17'yi buna göre güncelleyin.
+6. Ticaret açıklığı anlamlılık işaretini (**→* / sınırda) düzeltin; Tablo 5.3'e "kontroller eşzamanlı" notu; "yarım değerler yukarı yuvarlandı" ifadesi; kesirli seriyle sonuçların değişmediği notu.
+7. Poisson Faz 1 ortak test p değerini 0,000 yapın; Tablo 5.5→5.6; başlık stilleri, boş başlıklar, vurgulu metinler, atıf boşlukları, α notasyonu.
+8. Örneklemin "AB-15 − Birleşik Krallık" olduğunu ve 2004 sonrası üyelerin neden dışlandığını yazın.
