@@ -51,6 +51,25 @@ OK, TOT = uyum_sayisi()
 _sf = sorted(abs(bo(m, fam, k) / v[1] - 1) for m, T in (("m1", TEZ.T511), ("m2", TEZ.T513)) for fam in (P, N) for k, v in T[fam].items())
 se_fark, se_med = _sf[-1], _sf[len(_sf) // 2]
 
+# ---------------------------------------------------------------- metin içi atıflar
+import re as _re
+_md = (ROOT / "dokumanlar" / "Nihai_Model_19112026_metin.md").read_text(encoding="utf8")
+_govde, _kay = _md.split("# KAYNAKÇA")
+_refs = []
+for _ln in _kay.split("\n"):
+    _m = _re.match(r"^([A-ZÇĞİÖŞÜa-zçğıöşüéèêôñáíóúâäëüßčšžæøå'’\-\. ]+?),.*?\((\d{4}[a-z]?)\)", _ln.strip())
+    if _m: _refs.append((_m.group(1).strip().split()[0].replace("’", "'"), _m.group(2)[:4]))
+N_KAYIT = len(_refs)
+_STOP = {"Tablo", "Şekil", "Faz", "Direktif", "Model", "Etki", "F1", "F2", "F3", "Katsayılar", "Krallık", "Sayısı", "Testler", "Testleri", "Yoğunluğunun", "Üçüncüsü", "AT", "Aralık", "Ocak", "Ekim"}
+_say = {}
+for _m in _re.finditer(r"([A-ZÇĞİÖŞÜ][\wçğıöşüéèôáíČčšž'’\-]+)((?:\s+ve\s+van der Linde|\s+ve\s+diğ\.|\s*(?:ve|and|&)\s*[A-ZÇĞİÖŞÜ][\wçğıöşüéèôáíČčšž'’\-]+)?)(?:'[\wıüö]+)?\s*[,\(]?\s*\(?((?:19|20)\d{2}[a-z]?)", _govde):
+    _a = _m.group(1).split("'")[0]; _r = _re.sub(r"\s*(and|&)\s*", " ve ", _m.group(2)).strip(); _r = _re.sub(r"'.*$", "", _r)
+    if _a in _STOP: continue
+    if _a == "Silva": _a, _r = "Santos Silva", "ve Tenreyro"
+    _key = (_a + (" " + _r if _r else ""), _m.group(3))
+    _say[_key] = _say.get(_key, 0) + 1
+ATIFLAR = [{"atif": k[0], "yil": k[1], "adet": v, "kaynakcada": any(r[0] == k[0].split()[0] and r[1] == k[1][:4] for r in _refs) or k[0].startswith("OECD")} for k, v in sorted(_say.items())]
+
 # ---------------------------------------------------------------- Monte Carlo metni
 SIM_AD = {"A": "A — tezin kendi modeli (sabit etkili NB), etki = 0", "B": "B — A + ortak yıl şoku", "C": "C — sabit etkisiz stok modeli, etki = 0"}
 
@@ -77,10 +96,10 @@ w("# AB ETS ve Yeşil İnovasyon — 5. Bölümün Kapsamlı Yeniden İncelemesi
 w("")
 w(f"**İncelenen belge:** `dokumanlar/Nihai_Model_19112026.docx` (Beşinci Bölüm ve kaynakça) · **Veri:** `veri/AB14_nihai_veri.xlsx` · **Tarih:** {bugun}")
 w("")
-w("> Bu rapor, önceki iki aşamanın (ilk inceleme ve jüri raporu analizi) sonuçları dâhil **hiçbir şeyi doğru varsaymadan**, bölümün ve veri setinin baştan sona yeniden incelenmesidir. Bütün sayılar ham veriden yeniden hesaplanmış, rapordaki tablolar ve cümle içi sayılar doğrudan hesap çıktılarından üretilmiştir (`analiz/py/rapor_uret.py`). Önceki incelemede yanlış çıkan değerlendirmelerim Kısım 10'da açıkça listelenmiştir.")
+w("> Bu rapor, önceki iki aşamanın (ilk inceleme ve jüri raporu analizi) sonuçları dâhil **hiçbir şeyi doğru varsaymadan**, bölümün ve veri setinin baştan sona yeniden incelenmesidir. Bütün sayılar ham veriden yeniden hesaplanmış, rapordaki tablolar ve cümle içi sayılar doğrudan hesap çıktılarından üretilmiştir (`analiz/py/rapor_uret.py`). Önceki incelemede yanlış çıkan değerlendirmelerim Kısım 11'de açıkça listelenmiştir. **Güncelleme:** İkinci jüri ekibinin raporu ayrıca değerlendirilmiş (`analiz/Juri2_Raporu_Degerlendirmesi.md`), sonuçları bu rapora işlenmiştir (Kısım 9; T5, T11, M1, M8 bulguları).")
 w("")
 w("## İçindekiler"); w("")
-for i, t in enumerate(["Kapsam ve yöntem", "Yönetici özeti", "Yeniden üretim: tezdeki sayılar doğru mu?", "Hipotezlerin yeniden değerlendirilmesi", "Bulgular", "Tasarımın Monte Carlo sınaması", "Çıkarsama duyarlılığı tabloları", "Jüri değerlendirme raporunun analizi", "Bağımsız hakem okumasıyla karşılaştırma", "Önceki incelememdeki düzeltmeler", "Yapılacaklar", "Dosyalar ve yeniden üretilebilirlik"], 1):
+for i, t in enumerate(["Kapsam ve yöntem", "Yönetici özeti", "Yeniden üretim: tezdeki sayılar doğru mu?", "Hipotezlerin yeniden değerlendirilmesi", "Bulgular", "Tasarımın Monte Carlo sınaması", "Çıkarsama duyarlılığı tabloları", "Birinci jüri raporunun analizi", "İkinci jüri raporunun analizi", "Bağımsız hakem okumasıyla karşılaştırma", "Önceki incelememdeki düzeltmeler", "Yapılacaklar", "Tez bölümlerine göre bulgu haritası ve kaynakça denetimi", "Dosyalar ve yeniden üretilebilirlik"], 1):
     w(f"{i}. {t}")
 w("")
 
@@ -93,7 +112,7 @@ for s in [
     f"Tezdeki bütün tahminler bağımsız yazılımla (Python; kendi yazdığım Poisson IRLS ve NB2 en çok olabilirlik tahmincileri) yeniden üretildi: Model 1, Model 2, üç sağlamlık tanımı, 14 ülke dışlama tahmini, yıl etkileri, plasebo testleri, gecikme seçimi, birim kök ve yatay kesit bağımlılığı testleri. Eşli küme bootstrap B = {R['meta']['B']} tekrarla (tezde 1.000) uygulandı; tekrarların tamamı yakınsadı.",
     "Tezde olmayan ek analizler yapıldı: dört çıkarsama yöntemiyle karşılaştırma, etkin küme sayısı, stoksuz ITS, eğilimli tanımlar, beklenti kuklası, faz bölmeleri, ön-örneklem ortalamalı tahmin, ülke heterojenliği, 896 tanımlı spesifikasyon eğrisi ve tasarımın Monte Carlo sınaması.",
     "Önceki incelemelere demirlenmemek için, hiçbir sonuç verilmeden ayrı bir bağımsız hakem okuması yaptırıldı (`dokumanlar/Bagimsiz_Hakem_Raporu.md`); oradaki her iddia ayrıca yeniden hesaplanarak sınandı.",
-    "Kullanıcının ilettiği jüri değerlendirme raporu madde madde, veriyle karşılaştırıldı.",
+    "Kullanıcının ilettiği iki jüri değerlendirme raporu madde madde, veriyle karşılaştırıldı; ikinci jürinin önerdiği sınamalar (ön-örneklem ortalaması tahmincisi, sıfır-kesikli model, İrlanda etkisi) uygulandı.",
     "Literatüre ve kurumsal olgulara ilişkin dört ifade web kaynaklarından kontrol edildi."]:
     w(f"- {s}")
 w(""); w("**Neler yapılamadı (sınırlar)**"); w("")
@@ -118,9 +137,9 @@ for b in krit:
     w(f"- **{b['id']} — {b['baslik']}.** {b['tespit'].split('. ')[0]}.")
 w(f"- **Faz 1 bulgusu kırılgan.** Poisson'da küme jackknife p = {pv(c('m1', P, 'F1', 'p_cv3'))}, boş hipotez benzetimlerinde p = {I.mcr(P, 0)}; negatif binomda analitik yöntemlerle %5 düzeyinde anlamlı, benzetimlerde sınırda (p = {I.mcr(N, 0)}).")
 w(f"- **Model 1'in faz katsayıları yukarı yanlı ve tezin çıkarsama yöntemi fazla sık reddediyor.** Gerçek etki sıfırken bile ortalama Faz 1 ≈ +{tr(I.SP['A'][N]['ort'][0], 2)}, Faz 2 ≈ +{tr(I.SP['A'][N]['ort'][1], 2)} tahmin ediliyor ve tezin yöntemi %5 yerine {I.simrg('rej_boot', 'A')} oranında “anlamlı” buluyor (T5, C9).")
-w("- **Tanıma duyarlılık.** Ülke heterojenliği sabit etkiler yerine ön-örneklem ortalamasıyla kontrol edildiğinde Faz 1 ve Faz 2 katsayıları sıfıra iniyor (T5).")
+w(f"- **Tanıma duyarlılık.** Ülke heterojenliği sabit etkiler yerine ön-örneklem ortalamasıyla kontrol edildiğinde Model 1'in Faz 1 ve Faz 2 katsayıları sıfıra iniyor; Model 2'nin Faz 1 eğimi ({tr(I.J['psm_m2'][N]['S1']['b'], 3)}) ve Faz 2 düzeyi ({tr(I.J['psm_m2'][N]['F2']['b'], 3)}) ise bu tahmincide de anlamlı (T5).")
 w("")
-w("**Genel değerlendirme.** Jüri raporundaki “önemli düzeltme gerekli” yargısı bu incelemeyle örtüşüyor. Bölüm, “AB ETS yeşil inovasyonu artırmıştır” biçimindeki nedensel iddiayı bu tasarımla taşıyamıyor; ama “AB ETS'nin ilk iki fazına denk gelen dönemde, öncesindeki eğilimin ve bilgi stokunun açıklayamadığı bir yükseliş vardır ve bu yükseliş üçüncü fazda sürmemiştir” biçimindeki betimleyici bulgu güçlü ve yeniden üretilebilir. Aşağıdaki düzeltmeler yapılırsa bölüm savunulabilir hâle gelir; düzeltmelerin çoğu yeni veri değil, yeniden yazım ve birkaç ek tablo gerektiriyor.")
+w("**Genel değerlendirme.** Birinci jüri raporundaki “önemli düzeltme gerekli” yargısı bu incelemeyle örtüşüyor; ikinci jüri raporunun “düzeltmelerle uluslararası yayına hazır” yargısı ise fazla iyimser (Kısım 9). Bölüm, “AB ETS yeşil inovasyonu artırmıştır” biçimindeki nedensel iddiayı bu tasarımla taşıyamıyor; ama “AB ETS'nin ilk iki fazına denk gelen dönemde, öncesindeki eğilimin ve bilgi stokunun açıklayamadığı bir yükseliş vardır ve bu yükseliş üçüncü fazda sürmemiştir” biçimindeki betimleyici bulgu güçlü ve yeniden üretilebilir. Aşağıdaki düzeltmeler yapılırsa bölüm savunulabilir hâle gelir; düzeltmelerin çoğu yeni veri değil, yeniden yazım ve birkaç ek tablo gerektiriyor.")
 w("")
 say = {o: sum(1 for b in I.BULGULAR if b["onem"] == o) for o in ("kritik", "önemli", "orta", "küçük")}
 tablo(["", "Kritik", "Önemli", "Orta", "Küçük", "Toplam"], [["Bulgu sayısı", say["kritik"], say["önemli"], say["orta"], say["küçük"], len(I.BULGULAR)]])
@@ -246,15 +265,36 @@ for nm, lab in [("m1_trend", "Ana model + doğrusal eğilim"), ("m1_trend2", "An
 tablo(["Tanım", "Tahminci", "Faz 1", "Faz 2", "Faz 3"], rows)
 
 # ---- 8
-w("## 8. Jüri değerlendirme raporunun analizi"); w("")
-w("Jüri raporunun tam metni: `dokumanlar/Juri_Degerlendirme_Raporu.md`. Jüri, kendi ifadesiyle, regresyonları yeniden tahmin edememişti; aşağıdaki değerlendirme her maddeyi veriyle sınıyor.")
+w("## 8. Birinci jüri raporunun analizi"); w("")
+w("Jüri raporunun tam metni: `dokumanlar/Juri1_Degerlendirme_Raporu.md`. Jüri, kendi ifadesiyle, regresyonları yeniden tahmin edememişti; aşağıdaki değerlendirme her maddeyi veriyle sınıyor.")
 w("")
 tablo(["Jüri maddesi", "Değerlendirmem", "Veriyle desteklenen cevap"], [[j[0], j[1], j[3]] for j in I.JURI])
 w("**Jüri raporunda bulunmayan, bu incelemede ortaya çıkan başlıca noktalar:** H5'in stok yan ürünü olması (T2), H1 kanıtının eğilimle kirlenmesi (T3), sabit etki/stok tanımına duyarlılık (T5), 2003 plasebosu ve plasebo gücü (T6), Faz 2'nin zamanlaması (T7), etkin küme sayısı ve Poisson–NB ağırlık farkı (C3), BC aralıklarının kararsızlığı (C4), birim kök tablosunda log/düzey etiketi (M4), gecikme seçimi tanımı (M2).")
 w("")
 
-# ---- 9
-w("## 9. Bağımsız hakem okumasıyla karşılaştırma"); w("")
+# ---- 9 (ikinci jüri)
+w("## 9. İkinci jüri raporunun analizi"); w("")
+w("İkinci jüri ekibinin raporu (`dokumanlar/Juri2_Degerlendirme_Raporu.md`) ayrı bir belgede madde madde değerlendirildi: **`analiz/Juri2_Raporu_Degerlendirmesi.md`**. Burada özeti ve bu rapora etkisi verilmiştir.")
+w("")
+J2_OZET = {"G1": "Yeniden üretimimle aynı sonuç: 164 değer birebir.",
+           "G2": "Tercih savunulabilir; negatif binomun ortak yayılım varsayımı ve iki tahmincinin farklı ağırlıklandırması not edilmeli.",
+           "G3": f"Benzetimde yöntem %5 yerine {I.simrg('rej_boot', 'A')} oranında reddediyor; BC aralıkları kararsız.",
+           "G4": "Model 2 gerçekten en sağlam kısım; ancak “kalıcı” nitelemesi yıl etkileriyle, plasebo övgüsü 2003 sonucuyla çelişiyor.",
+           "E1": "Kesin dışsallık ihlali doğru ve ölçüldü; önerilen tahminci Model 1'i kurtarmıyor, Model 2'yi doğruluyor.",
+           "E2": "Tanımlama eleştirisi birinci kritik bulguyla aynı; fiyatın “temel mekanizma” olduğu sınanmış değil.",
+           "E3": "Kısıtsız model ana tabloda yer almalı; İrlanda sınandı, sonuç değişmiyor.",
+           "E4": "Aynı eleştiri diğer incelemelerde de var; ek olarak log/düzey etiketi ve dönem farkı bulundu.",
+           "E5": "Sıfır gözlenebilir, yalnız gerçekleşmemiş; sıfır-kesikli tahminler dördüncü ondalıkta aynı.",
+           "K1": "Doğrulandı.", "K2": "Doğrulandı.", "K3": "Veriyle doğrulandı; metin bunu dolaylı söylüyor, bir cümle eklenmeli.", "K4": "Doğrulandı.", "K5": "Doğrulandı.",
+           "S": "Liste gerekli ama yeterli değil; değinilmeyen altı kritik ya da önemli nokta var."}
+tablo(["", "İkinci jürinin maddesi", "Değerlendirmem", "Gerekçe (özet)", "İlgili bulgular"], [[j[0], j[2], f"**{j[3]}**", J2_OZET[j[0]], ", ".join(j[7]) or "–"] for j in I.JURI2])
+w(f"**Üç ana sonuç.** (1) Raporun çıkarsama övgüsü veriyle çelişiyor: eşli bootstrap + BC, gerçek etki sıfırken %5 yerine {I.simrg('rej_boot', 'A')} oranında reddediyor (C9). (2) Stok eleştirisi için önerilen ön-örneklem ortalaması tahmincisi uygulandı: Model 1'in faz katsayıları sıfıra iniyor (NB Faz 2: {tr(I.jp('psm', I.PSA, N, 'F2'), 3)}), Model 2'nin Faz 1 eğimi ({tr(I.J['psm_m2'][N]['S1']['b'], 3)}) ve Faz 2 düzeyi ({tr(I.J['psm_m2'][N]['F2']['b'], 3)}) ise anlamlı kalıyor (T5). (3) Karbon fiyatı ve yeşil olmayan patentlerle plasebo önerileri yerinde ve yeni; ilki için kanıt sınırlı (T11), ikincisi yeni veri gerektiriyor (T1).")
+w("")
+w("**İki jüri raporunun karşılaştırması**"); w("")
+tablo(["Konu", "1. jüri raporu", "2. jüri raporu", "Bu rapordaki karşılığı"], I.JURI_KARSILASTIRMA)
+
+# ---- 10
+w("## 10. Bağımsız hakem okumasıyla karşılaştırma"); w("")
 w("Hiçbir ön bilgi verilmeden yaptırılan ikinci okuma (`dokumanlar/Bagimsiz_Hakem_Raporu.md`) 27 madde üretti. Hepsi ayrıca yeniden hesaplandı (`analiz/py/ek_dogrulama.py`):")
 w("")
 tablo(["Hakemin iddiası", "Benim hesabım", "Sonuç"], [
@@ -273,25 +313,45 @@ tablo(["Hakemin iddiası", "Benim hesabım", "Sonuç"], [
 w("İki bağımsız okumanın (benim ilk incelemem ve hakem okuması) birbirinden habersiz aynı kritik noktalara ulaşması (kontrol grubu, H5'in stoka bağlılığı, bootstrap gerekçesi, Tablo 5.4, BC aralıkları) bu bulguların güvenilirliğini artırıyor. Hakemin bulup benim ilk incelememde kaçırdıklarım: H1 kanıtının eğilimle kirlenmesi, 2003 plasebosu, Faz 2 zamanlaması, log/düzey etiketi, gecikme seçimi tanımı, NAP ayrıntısı.")
 w("")
 
-# ---- 10
-w("## 10. Önceki incelememdeki düzeltmeler"); w("")
+# ---- 11
+w("## 11. Önceki incelememdeki düzeltmeler"); w("")
 w("İlk incelemede (`analiz/arsiv/01_Ilk_Inceleme_ve_Juri_Analizi.md`) yazdığım ve bu aşamada yanlış ya da eksik çıkan değerlendirmeler:")
 w("")
 tablo(["Önceki ifadem", "Şimdiki durum"], [[a, b_] for a, b_ in I.DUZELTMELER])
 
-# ---- 11
-w("## 11. Yapılacaklar"); w("")
+# ---- 12
+w("## 12. Yapılacaklar"); w("")
 for oc in "ABCD":
     w(f"### {oc} — {I.ONCELIK[oc]}"); w("")
     for i, (o, t, ref) in enumerate([y for y in I.YAPILACAK if y[0] == oc], 1):
         w(f"{i}. {t} *(bkz. {ref})*")
     w("")
 
-# ---- 12
-w("## 12. Dosyalar ve yeniden üretilebilirlik"); w("")
+# ---- 13
+w("## 13. Tez bölümlerine göre bulgu haritası ve kaynakça denetimi"); w("")
+w("### 13.1 Bölümlere göre bulgular"); w("")
+tablo(["Tez bölümü", "Kapsam", "Genel durum", "İlgili bulgular"], [[b[1], b[2], b[3], ", ".join(x["id"] for x in I.BULGULAR if b[0] in x["bolum"])] for b in I.BOLUMLER])
+w("### 13.2 Kaynakça ve atıf denetimi"); w("")
+w(I.KAYNAKCA["ozet"] + f" Bölümde {len(ATIFLAR)} farklı yazar–yıl atfı var; kaynakçada {N_KAYIT} kayıt bulunuyor (liste tezin tamamı için).")
+w("")
+w("**Atıf yazım hataları**"); w("")
+tablo(["Satır", "Metindeki yazım", "Sorun"], I.KAYNAKCA["bicim"])
+w("**Kaynakça kayıtları**"); w("")
+tablo(["Kayıt", "Sorun"], I.KAYNAKCA["kayit"])
+w("**Eksik metin içi atıflar**"); w("")
+tablo(["Yer", "Konu", "Not"], I.KAYNAKCA["eksik_atif"])
+w("**Birincil kaynaktan doğrulanması gereken aktarımlar**"); w("")
+tablo(["Yer", "İfade", "Durum"], I.KAYNAKCA["dogrulanamayan"])
+w("**Eklenmesi önerilen kaynaklar**"); w("")
+tablo(["Kaynak", "Neden"], I.KAYNAKCA["onerilen"])
+
+# ---- 14
+w("## 14. Dosyalar ve yeniden üretilebilirlik"); w("")
 tablo(["Dosya", "İçerik"], [
     ["`veri/AB14_nihai_veri.xlsx`", "Ham panel, stok sayfası, kaynaklar"],
-    ["`dokumanlar/`", "Tez bölümü (docx + metin), şekiller, jüri raporu, bağımsız hakem raporu"],
+    ["`dokumanlar/`", "Tez bölümü (docx + metin), şekiller, iki jüri raporu, bağımsız hakem raporu"],
+    ["`analiz/Juri2_Raporu_Degerlendirmesi.md`", "İkinci jüri raporunun madde madde değerlendirmesi"],
+    ["`analiz/py/juri2.py`", "İkinci jürinin önerdiği sınamalar → `analiz/cikti/juri2.json`"],
     ["`analiz/py/tezlib.py`", "Veri hazırlama, Poisson IRLS, NB2 en çok olabilirlik, kümelenmiş kovaryanslar, bootstrap yardımcıları"],
     ["`analiz/py/yeniden_inceleme.py`", "Tüm tabloların yeniden üretimi ve ek analizler → `analiz/cikti/sonuclar.json`"],
     ["`analiz/py/birim_kok.py`", "Fisher-ADF, IPS, CD, CIPS"],
@@ -300,7 +360,7 @@ tablo(["Dosya", "İçerik"], [
     ["`analiz/py/icerik.py`, `rapor_uret.py`", "Bulgular ve bu raporun üretimi (sayılar çıktılardan çekilir)"],
     ["`analiz/arsiv/`", "İlk inceleme raporu ve ilk replikasyon betiği"],
     ["`docs/`", "Etkileşimli site (GitHub Pages)"]])
-w("```bash"); w("pip install pandas numpy scipy statsmodels openpyxl"); w("python analiz/py/yeniden_inceleme.py 1999"); w("python analiz/py/birim_kok.py"); w("python analiz/py/ek_dogrulama.py"); w("python analiz/py/simulasyon.py 300 199"); w("python analiz/py/simulasyon_p.py 1000"); w("python analiz/py/rapor_uret.py"); w("```")
+w("```bash"); w("pip install pandas numpy scipy statsmodels openpyxl"); w("python analiz/py/yeniden_inceleme.py 1999"); w("python analiz/py/birim_kok.py"); w("python analiz/py/ek_dogrulama.py"); w("python analiz/py/simulasyon.py 300 199"); w("python analiz/py/simulasyon_p.py 1000"); w("python analiz/py/juri2.py"); w("python analiz/py/rapor_uret.py"); w("```")
 w("")
 
 rapor = "\n".join(L)
@@ -313,12 +373,18 @@ except Exception as ex:
 (ROOT / "analiz" / "Kapsamli_Yeniden_Inceleme.md").write_text(rapor, encoding="utf8")
 
 # ---------------------------------------------------------------- site verisi
-for f in ["sonuclar.json", "panel.json", "spec_egrisi.json", "bootstrap_m1.json", "birim_kok.json", "ek_dogrulama.json", "simulasyon.json", "simulasyon_p.json"]:
+import juri2_rapor
+J2W = juri2_rapor.uret(bugun)
+for f in ["sonuclar.json", "panel.json", "spec_egrisi.json", "bootstrap_m1.json", "birim_kok.json", "ek_dogrulama.json", "simulasyon.json", "simulasyon_p.json", "juri2.json"]:
     if (I.CK / f).exists(): shutil.copy(I.CK / f, DOCS / "data" / f)
-json.dump({"bulgular": I.BULGULAR, "dogrulanan": I.DOGRULANAN, "duzeltmeler": I.DUZELTMELER, "hipotez": I.HIPOTEZ, "juri": I.JURI, "yapilacak": I.YAPILACAK, "oncelik": I.ONCELIK,
+json.dump({"bulgular": I.BULGULAR, "dogrulanan": I.DOGRULANAN, "duzeltmeler": I.DUZELTMELER, "hipotez": I.HIPOTEZ, "juri": I.JURI, "juri2": I.JURI2, "juri_karsilastirma": I.JURI_KARSILASTIRMA, "juri2_cevap": I.JURI2_CEVAP, "bolumler": I.BOLUMLER, "kaynakca": I.KAYNAKCA, "atiflar": ATIFLAR, "n_kayit": N_KAYIT,
+           "yapilacak": I.YAPILACAK, "oncelik": I.ONCELIK,
            "ozet": {"uyum": [OK, TOT], "se_fark": se_fark, "se_med": se_med, "tarih": bugun, "sim_yorum": SIMY}},
           open(DOCS / "data" / "icerik.json", "w"), ensure_ascii=False, default=float)
 for src, dst in [(ROOT / "analiz" / "Kapsamli_Yeniden_Inceleme.md", "Kapsamli_Yeniden_Inceleme.md"), (ROOT / "analiz" / "arsiv" / "01_Ilk_Inceleme_ve_Juri_Analizi.md", "01_Ilk_Inceleme_ve_Juri_Analizi.md"),
-                 (ROOT / "dokumanlar" / "Juri_Degerlendirme_Raporu.md", "Juri_Degerlendirme_Raporu.md"), (ROOT / "dokumanlar" / "Bagimsiz_Hakem_Raporu.md", "Bagimsiz_Hakem_Raporu.md")]:
+                 (ROOT / "dokumanlar" / "Juri1_Degerlendirme_Raporu.md", "Juri1_Degerlendirme_Raporu.md"), (ROOT / "dokumanlar" / "Juri2_Degerlendirme_Raporu.md", "Juri2_Degerlendirme_Raporu.md"),
+                 (ROOT / "analiz" / "Juri2_Raporu_Degerlendirmesi.md", "Juri2_Raporu_Degerlendirmesi.md"), (ROOT / "dokumanlar" / "Bagimsiz_Hakem_Raporu.md", "Bagimsiz_Hakem_Raporu.md"),
+                 (ROOT / "dokumanlar" / "Nihai_Model_19112026_metin.md", "Tez_Bolum5_metin.md")]:
     shutil.copy(src, DOCS / "raporlar" / dst)
+print("atıf:", len(ATIFLAR), "kaynakça kaydı:", N_KAYIT, "eşleşmeyen:", [a["atif"] + " " + a["yil"] for a in ATIFLAR if not a["kaynakcada"]], "| jüri2 raporu:", J2W, "kelime")
 print("uyum:", OK, "/", TOT, " | SH en büyük göreli fark:", round(se_fark, 3), " | rapor:", len(rapor.split()), "kelime")

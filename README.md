@@ -8,11 +8,12 @@ Elif Uslu'nun doktora tezinin (AB ETS'nin yeşil inovasyon üzerindeki etkisi) 5
 
 | Klasör | İçerik |
 |---|---|
-| `analiz/Kapsamli_Yeniden_Inceleme.md` | Ana rapor: bölümün ve verinin sıfırdan, bağımsız yeniden incelemesi (34 bulgu, yeniden üretim, Monte Carlo, jüri analizi, yapılacaklar) |
+| `analiz/Kapsamli_Yeniden_Inceleme.md` | Ana rapor: bölümün ve verinin sıfırdan, bağımsız yeniden incelemesi (36 bulgu, yeniden üretim, Monte Carlo, iki jüri raporunun analizi, tez bölümlerine göre harita, yapılacaklar) |
+| `analiz/Juri2_Raporu_Degerlendirmesi.md` | İkinci jüri ekibinin raporunun madde madde, veriyle sınanmış değerlendirmesi |
 | `analiz/py/` | Bütün hesapları yeniden üreten Python kodu |
 | `analiz/cikti/` | Hesap çıktıları (JSON) ve çalışma günlükleri |
 | `analiz/arsiv/` | İlk inceleme raporu ve ilk replikasyon betiği |
-| `dokumanlar/` | Tez bölümü (docx ve düz metin), şekiller, jüri değerlendirme raporu, bağımsız hakem raporu |
+| `dokumanlar/` | Tez bölümü (docx ve düz metin), şekiller, birinci ve ikinci jüri raporları, bağımsız hakem raporu |
 | `veri/` | `AB14_nihai_veri.xlsx`: 14 AB ülkesi, 1990–2020 |
 | `docs/` | GitHub Pages sitesi (statik; veriyi `docs/data/*.json` dosyalarından okur) |
 
@@ -43,10 +44,14 @@ python analiz/py/simulasyon_p.py 1000
 ```
 
 ```bash
+python analiz/py/juri2.py
+```
+
+```bash
 python analiz/py/rapor_uret.py
 ```
 
-Son komut raporu (`analiz/Kapsamli_Yeniden_Inceleme.md`) ve site verisini (`docs/data/`) hesap çıktılarından üretir; rapordaki ve sitedeki sayılar elle yazılmaz.
+Son komut iki raporu (`analiz/Kapsamli_Yeniden_Inceleme.md`, `analiz/Juri2_Raporu_Degerlendirmesi.md`) ve site verisini (`docs/data/`) hesap çıktılarından üretir; rapordaki ve sitedeki sayılar elle yazılmaz.
 
 ## Siteyi yerelde açmak
 

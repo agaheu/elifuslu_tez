@@ -57,7 +57,7 @@ def F(id, onem, kat, baslik, yer, kaynak, durum, tespit, kanit, oneri):
     return dict(id=id, onem=onem, kat=kat, baslik=baslik, yer=yer, kaynak=kaynak, durum=durum, tespit=tespit, kanit=kanit, oneri=oneri)
 
 
-II, JU, BH, YI = "İlk inceleme", "Jüri raporu", "Bağımsız hakem", "Yeniden inceleme"
+II, JU, BH, YI, J2 = "İlk inceleme", "1. jüri raporu", "Bağımsız hakem", "Yeniden inceleme", "2. jüri raporu"
 BULGULAR = [
     # ------------------------------------------------------------ TANIMLAMA
     F("T1", "kritik", "Tanımlama", "Kontrol grubu yok: faz kuklaları ortak zaman kuklasıdır", "5.2, 5.6.3 (L125–127, L351, L761)", [II, JU, BH, YI], "doğrulandı",
@@ -283,3 +283,163 @@ YAPILACAK = [
     ("D", "Atıf yazımı ve kaynakça biçimi; Wooldridge (1999) ve StataCorp kayıtları.", "B2, M5"),
 ]
 ONCELIK = {"A": "Savunmadan önce şart", "B": "Güçlü biçimde önerilir", "C": "Önerilir", "D": "Son okuma düzeltmeleri"}
+
+
+# =====================================================================================================================
+# İKİNCİ JÜRİ RAPORU (dokumanlar/Juri2_Degerlendirme_Raporu.md) — sınama sonuçları: analiz/cikti/juri2.json
+# =====================================================================================================================
+J = json.load(open(CK / "juri2.json"))
+jp = lambda sec, key, fam, k, f="b": J[sec][key][fam][k][f]
+PSA, PSB, PSC, PSE = [k for k in J["psm"] if k.startswith("A:")][0], [k for k in J["psm"] if k.startswith("B:")][0], [k for k in J["psm"] if k.startswith("C:")][0], [k for k in J["psm"] if k.startswith("E:")][0]
+B_ = {b["id"]: b for b in BULGULAR}
+
+# --- mevcut bulgulara ikinci jüri kaynağı ve ek kanıt
+for _id in ["T1", "T4", "T5", "M1", "M4", "Y6", "B1", "B2"]:
+    B_[_id]["kaynak"].append(J2)
+B_["T1"]["oneri"] = B_["T1"]["oneri"].replace("(3) Bağımlı değişken olarak “yeşil patentlerin toplam EPO başvurularındaki payı”nı deneyin; ortak patentleme eğilimlerini temizler.",
+    "(3) İkinci jürinin önerdiği plasebo sonuç sınamasını yapın: aynı modeli yeşil olmayan EPO başvurularıyla tahmin edin (ya da bağımlı değişken olarak yeşil patentlerin toplam EPO başvurularındaki payını kullanın); ortak patentleme eğilimlerini ayıklar.")
+B_["T5"]["baslik"] = "Sabit etki + gecikmeli stok: Model 1'in faz katsayıları yukarı yanlı ve ön-örneklem tahmincisinde kayboluyor; Model 2'ninkiler korunuyor"
+B_["T5"]["tespit"] += " İkinci jüri raporu aynı sorunu kesin dışsallık (strict exogeneity) ihlali olarak adlandırıyor ve ön-örneklem ortalaması tahmincisini öneriyor: ihlal tartışmasız, çünkü stok tanım gereği cari patentleri bir sonraki dönemin açıklayıcısına taşıyor (K₍t₎ = 0,85·K₍t−1₎ + y₍t₎)."
+B_["T5"]["kanit"] = B_["T5"]["kanit"].replace(" Monte Carlo (Kısım 6):", f" Ön-örneklem bilgisinin biçimine duyarlılık (ikinci jürinin önerisi üzerine altı varyant): ön-örneklem stoku ln K₁₉₉₆ ile sonuç aynı (Faz 1 {tr(jp('psm', PSB, P, 'F1'), 3)} / {tr(jp('psm', PSB, N, 'F1'), 3)}; Faz 2 {tr(jp('psm', PSB, P, 'F2'), 3)} / {tr(jp('psm', PSB, N, 'F2'), 3)}); tek bir ön-örneklem yoğunluğu değişkeniyle ise Faz 1 {tr(jp('psm', PSC, P, 'F1'), 3)} / {tr(jp('psm', PSC, N, 'F1'), 3)}, Faz 2 {tr(jp('psm', PSC, P, 'F2'), 3)} / {tr(jp('psm', PSC, N, 'F2'), 3)}. 14 ülkelik yatay kesitte bu tahminci kararsız. Buna karşılık Model 2 ön-örneklem tahmincisinde de ayakta: Faz 1 eğimi {tr(J['psm_m2'][P]['S1']['b'], 3)} (p = {pv(J['psm_m2'][P]['S1']['p_t'])}) / {tr(J['psm_m2'][N]['S1']['b'], 3)} (p = {pv(J['psm_m2'][N]['S1']['p_t'])}), Faz 2 düzeyi {tr(J['psm_m2'][P]['F2']['b'], 3)} (p = {pv(J['psm_m2'][P]['F2']['p_t'])}) / {tr(J['psm_m2'][N]['F2']['b'], 3)} (p = {pv(J['psm_m2'][N]['F2']['p_t'])}). Monte Carlo (Kısım 6):")
+B_["T7"]["kanit"] += " İkinci jüri raporu da Faz 2'yi “kalıcı düzey sıçraması” olarak niteliyor; yıl etkileri bu nitelemeyi desteklemiyor."
+B_["C9"]["kanit"] += " İkinci jüri raporu bu yöntemin “birinci tip hata riskini başarıyla kontrol ettiğini” belirtiyor; benzetim sonuçları bu değerlendirmeyi desteklemiyor."
+B_["M1"]["kanit"] += f" İkinci jürinin işaret ettiği İrlanda etkisi sınandı: 2015'te reel GSYİH {tr(J['irlanda']['gsyih_2014_2015'][0] / 1000, 1)} → {tr(J['irlanda']['gsyih_2014_2015'][1] / 1000, 1)} milyar € (+%24,6). İrlanda çıkarıldığında faz katsayıları değişmiyor (NB {tr(jp('irlanda', 'haric', N, 'F1'), 3)} / {tr(jp('irlanda', 'haric', N, 'F2'), 3)}; Poisson {tr(jp('irlanda', 'haric', P, 'F1'), 3)} / {tr(jp('irlanda', 'haric', P, 'F2'), 3)}); İrlanda × 2015 sonrası kuklası anlamsız ({tr(jp('irlanda', 'kukla_2015_sonrasi', P, 'IE15'), 3)}; p = {pv(jp('irlanda', 'kukla_2015_sonrasi', P, 'IE15', 'p_t'))}); İrlanda'nın Poisson ağırlığı %{tr(J['irlanda']['poisson_agirlik'], 1)}. Sorun ilkesel olarak doğru, sonuçlar için önemsiz."
+B_["Y6"]["kanit"] += f" • Tahmin döneminin neden 1997'de başladığı metinde yalnız dolaylı söyleniyor (L193): reel GSYİH {J['eksik']['ilk_tam_yil']['gdp_real']}'ten, büyüme oranı {J['eksik']['ilk_tam_yil']['gdp_growth']}'dan itibaren 14 ülkenin tamamı için mevcut (1990–1995'te 10–12 ülke eksik); bir dönem gecikmeyle ilk kullanılabilir yıl 1997 (ikinci jüri notu; veriyle doğrulandı)."
+
+# --- yeni bulgular
+YENI = [
+    F("T11", "orta", "Tanımlama", "Karbon fiyatı ne modelde ne tartışmada var; “Faz 3'te etki fiyat çöktüğü için kayboldu” açıklaması sınanmalı", "5.4.4, 5.10.2–5.10.3", [J2, YI], "kısmen doğrulandı",
+      "İkinci jüri raporu, 2013–2017'de izin (EUA) fiyatının 3–8 €/ton bandına gerilemesini Faz 3'te etkinin kaybolmasının “temel iktisadi mekanizması” olarak gösteriyor ve tartışılmasını istiyor. Fiyatın tartışılması gerektiği doğru: tezde karbon fiyatı değişken olarak da, tartışma konusu olarak da yok; oysa ETS'nin inovasyon teşviki fiyat üzerinden işler. Ancak “temel mekanizma” hükmü bu veriyle sınanmış değil ve tezin kendi yıl etkileriyle basit bir fiyat–inovasyon örtüşmesi görülmüyor.",
+      f"Fiyat ve yıl etkilerinin (Poisson, 2004 = 0) yan yana okunması: (i) Faz 1 izinlerinin fiyatı 2007'de sıfıra yaklaştı (Ellerman ve Buchner, 2007; Ellerman ve diğ., 2010; ikisi de tezin kaynakçasında), yıl etkisi ise 2006–2007'de yükseliyor ({tr(yb['2006']['b'], 3)} → {tr(yb['2007']['b'], 3)}); (ii) fiyat 2008 ortasındaki ≈30 €'dan sonra ≈10–15 €'ya geriledi, yıl etkisi 2009'da zirve yapıyor ({tr(yb['2009']['b'], 3)}); (iii) Avrupa Çevre Ajansı'na göre yıllık ortalama fiyat 2018'de 15,5 €, 2019'da 24,7 €; Faz 3 yıl etkileri 2020'ye kadar sıfırın altında ya da çevresinde ({tr(yb['2018']['b'], 3)}; {tr(yb['2019']['b'], 3)}; {tr(yb['2020']['b'], 3)}). Patentlerin fiyata gecikmeli tepki vermesi bu tabloyu kısmen açıklayabilir, ama fiyat kanalı kanıtlanmış değil. Yıllık EUA fiyat serisi veri setinde yok; doğrulanmış tam bir seri bu incelemede elde edilemedi, bu yüzden fiyat kontrollü tahmin yapılmadı.",
+      "Gecikmeli yıllık ortalama EUA fiyatını modele ekleyin (faz kuklalarıyla birlikte faz içi fiyat değişiminden tanımlanır) ve sonucu raporlayın; 5.10'da fiyat dinamiğini tartışın, ancak Faz 3 için tek açıklama olarak sunmayın."),
+    F("M8", "küçük", "Model", "Sıfır-kesikli (zero-truncated) model önerisi: kavramsal olarak gerekli değil; sınandı, sonuç değişmiyor", "5.4.1 (L153), 5.6.1", [J2, YI], "sınandı — sorun yok",
+      "İkinci jüri, örneklemde sıfır bulunmadığı için bulguların sıfır-kesikli negatif binoma duyarlılığının kontrol edilmesini öneriyor. Sıfır-kesikli modeller, sıfırın örnekleme tasarımı gereği gözlenemediği veriler içindir; burada sıfır gözlenebilir (Portekiz 1990'da sıfır), yalnızca tahmin döneminde gerçekleşmemiştir. Model de bunu olağan buluyor. Yine de öneri uygulandı.",
+      f"Tahmin edilen modele göre beklenen sıfır sayısı {tr(J['sifir']['beklenen_sifir_poisson'], 2)} (Poisson) / {tr(J['sifir']['beklenen_sifir_nb'], 2)} (NB); hiç sıfır gözlenmemesi şaşırtıcı değil. En küçük beklenen değer {tr(J['sifir']['min_mu_nb'], 1)}; 3 ve altında {J['sifir']['y_le_3']} gözlem var. Sıfır-kesikli Poisson: {tr(J['sifir']['zt_poisson']['F1'], 4)} / {tr(J['sifir']['zt_poisson']['F2'], 4)} / {tr(J['sifir']['zt_poisson']['F3'], 4)} (olağan: {tr(J['sifir']['normal_poisson']['F1'], 4)} / {tr(J['sifir']['normal_poisson']['F2'], 4)} / {tr(J['sifir']['normal_poisson']['F3'], 4)}). Sıfır-kesikli NB: {tr(J['sifir']['zt_nb']['F1'], 4)} / {tr(J['sifir']['zt_nb']['F2'], 4)} / {tr(J['sifir']['zt_nb']['F3'], 4)} (olağan: {tr(J['sifir']['normal_nb']['F1'], 4)} / {tr(J['sifir']['normal_nb']['F2'], 4)} / {tr(J['sifir']['normal_nb']['F3'], 4)}). Yunanistan ve Portekiz çıkarıldığında NB {tr(jp('sifir', 'GR_PT_haric', N, 'F1'), 3)} / {tr(jp('sifir', 'GR_PT_haric', N, 'F2'), 3)}.",
+      "Dipnotla belirtmek yeterli: “örneklemde sıfır yoktur; sıfır-kesikli tahminler katsayıları dördüncü ondalıkta değiştirmektedir.”"),
+]
+BULGULAR.extend(YENI)
+_KS = ["Tanımlama", "Çıkarsama", "Model", "Yorum", "Biçim", "Kaynakça"]
+BULGULAR.sort(key=lambda b: (_KS.index(b["kat"]), b["id"][0], int(b["id"][1:])))
+B_ = {b["id"]: b for b in BULGULAR}
+
+DUZELTMELER.append(("Ön-örneklem ortalaması için tek bir tanım raporlayıp “faz etkisi kayboluyor” demiştim",
+                    f"Ayrıntılandırıldı. Altı varyantın sonucu ön-örneklem bilgisinin biçimine çok duyarlı (Model 1 Faz 2: {tr(jp('psm', PSA, N, 'F2'), 2)} ile {tr(jp('psm', PSC, N, 'F2'), 2)} arasında); Model 2'nin Faz 1 eğimi ve Faz 2 düzeyi ise bu tahmincide de anlamlı (T5)."))
+
+# --- tez bölümleri (site sayfaları ve rapor eki için)
+BOLUM_MAP = {"T1": ["5.2", "5.6", "5.9"], "T2": ["5.7", "5.9"], "T3": ["5.8", "5.9"], "T4": ["5.6", "5.8", "5.9"], "T5": ["5.6"], "T6": ["5.8"], "T7": ["5.7", "5.9"], "T8": ["5.4"],
+             "T9": ["5.2", "5.4"], "T10": ["5.2", "5.9"], "T11": ["5.9"], "C1": ["5.6"], "C2": ["5.1", "5.6"], "C3": ["5.6", "5.8"], "C4": ["5.1", "5.7"], "C5": ["5.7", "5.9"],
+             "C6": ["5.7"], "C7": ["5.6", "5.7", "5.8"], "C8": ["5.7"], "C9": ["5.1", "5.6"], "M1": ["5.6", "5.8"], "M2": ["5.6"], "M3": ["5.4"], "M4": ["5.6"], "M5": ["5.1", "5.6"],
+             "M6": ["5.4"], "M7": ["5.1", "5.6"], "M8": ["5.4", "5.6"], "Y1": ["5.8"], "Y2": ["5.9"], "Y3": ["5.7", "5.9"], "Y4": ["5.6", "5.9", "kaynakca"], "Y5": ["5.4", "5.9"],
+             "Y6": ["5.4", "5.7"], "B1": ["bicim"], "B2": ["kaynakca"]}
+for b in BULGULAR: b["bolum"] = BOLUM_MAP[b["id"]]
+BOLUMLER = [
+    ("5.1", "5.1 Modeller ve yöntemler", "Genelleştirilmiş doğrusal modeller, sayım verisi, Poisson QML, negatif binom, sabit etkili panel sayım modeli, kukla değişkenli model, segmentli kesintili zaman serisi ve kümelenmiş bootstrap'ın kuramsal anlatımı.",
+     "Denklemler (1)–(13), NB2 olasılık fonksiyonu ve varyansı, sınırdaki LR dağılımı, BC ve Wald formülleri doğru. Sorunlar anlatımın uygulamayla uyumunda: bootstrap gerekçesi (wild ↔ eşli), BC aralıklarının bu verideki davranışı ve negatif binomun varsayımları."),
+    ("5.2", "5.2–5.3 Model tanımı ve hipotezler", "İki modelin amacı, referans dönem (1997–2004), tanımlama savı (fazların dışsallığı) ve Porter hipotezine dayanan H1–H5.",
+     "Faz takvimi doğru (Faz 3: 2013–2020; Faz 4 dışarıda). Temel sorun tanımlama savında: fazların dışsal olması ters nedenselliği dışlar, ortak zaman şoklarını dışlamaz. Hipotezlerin yeniden değerlendirmesi Özet sayfasında."),
+    ("5.4", "5.4–5.5 Değişkenler ve veri", "Bağımlı değişken (EPO iklim azaltım patent başvuruları), maruziyet (reel GSYİH), faz kuklaları, stok ve beş kontrol; örneklem, kaynaklar, tanımlayıcı istatistikler, korelasyonlar.",
+     "Veri seti tam dengeli ve iç tutarlı; Tablo 5.2–5.4'ün bütün değerleri, toplamlar, paylar, uç değerler ve stok hesabı birebir yeniden üretildi. Kaynak verilerle karşılaştırma yapılamadı (erişim yok). Sorunlar örneklem gerekçesinde ve tabloların sunumunda."),
+    ("5.6", "5.6 Modelin kurulması", "Tahminci seçimi, maruziyet, Model 1 ve Model 2 denklemleri, stokun rolü ve Nickell tartışması, VIF, bootstrap uygulaması, aşırı yayılım testi, birim kök ve eşbütünleşme testleri, gecikme seçimi.",
+     "α, LR, VIF, AIC değerleri ve birim kök / CD / CIPS istatistikleri yeniden üretildi. Bölümün en yoğun sorun alanı burası: çıkarsama yöntemi, dinamik yapı (stok), maruziyet kısıtı, birim kök bölümünün tutarlılığı."),
+    ("5.7", "5.7 Bulgular", "Model 1 faz katsayıları (Tablo 5.11–5.12), Model 2 düzey ve eğim katsayıları (Tablo 5.13), yıl etkileri (Şekil 5.5).",
+     "Bütün katsayılar dört ondalığa kadar, bootstrap standart hataları birkaç yüzde içinde yeniden üretildi; yüzde dönüşümleri ve yıllık sapmalar doğru. Sorunlar katsayıların yorumunda ve anlamlılık yargılarında."),
+    ("5.8", "5.8 Sağlamlık testleri", "Stoksuz model, serbest GSYİH esnekliği, Almanya hariç, ülkelerin tek tek dışlanması, plasebo kırılma testleri.",
+     "Tablo 5.14–5.16'nın bütün değerleri yeniden üretildi. Sorunlar testlerin seçici raporlanmasında (2003 plasebosu), gücünde ve sonuçların yorumunda."),
+    ("5.9", "5.9–5.10 Hipotez değerlendirmesi ve tartışma", "Tablo 5.17 (hipotez sonuçları), fazlara göre tartışma, bilgi stoku ve yol bağımlılığı, literatürle karşılaştırma.",
+     "H3 ve H4'ün sonuçları sağlam. H1 ve H5 bağdaşmayan tanımlardan destekleniyor; tartışmadaki nedensel anlatı (beklenti kanalı, kurumsal kesinlik, stokla taşınan etki) tasarımın taşıyabileceğinden güçlü; bölümde sınırlılıklar tartışması yok."),
+]
+
+# --- ikinci jüri: madde madde değerlendirme (rapor ve site ortak)
+JURI2 = [
+    ("G1", "Güçlü yön", "Veri bütünlüğü ve tam tekrarlanabilirlik", "Katılıyorum", "ok",
+     "Toplam, paylar, Tablo 5.2, 5.4, 5.6 ve Tablo 5.11–5.13 katsayılarının birebir örtüştüğü belirtiliyor.",
+     "Bağımsız yeniden üretimimle aynı sonuç: karşılaştırılan 164 değerin tamamı birebir. İkinci jüri bunu benden bağımsız doğrulamış oluyor. Bir kayıt: “tam tekrarlanabilirlik” hesapların doğruluğunu gösterir, yorumların doğruluğunu göstermez.", []),
+    ("G2", "Güçlü yön", "Doğru tahminci ve sabit etki tercihi", "Büyük ölçüde katılıyorum", "ok",
+     "Koşullu sabit etkili NB yerine ülke kuklalı NB2 ve Poisson QML'in birlikte raporlanması yerinde bulunuyor.",
+     f"Tercih savunulabilir. İki kayıt: (i) negatif binomun ortak aşırı yayılım varsayımı sağlanmıyor (ülke bazında α: Lüksemburg {tr(ALFA_I['Lüksemburg'], 2)}, Almanya {tr(ALFA_I['Almanya'], 3)}); (ii) iki tahminci farklı ağırlıklandırıyor (Almanya'nın payı Poisson'da %{tr(R['agirlik']['Almanya'][0], 0)}, NB'de %{tr(R['agirlik']['Almanya'][1], 0)}), bu yüzden “birlikte raporlama” farkın nedenini açıklamayı da gerektirir.", ["M5", "M7", "C3"]),
+    ("G3", "Güçlü yön", "Küçük küme sayısına uygun çıkarsama: eşli bootstrap ve BC aralıkları “birinci tip hata riskini başarıyla kontrol etmektedir”", "Katılmıyorum", "kritik",
+     "14 küme ve dengesiz ağırlıklar altında eşli bootstrap + BC aralıklarının birinci tip hatayı kontrol ettiği söyleniyor.",
+     f"Bu, raporun veriyle çelişen tek güçlü iddiası. Gerçek etkinin sıfır olduğu benzetimlerde tezin yöntemi %5 yerine {simrg('rej_boot', 'A')} oranında reddediyor; küçük bir ortak şokla {simrg('rej_boot', 'B')}. BC aralıkları kararsız: Poisson Faz 1 için “%95 BC aralığı” fiilen bootstrap dağılımının %{tr(bc_levels[0], 1)}–%{tr(bc_levels[1], 1)} yüzdelikleri. Eşli bootstrap asimptotik kümelenmiş SH'den daha ihtiyatlı ama yeterli değil. Birinci jüri raporu da aynı noktada ikinci jüriden ayrışıyor (wild ↔ eşli bootstrap uyumsuzluğu).", ["C2", "C4", "C9"]),
+    ("G4", "Güçlü yön", "Dinamik ayrıştırma ve sağlamlık tasarımı: Faz 1'de eğim hızlanması, Faz 2'de “kalıcı düzey sıçraması”; dışlama ve plasebo testleri dayanıklılığı pekiştiriyor", "Kısmen katılıyorum", "orta",
+     "Model 2'nin katkısı ve sağlamlık testleri olumlu bulunuyor.",
+     f"Model 2 gerçekten bölümün en sağlam kısmı: Faz 1 eğimi ve Faz 2 düzeyi benzetimlerde yansız ve nadir (NB Monte Carlo p = {mcr(N, 4)}; {mcr(N, 5)}), ön-örneklem tahmincisinde de anlamlı. Üç kayıt: (i) “kalıcı” nitelemesi yıl etkileriyle çelişiyor: fark 2009'da zirve yapıp 2012'de sıfıra iniyor; (ii) plasebo testleri seçici: raporlanmayan 2003 kırılması tezin kendi yöntemiyle reddediyor (χ² = {tr(pl['2003'][P]['chi2_kume'], 2)}); (iii) ülke dışlamada Faz 1 on dört tahminin yalnız {loo_p5}'sinde %5 düzeyinde anlamlı.", ["T6", "T7", "Y1"]),
+    ("E1", "Eleştiri", "Stokun ardışık dışsallığı ve “kötü kontrol” sorunu; ön-örneklem ortalaması tahmincisi “bu eleştiriyi karşılayacaktır”", "Tanıya katılıyorum; önerilen çare sorunu çözmüyor", "önemli",
+     "Stok geçmiş bağımlı değişkenin fonksiyonu; sabit etkili sayım tahmincileri kesin dışsallık ister; Faz 3'te stoku sabit tutmak Faz 3 katsayısını yapay biçimde aşağı çeker; ön-örneklem ortalaması tahmincisi önerilir.",
+     f"Tanı doğru ve benzetimle ölçüldü: gerçek etki sıfırken bile stok katsayısı {tr(S['ayar']['gamma_A'], 2)} yerine ortalama {tr(SP['A']['nb']['ort_gamma'], 2)} tahmin ediliyor, faz katsayıları yukarı kayıyor (+{tr(SP['A']['nb']['ort'][0], 3)} / +{tr(SP['A']['nb']['ort'][1], 3)} / +{tr(SP['A']['nb']['ort'][2], 3)}). İki noktada ayrışıyorum. (1) “Faz 3 yapay biçimde aşağı çekiliyor” ifadesi yön olarak desteklenmiyor: dinamik yanlılık Faz 3 katsayısını yukarı iter; stok çıkarıldığında büyüyen Faz 3 katsayısı ({tr(J['faz3']['stoksuz'][N]['F3']['b'], 2)}) eğilimi de içerir, eğilim eklenince {tr(J['faz3']['stoksuz_egilimli'][N]['F3']['b'], 2)} (p = {pv(J['faz3']['stoksuz_egilimli'][N]['F3']['p_t'])}) kalır. (2) Önerilen ön-örneklem tahmincisi uygulandı ve Model 1'i kurtarmıyor: Faz 1 {tr(jp('psm', PSA, N, 'F1'), 3)}, Faz 2 {tr(jp('psm', PSA, N, 'F2'), 3)}, Faz 3 {tr(jp('psm', PSA, N, 'F3'), 3)} (NB; stok katsayısı {tr(jp('psm', PSA, N, 'lnK1'), 2)}); ön-örneklem stokuyla da aynı. Sonuç ön-örneklem bilgisinin biçimine çok duyarlı (tek yoğunluk değişkeniyle Faz 2 {tr(jp('psm', PSC, N, 'F2'), 2)}). İyi haber: Model 2 bu tahmincide de ayakta (Faz 1 eğimi {tr(J['psm_m2'][N]['S1']['b'], 3)}, Faz 2 düzeyi {tr(J['psm_m2'][N]['F2']['b'], 3)}).", ["T4", "T5"]),
+    ("E2", "Eleştiri", "Ortak zaman şokları, karıştırıcı politikalar ve karbon fiyatı; yeşil olmayan patentlerle plasebo", "Katılıyorum; fiyat mekanizması hükmüne kısmen", "kritik",
+     "Yıl sabit etkileri kullanılamıyor; Faz 2 AB 2020 Paketi ve kriz sonrası teşviklerle örtüşüyor; Faz 3'te EUA fiyatının 3–8 €/ton'a çökmesi etkinin kaybolmasının temel mekanizması; yeşil olmayan EPO başvuruları plasebo olarak önerilir.",
+     f"Tanımlama eleştirisi bu incelemenin birinci kritik bulgusuyla aynı; en somut çakışma Kyoto 1. taahhüt dönemi (2008–2012 = Faz 2). Yeşil olmayan patentlerle plasebo önerisi yerinde ve güçlü; veri setinde olmadığı için sınanamadı. Fiyat konusunda: tartışılması gerektiğine katılıyorum (tezde hiç yok); “temel mekanizma” hükmüne katılmak için kanıt yok. Yıl etkileri basit bir fiyat–inovasyon ilişkisi göstermiyor: Faz 1 izin fiyatı 2007'de sıfıra yaklaşırken etki artıyor; fiyat 2008 ortasından sonra gerilerken etki 2009'da zirve yapıyor; 2018–2019'da fiyat 15,5 → 24,7 €'ya çıkarken Faz 3 yıl etkileri sıfırın altında ({tr(yb['2019']['b'], 2)}).", ["T1", "T11"]),
+    ("E3", "Eleştiri", "Maruziyet kısıtı ve İrlanda 2015", "Katılıyorum; İrlanda etkisi sonuçlar için önemsiz", "önemli",
+     "Birim esneklik reddediliyor; İrlanda'nın 2015'teki %24,6'lık GSYİH sıçraması yoğunluğu suni düşürüyor; kısıtsız model ana bulgularla birlikte sunulmalı.",
+     f"Kısıtsız modelin ana tabloda yer alması önerisine katılıyorum (birinci jüri de istiyor; AIC ve BIC serbest modeli seçiyor). İrlanda sınandı: ülke çıkarıldığında NB {tr(jp('irlanda', 'haric', N, 'F1'), 3)} / {tr(jp('irlanda', 'haric', N, 'F2'), 3)} / {tr(jp('irlanda', 'haric', N, 'F3'), 3)} (tam örneklem {tr(c('m1', N, 'F1'), 3)} / {tr(c('m1', N, 'F2'), 3)} / {tr(c('m1', N, 'F3'), 3)}); İrlanda × 2015 sonrası kuklası anlamsız; serbest esneklik İrlanda'sız {tr(jp('irlanda', 'serbest_haric', N, 'lngdp'), 3)} (tam {tr(jp('irlanda', 'serbest_tam', N, 'lngdp'), 3)}). İrlanda'nın Poisson ağırlığı %{tr(J['irlanda']['poisson_agirlik'], 1)}. Ayrıca 2015'te İrlanda'nın başvurusu da sıçradığı için ({J['irlanda']['ccm_2014_2016'][0]} → {J['irlanda']['ccm_2014_2016'][1]}) o yıl yoğunluk düşmüyor, yükseliyor ({tr(J['irlanda']['yogunluk_2014_2016'][0], 3)} → {tr(J['irlanda']['yogunluk_2014_2016'][1], 3)}).", ["M1"]),
+    ("E4", "Eleştiri", "Birim kök ve eşbütünleşme analizindeki yöntemsel tutarsızlık", "Katılıyorum; ek bulgular var", "orta",
+     "CD ile bağımlılık bulunup CIPS'e geçildikten sonra birinci nesil Kao ve Pedroni testlerinin kullanılması çelişki; üstel sayım modelinde durağanlık uyumu açıklanmalı.",
+     f"Aynı eleştiri birinci jüride ve bağımsız hakemde de var. Bu incelemenin eklediği: (i) “yeşil patent yoğunluğu” satırları aslında logaritmayla hesaplanmış; düzeyle CIPS {tr(U['inten']['cips_c']['stat'], 2)} olup birim kökü reddedemiyor; (ii) birim kök testleri 1996–2020, Kao 1997–2020 dönemiyle; (iii) Pedroni'nin +2,255'lik istatistiğinin ret sayılması şüpheli.", ["M4"]),
+    ("E5", "Eleştiri", "Sıfır-kesikli sayım dağılımı: ZTNB duyarlılığı", "Kavramsal olarak katılmıyorum; yine de sınandı", "küçük",
+     "Örneklemde sıfır yok; Yunanistan ve Portekiz'de değerler 1'e yaklaşıyor; sıfır-kesikli negatif binoma duyarlılık kontrol edilmeli.",
+     f"Sıfır-kesikli model, sıfırın gözlenemediği tasarımlar içindir; burada sıfır gözlenebilir, yalnızca gerçekleşmemiştir ve model bunu olağan buluyor (beklenen sıfır sayısı {tr(J['sifir']['beklenen_sifir_nb'], 2)}). Kontrol yapıldı: sıfır-kesikli NB katsayıları {tr(J['sifir']['zt_nb']['F1'], 4)} / {tr(J['sifir']['zt_nb']['F2'], 4)} / {tr(J['sifir']['zt_nb']['F3'], 4)}, olağan NB {tr(J['sifir']['normal_nb']['F1'], 4)} / {tr(J['sifir']['normal_nb']['F2'], 4)} / {tr(J['sifir']['normal_nb']['F3'], 4)}. Fark dördüncü ondalıkta. Bir dipnot yeterli.", ["M8"]),
+    ("K1", "Tutarlılık", "Tablo 5.2 (t−1) ↔ Tablo 5.3 (t) dönem uyuşmazlığı", "Katılıyorum", "küçük",
+     "Tablo 5.3 dönem ortalamaları cari değerlerle hesaplanmış; not eklenmeli.",
+     f"Doğrulandı: Tablo 5.3'ün kontrol sütunları eşzamanlı değerlerle birebir (ör. ETS öncesi yenilenebilir payı {tr(R['tanim']['t53']['pre']['es']['renew'], 2)}; gecikmeliyle {tr(R['tanim']['t53']['pre']['gec']['renew'], 2)}). Stok sütunu da K₍t₎.", ["Y6"]),
+    ("K2", "Tutarlılık", "5.6.4'te “Tablo 5.5” atfı Tablo 5.6 olmalı", "Katılıyorum", "küçük", "VIF tablosuna yanlış numarayla atıf.", "Doğrulandı (metin satırı L375).", ["Y6"]),
+    ("K3", "Tutarlılık", "Tahmin döneminin neden 1997'de başladığı açıklanmamış", "Kısmen katılıyorum", "küçük",
+     "1990–1995'te Eurostat makro verilerinde 10–12 ülke eksik; açıkça belirtilmeli.",
+     f"Veriyle doğrulandı: reel GSYİH {J['eksik']['ilk_tam_yil']['gdp_real']}'ten, büyüme oranı {J['eksik']['ilk_tam_yil']['gdp_growth']}'dan itibaren tam (1990–1995'te 10–12 ülke eksik); bir dönem gecikmeyle ilk yıl 1997. “Açıklanmamış” demek biraz ağır: L193 “veriler 1996 yılından itibaren eksiksiz temin edilebilmiştir” diyor; ama hangi değişkenlerin kısıtlayıcı olduğu yazılmamış. Bir cümle eklenmeli.", ["Y6"]),
+    ("K4", "Tutarlılık", "Eskime oranı (0,15) için metin içi atıf yok", "Katılıyorum", "küçük", "Noailly ve Smeets (2015) vd. kaynakçada var, metinde atıf yok.", "Doğrulandı; veri dosyası Noailly–Smeets, Hall–Mairesse ve Popp/Verdolini–Galeotti'yi anıyor, metin (L179) anmıyor.", ["Y6"]),
+    ("K5", "Tutarlılık", "Değişken adları ve APA 7 biçim tutarlılığı", "Katılıyorum", "küçük", "Farklı adlandırmalar, “&” bağlacı, bitişik yazımlar, mükerrer kaynakça girdisi.", "Doğrulandı; ayrıntılı liste Kaynakça sayfasında ve B1–B2 bulgularında.", ["B1", "B2"]),
+    ("S", "Kapanış", "“Bu düzeltmelerle çalışma doğrudan uluslararası dergilere gönderilebilecek olgunluğa ulaşacaktır”", "Katılmıyorum", "önemli",
+     "Önerilen düzeltmeler yapıldığında yayın olgunluğuna ulaşılacağı söyleniyor.",
+     "İkinci jürinin listesi gerekli ama yeterli değil. Listede olmayan ve hakem sürecinde belirleyici olacak noktalar: “ETS öncesi eğilim yok” bulgusunun stok yan ürünü olması (T2), H1 kanıtının eğilimle kirlenmesi (T3), çıkarsama yönteminin aşırı reddetmesi (C9), plasebo testlerinin seçiciliği (T6), Faz 2 zamanlaması (T7), Birleşik Krallık gerekçesi (T8). Kontrol grubu sorunu (T1) çözülmeden nedensel bir makale olarak yayımlanması güç; betimleyici bir makale olarak ise bulgular güçlü.", ["T1", "T2", "T3", "C9", "T6", "T7", "T8"]),
+]
+JURI_KARSILASTIRMA = [
+    ("Kontrol grubu / ortak zaman şokları", "Var (en önemli madde)", "Var", "T1"),
+    ("Stokun kontrol / aracı rolü", "Var", "Var (kesin dışsallık çerçevesiyle)", "T4, T5"),
+    ("GSYİH maruziyet kısıtı", "Var (ana model değişsin)", "Var (birlikte sunulsun)", "M1"),
+    ("Birim kök / eşbütünleşme tutarsızlığı", "Var", "Var", "M4"),
+    ("Bootstrap yöntemi", "Eleştiriyor (wild ↔ eşli uyumsuzluğu, az küme)", "Övüyor (“birinci tip hatayı kontrol ediyor”)", "C2, C4, C9 — veri birinci jüriyi destekliyor"),
+    ("Birleşik Krallık ve örneklem seçimi", "Var", "Yok", "T8"),
+    ("Üçüncü faz yorumu (“etki yok” ↔ “kanıt yok”)", "Var", "Kısmen (fiyat mekanizması)", "Y3, T11"),
+    ("Karbon fiyatı", "Yok", "Var", "T11"),
+    ("Yeşil olmayan patentlerle plasebo", "Yok (genel olarak karşılaştırma grubu)", "Var", "T1"),
+    ("Ön-örneklem ortalaması tahmincisi", "Yok", "Var", "T5"),
+    ("İrlanda 2015", "Yok", "Var", "M1"),
+    ("Sıfır-kesikli model", "Yok", "Var", "M8"),
+    ("“Yeşil inovasyon = patent” sınırı", "Var", "Yok", "Y5"),
+    ("Regresyonların yeniden tahmini", "Yapılmamış (yalnız tanımlayıcılar)", "Yapılmış (katsayılar doğrulanmış)", "Kısım 3"),
+    ("Genel hüküm", "Önemli düzeltme gerekli; nedensel tanımlama yetersiz", "Güçlü omurga; düzeltmelerle yayına hazır", "Bu inceleme birinci jürinin hükmüne daha yakın"),
+]
+JURI2_CEVAP = [
+    ("Stok kesin dışsallığı bozuyor; tahminleriniz tutarlı mı?",
+     f"İhlal tanım gereği var. Büyüklüğünü benzetimle ölçtüm: gerçek etki sıfırken Model 1 ortalama +{tr(SP['A']['nb']['ort'][0], 2)} / +{tr(SP['A']['nb']['ort'][1], 2)} / +{tr(SP['A']['nb']['ort'][2], 2)} tahmin ediyor. Bu, Faz 2 tahminini ({tr(c('m1', N, 'F2'), 2)}) açıklamıyor. Asıl kanıtım Model 2: orada yanlılık yok denecek kadar küçük ve Faz 1 eğimi ile Faz 2 düzeyi hem sabit etkili hem ön-örneklem ortalamalı tahmincide anlamlı."),
+    ("Ön-örneklem ortalaması tahmincisi ne veriyor?",
+     f"Model 1'de faz katsayıları sıfıra iniyor (Faz 2: {tr(jp('psm', PSA, N, 'F2'), 3)}), stok katsayısı {tr(jp('psm', PSA, N, 'lnK1'), 2)}'ye çıkıyor; sonuç ön-örneklem bilgisinin biçimine çok duyarlı. Model 2'de bulgular korunuyor. Bu yüzden iki tahmini aralık olarak sunuyor, yorumu Model 2'ye dayandırıyorum."),
+    ("Faz 3'te etki neden yok? Karbon fiyatı mı?",
+     "Fiyat makul bir aday, ama bu veriyle sınanmadı ve yıl etkileri fiyatla birebir hareket etmiyor (2007'de fiyat sıfıra yaklaşırken etki artıyor; 2018–2019'da fiyat yükselirken etki yok). Dürüst cevap: üçüncü fazda ek doğrudan etkiye ilişkin kanıt yok; nedeni ayrıştırılamıyor. Gecikmeli EUA fiyatını modele ekleyen tahmin yapılmalı."),
+    ("Ortak şokları nasıl ayırıyorsunuz? Yeşil olmayan patentler?",
+     "Bu tasarımla ayrılamıyor; bulgular “AB ETS dönemleriyle ilişkili fark” olarak sunulmalı. Yeşil olmayan EPO başvurularıyla plasebo ve NAP sıkılığına dayalı maruziyet tasarımı en güçlü iki ek sınama; ikisi de yeni veri gerektiriyor."),
+    ("İrlanda sonuçları bozuyor mu? Sıfır-kesikli model gerekli mi?",
+     f"İkisi de sınandı, sonuç değişmiyor: İrlanda'sız NB {tr(jp('irlanda', 'haric', N, 'F1'), 3)} / {tr(jp('irlanda', 'haric', N, 'F2'), 3)}; sıfır-kesikli NB {tr(J['sifir']['zt_nb']['F1'], 4)} / {tr(J['sifir']['zt_nb']['F2'], 4)}."),
+]
+YAPILACAK.extend([
+    ("B", "Karbon fiyatını tartışmaya ve modele ekleyin: gecikmeli yıllık ortalama EUA fiyatı; Faz 3 için fiyat açıklamasını sınanmış biçimde sunun.", "T11"),
+    ("C", "Yeşil olmayan EPO başvurularıyla plasebo sonuç sınaması yapın (ikinci jüri önerisi; yeni veri gerekir).", "T1"),
+    ("D", "Dipnotlar: tahmin döneminin 1997'de başlama nedeni; sıfır-kesikli tahminlerin sonucu değiştirmediği; İrlanda 2015 sıçramasının etkisizliği.", "Y6, M8, M1"),
+])
+
+# --- Kaynakça sayfası
+KAYNAKCA = {
+    "ozet": "Bölümdeki bütün metin içi atıflar programla çıkarılıp kaynakçayla eşleştirildi: eksik kayıt ya da yazar/yıl uyuşmazlığı yok. Sorunlar biçimde, birkaç eksik atıfta ve doğrulanamayan iki literatür aktarımında.",
+    "bicim": [("L81", "Hausman ve diğ.(1984)", "parantezden önce boşluk"), ("L81", "(Allison&Waterman, 2002)", "“ve” bağlacı, boşluk"), ("L109", "(Efron&Tibshirani, 1993)", "“ve” bağlacı, boşluk"),
+              ("L153", "(OECD,2026)", "virgülden sonra boşluk; kaynakçadaki yıl 2024"), ("L183", "sağlamaktadır(Bel ve Joseph,2018)", "boşluklar"), ("L193", "(Dechezleprêtre ve diğ.,2011; … Haščič ve Migotto 2015)", "boşluk, virgül"),
+              ("L331", "(Allison andWaterman, 2002)", "“and” → “ve”, boşluk"), ("L335", "etkilemektedir(Bel&Joseph,2018)", "“ve” bağlacı, boşluklar"), ("L525", "Pakes&Griliches(1984); Bel&Joseph(2018)", "“ve” bağlacı, boşluklar")],
+    "kayit": [("Dechezleprêtre ve diğ. (2011)", "“&” bağlacı ve tırnak içinde başlık; diğer kayıtlarla aynı biçime getirilmeli"),
+              ("OECD veri seti", "İki kez, iki farklı yıl ve biçimle listelenmiş (2024, başka bir atıf stiliyle; 2026, veri kaynakları altında)"),
+              ("StataCorp", "Stata 19 kullanıldığı yazılıyor, kaynakça kaydı yok"), ("Wooldridge (1999)", "Kaynakçada var; sabit etkili Poisson'un dağılım varsayımına dayanıklılığı (5.1.5) için metinde atıf yapılmalı")],
+    "eksik_atif": [("5.4.4 (L179)", "Eskime oranı δ = 0,15 ve başlangıç stoku formülü", "Noailly ve Smeets (2015); Hall ve Mairesse (1995); Popp (2002); Verdolini ve Galeotti (2011) — hepsi kaynakçada, metinde atıf yok"),
+                   ("5.5 (L193)", "1990 başlangıcı için gösterilen kaynaklar", "Atıf yapılan çalışmaların “veriler 1990'dan itibaren güvenilir” dediği kontrol edilmeli")],
+    "dogrulanamayan": [("5.6.9 (L525)", "“Pakes ve Griliches (1984) … ortalama gecikme yaklaşık 1,6 yıl”", "Birincil kaynakta bu rakam teyit edilemedi; sayfa numarasıyla atıf verilmeli ya da ifade değiştirilmeli"),
+                       ("5.10.5 (L811)", "“Bel ve Joseph'in (2018) ana modeli enerji teknolojilerine dayanırken…”", "Makalenin özeti genel iklim azaltım teknolojilerini de kullandığını ve 28 ülkeyi kapsadığını belirtiyor; “rassal etkili model” nitelemesi de teyit edilemedi")],
+    "onerilen": [("Blundell, Griffith ve Windmeijer (2002); Blundell, Griffith ve Van Reenen (1999)", "Sayım verili dinamik panel, ön-örneklem ortalaması tahmincisi (T5)"),
+                 ("MacKinnon, Nielsen ve Webb (2023)", "Az kümede çıkarsama, küme jackknife (C1, C9)"), ("Carter, Schnepel ve Steigerwald (2017)", "Etkin küme sayısı (C3)"),
+                 ("Westerlund (2007)", "Yatay kesit bağımlılığına dayanıklı eşbütünleşme testi (M4)"), ("Guimarães (2008); Greene (2007)", "Sabit etkili negatif binom tartışması (M5)")],
+}

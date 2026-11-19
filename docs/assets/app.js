@@ -18,9 +18,9 @@
   const pctEff = (b) => tr(100 * (Math.exp(b) - 1), 1);
   const load = (f) => fetch("data/" + f).then((r) => { if (!r.ok) throw new Error(f); return r.json(); });
 
-  let R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP;
+  let R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP, J2D;
   try {
-    [R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP] = await Promise.all(["sonuclar.json", "icerik.json", "panel.json", "spec_egrisi.json", "bootstrap_m1.json", "birim_kok.json", "ek_dogrulama.json", "simulasyon.json", "simulasyon_p.json"].map(load));
+    [R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP, J2D] = await Promise.all(["sonuclar.json", "icerik.json", "panel.json", "spec_egrisi.json", "bootstrap_m1.json", "birim_kok.json", "ek_dogrulama.json", "simulasyon.json", "simulasyon_p.json", "juri2.json"].map(load));
   } catch (e) {
     $("#yukleniyor").textContent = "Veri dosyaları yüklenemedi (" + e.message + "). Sayfayı bir web sunucusu üzerinden açın.";
     return;
@@ -53,8 +53,14 @@
 
   const say = (o) => IC.bulgular.filter((b) => b.onem === o).length;
   const PAGES = [
-    ["ozet", "◎", "Özet"], ["veri", "▤", "Veri"], ["replikasyon", "⟳", "Yeniden üretim"], ["modeller", "ƒ", "Modeller"], ["cikarsama", "±", "Çıkarsama"],
-    ["saglamlik", "≋", "Sağlamlık"], ["bulgular", "⚑", "Bulgular", IC.bulgular.length], ["juri", "§", "Jüri ve hakem"], ["yapilacak", "☑", "Yapılacaklar", IC.yapilacak.length], ["belgeler", "▣", "Belgeler"]];
+    ["ozet", "◎", "Özet"], ["rapor", "❡", "Rapor (tam metin)"], ["bolumler", "☰", "Tez bölümleri"], ["veri", "▤", "Veri"], ["replikasyon", "⟳", "Yeniden üretim"], ["modeller", "ƒ", "Modeller"], ["cikarsama", "±", "Çıkarsama"],
+    ["saglamlik", "≋", "Sağlamlık"], ["bulgular", "⚑", "Bulgular", IC.bulgular.length], ["kaynakca", "❞", "Kaynakça"], ["juri", "§", "Jüri raporları"], ["yapilacak", "☑", "Yapılacaklar", IC.yapilacak.length], ["belgeler", "▣", "Belgeler"]];
+  const para = (t) => { const parts = t.split(" • "); if (parts.length < 3) return h("p", null, t.replace(/^• /, "")); return h("ul", null, parts.map((x) => h("li", null, x.replace(/^• /, "")))); };
+  const durumCls = (d) => (d.startsWith("yeni") ? "b-info" : d.includes("doğrulanamadı") || d.includes("kısmen") ? "b-orta" : "b-ok");
+  const findingEl = (b, pre) => h("details", { class: "finding", id: (pre || "b-") + b.id }, h("summary", null, badge(b.onem, ONEM[b.onem]), h("span", null, h("span", { class: "id" }, b.id + " · " + b.kat), h("br"), h("span", { class: "ttl" }, b.baslik)), h("span", { class: "small" }, b.yer)),
+    h("div", { class: "body" }, h("div", { class: "meta" }, b.kaynak.map((k) => badge(k)), badge(b.durum, durumCls(b.durum))), h("h4", null, "Tespit"), para(b.tespit), h("h4", null, "Kanıt"), para(b.kanit), h("h4", null, "Öneri"), para(b.oneri)));
+  const bulguLink = (id) => h("a", { href: "#bulgular", class: "small", style: "margin-right:8px", onclick: () => setTimeout(() => { const d = document.getElementById("b-" + id); if (d) { d.open = true; d.scrollIntoView({ block: "center" }); } }, 80) }, id);
+  const mdView = async (view, f) => { view.textContent = "Yükleniyor…"; try { const t = await fetch("raporlar/" + f).then((r) => { if (!r.ok) throw 0; return r.text(); }); view.innerHTML = marked.parse(t); view.querySelectorAll("table").forEach((t_) => { const w = h("div", { class: "tw" }); t_.replaceWith(w); w.append(t_); }); } catch (e) { view.textContent = "Belge yüklenemedi."; } };
   const main = $("#main"); main.replaceChildren();
   const nav = $("#nav");
   const built = {};
@@ -83,7 +89,7 @@
     el.append(h("div", { class: "hero" },
       h("div", { class: "verdict" }, h("h3", null, "Sonuç: hesaplar doğru, yorumlar fazla iddialı"),
         h("p", null, "Tezde raporlanan sayılar yeniden üretilebiliyor; hesaplama hatası yok. Sorunlar, tasarımın neyi tanımlayabildiğinde ve hipotez tablosunun kanıttan ileri gitmesinde. “AB ETS yeşil inovasyonu artırmıştır” nedensel iddiası bu tasarımla taşınamıyor; “ilk iki faza denk gelen dönemde, önceki eğilimin ve bilgi stokunun açıklayamadığı bir yükseliş vardır ve üçüncü fazda sürmemiştir” betimleyici bulgusu ise güçlü."),
-        h("p", { class: "small", style: "margin:0" }, "Jüri raporundaki “önemli düzeltme gerekli” yargısıyla örtüşüyor. Düzeltmelerin çoğu yeni veri değil, yeniden yazım ve birkaç ek tablo gerektiriyor.")),
+        h("p", { class: "small", style: "margin:0" }, "Birinci jüri raporundaki “önemli düzeltme gerekli” yargısıyla örtüşüyor; ikinci jüri raporunun “düzeltmelerle yayına hazır” yargısı fazla iyimser. Düzeltmelerin çoğu yeni veri değil, yeniden yazım ve birkaç ek tablo gerektiriyor.")),
       h("div", { class: "grid g2" },
         h("div", { class: "tile" }, h("div", { class: "lab" }, "Birebir yeniden üretilen değer"), h("div", { class: "val" }, u[0] + " / " + u[1]), h("div", { class: "note" }, "katsayı, istatistik, VIF, korelasyon")),
         h("div", { class: "tile" }, h("div", { class: "lab" }, "Bulgu"), h("div", { class: "val" }, IC.bulgular.length), h("div", { class: "chips", style: "margin-top:4px" }, badge(say("kritik") + " kritik", "b-kritik"), badge(say("önemli") + " önemli", "b-onemli"), badge(say("orta") + " orta", "b-orta"), badge(say("küçük") + " küçük", "b-kucuk"))),
@@ -339,16 +345,14 @@
 
   // ================================================================ BULGULAR
   function bulgular(el) {
-    el.append(h("h1", null, "Bulgular"), h("p", { class: "lede" }, "Dört kaynaktan gelen bütün tespitler tek listede: ilk inceleme, jüri raporu, bağımsız hakem okuması ve bu yeniden inceleme. Her biri veriyle yeniden sınandı; sayılar hesap çıktılarından otomatik çekiliyor."));
+    el.append(h("h1", null, "Bulgular"), h("p", { class: "lede" }, "Beş kaynaktan gelen bütün tespitler tek listede: ilk inceleme, iki jüri raporu, bağımsız hakem okuması ve bu yeniden inceleme. Her biri veriyle yeniden sınandı; sayılar hesap çıktılarından otomatik çekiliyor."));
     const st = { onem: new Set(), kat: "", kay: "", q: "" };
     const list = h("div"), cnt = h("span", { class: "small" });
     const kats = [...new Set(IC.bulgular.map((b) => b.kat))], kays = [...new Set(IC.bulgular.flatMap((b) => b.kaynak))];
-    const para = (t) => { const parts = t.split(" • "); if (parts.length < 3) return h("p", null, t.replace(/^• /, "")); return h("ul", null, parts.map((x) => h("li", null, x.replace(/^• /, "")))); };
     const draw = () => { const q = st.q.toLocaleLowerCase("tr");
       const fs = IC.bulgular.filter((b) => (!st.onem.size || st.onem.has(b.onem)) && (!st.kat || b.kat === st.kat) && (!st.kay || b.kaynak.includes(st.kay)) && (!q || (b.baslik + b.tespit + b.kanit + b.oneri + b.id).toLocaleLowerCase("tr").includes(q)));
       cnt.textContent = fs.length + " / " + IC.bulgular.length + " bulgu";
-      list.replaceChildren(...fs.map((b) => h("details", { class: "finding", id: "b-" + b.id }, h("summary", null, badge(b.onem, ONEM[b.onem]), h("span", null, h("span", { class: "id" }, b.id + " · " + b.kat), h("br"), h("span", { class: "ttl" }, b.baslik)), h("span", { class: "small" }, b.yer)),
-        h("div", { class: "body" }, h("div", { class: "meta" }, b.kaynak.map((k) => badge(k)), badge(b.durum, b.durum.startsWith("yeni") ? "b-info" : b.durum.includes("doğrulanamadı") ? "b-orta" : "b-ok")), h("h4", null, "Tespit"), para(b.tespit), h("h4", null, "Kanıt"), para(b.kanit), h("h4", null, "Öneri"), para(b.oneri)))));
+      list.replaceChildren(...fs.map((b) => findingEl(b)));
       if (!fs.length) list.append(h("p", null, "Bu süzgeçle bulgu yok.")); };
     el.append(h("div", { class: "filters" }, h("label", null, "Önem", h("div", { class: "row" }, ["kritik", "önemli", "orta", "küçük"].map((o) => h("label", { class: "chk" }, h("input", { type: "checkbox", onchange: (e) => { e.target.checked ? st.onem.add(o) : st.onem.delete(o); draw(); } }), o + " (" + say(o) + ")")))),
       h("label", null, "Kategori", sel([["", "hepsi"]].concat(kats.map((k) => [k, k])), "", (x) => { st.kat = x; draw(); })), h("label", null, "Kaynak", sel([["", "hepsi"]].concat(kays.map((k) => [k, k])), "", (x) => { st.kay = x; draw(); })),
@@ -360,13 +364,34 @@
 
   // ================================================================ JÜRİ
   function juri(el) {
-    el.append(h("h1", null, "Jüri raporu ve bağımsız hakem okuması"), h("p", { class: "lede" }, "Jüri değerlendirme raporundaki her madde veriyle sınandı. Ayrıca, önceki sonuçlara demirlenmemek için hiçbir ön bilgi verilmeden ikinci bir bağımsız okuma yaptırıldı; oradaki iddialar da tek tek yeniden hesaplandı."));
-    el.append(h("h2", null, "Jürinin soruları ve veriyle desteklenen cevaplar"));
-    IC.juri.forEach((j) => el.append(h("div", { class: "card" }, h("div", { class: "qa" }, h("div", { class: "q" }, j[0]), h("div", { class: "chips", style: "margin-bottom:8px" }, badge(j[1], j[1].startsWith("Katıl") || j[1].startsWith("Tamamen") ? "b-ok" : "b-info"), j[2] !== "bilgi" ? badge(j[2], ONEM[j[2]]) : null), h("div", null, j[3])))));
-    el.append(h("h2", null, "Önceki incelememdeki düzeltmeler"), h("p", { class: "small" }, "İlk incelemede yazdığım ve bu aşamada yanlış ya da eksik çıkan değerlendirmeler."),
-      h("div", { class: "card" }, table(["Önceki ifadem", "Şimdiki durum"], IC.duzeltmeler)));
-    el.append(h("h2", null, "Bağımsız hakemin iddiaları: yeniden hesap"),
-      h("div", { class: "card" }, table(["İddia", "Benim hesabım", ""], [
+    el.append(h("h1", null, "Jüri raporları ve bağımsız hakem okuması"), h("p", { class: "lede" }, "İki jüri ekibinin raporlarındaki her madde veriyle sınandı. Ayrıca, önceki sonuçlara demirlenmemek için hiçbir ön bilgi verilmeden bağımsız bir hakem okuması yaptırıldı; oradaki iddialar da tek tek yeniden hesaplandı."));
+    const box = h("div"); let tab = "j2";
+    const stance = (t) => badge(t, t.startsWith("Katılmıyorum") || t.startsWith("Kavramsal") ? "b-kritik" : t.includes("Kısmen") || t.includes("çare") || t.includes("kısmen") ? "b-orta" : "b-ok");
+    const cellJ = (d, k) => (d[k] ? h("td", { class: "pcell" }, tr(d[k].b, 3) + " ", h("span", { class: "pp " + pcls(d[k].p_t) }, pv(d[k].p_t))) : h("td", { class: "pcell" }, "–"));
+    const T = {
+      j2: () => { const d = h("div");
+        d.append(h("div", { class: "card" }, h("h3", null, "İkinci jüri raporu: genel değerlendirme"),
+          h("p", null, "Rapor kısa, isabetli ve yapıcı; beş eleştirisinin dördü birinci jüri raporu ve bu incelemeyle örtüşüyor, üç yeni öneri getiriyor (ön-örneklem ortalaması tahmincisi, karbon fiyatı, yeşil olmayan patentlerle plasebo). Üç noktada veriyle çelişiyor ya da fazla iyimser:"),
+          h("ul", null,
+            h("li", null, h("b", null, "Çıkarsama övgüsü (G3): "), `eşli bootstrap + BC'nin birinci tip hatayı “başarıyla kontrol ettiği” söyleniyor; benzetimlerde yöntem %5 yerine ${simr("rej_boot", "A")} oranında reddediyor.`),
+            h("li", null, h("b", null, "Önerilen çare (E1): "), `ön-örneklem ortalaması tahmincisi Model 1'i kurtarmıyor (negatif binom Faz 2: ${tr(J2D.psm[Object.keys(J2D.psm)[0]].nb.F2.b, 3)}); Model 2'nin Faz 1 eğimi (${tr(J2D.psm_m2.nb.S1.b, 3)}) ve Faz 2 düzeyi (${tr(J2D.psm_m2.nb.F2.b, 3)}) ise bu tahmincide de anlamlı.`),
+            h("li", null, h("b", null, "Kapanış yargısı (S): "), "listelenen düzeltmeler gerekli ama yeterli değil; raporun değinmediği kritik noktalar var.")),
+          h("p", { class: "small", style: "margin:0" }, h("a", { href: "#rapor" , onclick: () => { try { sessionStorage.setItem("rapor", "Juri2_Raporu_Degerlendirmesi.md"); } catch (e) {} } }, "Ayrı değerlendirme raporunun tam metni →"))));
+        ["Güçlü yön", "Eleştiri", "Tutarlılık", "Kapanış"].forEach((g) => { d.append(h("h2", null, { "Güçlü yön": "Güçlü yönler", "Eleştiri": "Yöntemsel eleştiriler", "Tutarlılık": "Tutarlılık denetimi", "Kapanış": "Kapanış yargısı" }[g]));
+          IC.juri2.filter((j) => j[1] === g).forEach((j) => d.append(h("div", { class: "card" }, h("div", { class: "qa" }, h("div", { class: "q" }, j[0] + " · " + j[2]), h("div", { class: "chips", style: "margin-bottom:8px" }, stance(j[3])),
+            h("p", { class: "small" }, h("b", null, "Jürinin ifadesi: "), j[5]), h("p", null, j[6]), j[7].length ? h("div", null, h("span", { class: "small" }, "İlgili bulgular: "), j[7].map(bulguLink)) : null)))); });
+        d.append(h("h2", null, "Önerilen sınama: ön-örneklem ortalaması tahmincisi"), h("div", { class: "card" }, h("div", { class: "sub" }, "Ülke kuklaları yerine ön-örneklem dönemi bilgisi; hücreler katsayı ve ülke-kümeli t(13) p değeri"),
+          table(["Tanım", "Tahminci", "Faz 1", "Faz 2", "Faz 3", "Stok"], Object.entries(J2D.psm).flatMap(([nm, v]) => [N, P].map((f) => [nm, FAM[f], cellJ(v[f], "F1"), cellJ(v[f], "F2"), cellJ(v[f], "F3"), cellJ(v[f], "lnK1")])), { tall: true }),
+          h("h4", { style: "margin-top:14px" }, "Model 2, ön-örneklem ortalamalı"),
+          table(["Katsayı", "Negatif binom", "Poisson QML", "Tezin sabit etkili tahmini (NB)"], ["tstar", "F1", "S1", "F2", "S2", "F3", "S3", "lnK1"].map((k) => [AD2[k], cellJ(J2D.psm_m2.nb, k), cellJ(J2D.psm_m2.poisson, k), tr(C("m2", N, k).b, 3)]), { num: [3] }),
+          h("div", { class: "takeaway", html: "Model 1'de sonuç ön-örneklem bilgisinin biçimine çok duyarlı (A ve B'de faz farkı yok, C'de var). <b>Model 2</b>'nin Faz 1 eğimi ve Faz 2 düzeyi ise sabit etkili tahminlere çok yakın ve anlamlı: tezin en dayanıklı bulgusu burada." })));
+        d.append(h("h2", null, "Savunma için cevap taslakları")); IC.juri2_cevap.forEach(([q, a]) => d.append(h("div", { class: "card" }, h("div", { class: "qa" }, h("div", { class: "q" }, q), h("div", null, a)))));
+        return d; },
+      j1: () => { const d = h("div"); d.append(h("h2", null, "Birinci jürinin soruları ve veriyle desteklenen cevaplar"));
+        IC.juri.forEach((j) => d.append(h("div", { class: "card" }, h("div", { class: "qa" }, h("div", { class: "q" }, j[0]), h("div", { class: "chips", style: "margin-bottom:8px" }, badge(j[1], j[1].startsWith("Katıl") || j[1].startsWith("Tamamen") ? "b-ok" : "b-info"), j[2] !== "bilgi" ? badge(j[2], ONEM[j[2]]) : null), h("div", null, j[3]))))); return d; },
+      kars: () => h("div", { class: "card" }, h("h3", null, "İki jüri raporunun karşılaştırması"), table(["Konu", "1. jüri raporu", "2. jüri raporu", "Bu incelemedeki karşılığı"], IC.juri_karsilastirma),
+        h("div", { class: "takeaway", html: "İki rapor dört temel eleştiride birleşiyor (ortak şoklar, stok, maruziyet, birim kök). Ayrıştıkları tek esaslı nokta <b>bootstrap</b>: birinci jüri yöntemi sorguluyor, ikinci jüri övüyor; benzetim sonuçları birinci jüriyi destekliyor. Genel hükümde bu inceleme birinci jüriye daha yakın." })),
+      hakem: () => h("div", { class: "card" }, h("h3", null, "Bağımsız hakemin iddiaları: yeniden hesap"), table(["İddia", "Benim hesabım", ""], [
         ["Model 2 ülke-içi VIF: eğilim 42,8; Faz 3 25,4; stok 12,0", `${tr(EKD.vif_m2.tstar, 1)}; ${tr(EKD.vif_m2.F3, 1)}; ${tr(EKD.vif_m2.lnK1, 1)}`, h("span", { class: "ok" }, "✓")],
         ["Stok–zaman ülke-içi korelasyonu 0,95", tr(EKD.ici_kor["lnK1~zaman"], 3), h("span", { class: "ok" }, "✓")],
         ["Eğilim tek başına 0,27 / 0,46 / 0,78 log puan üretir", ["F1", "F2", "F3"].map((f) => tr(EKD.egilim_katkisi.nb[f].egilimden, 2)).join(" / "), h("span", { class: "ok" }, "✓")],
@@ -376,7 +401,63 @@
         ["Yoğunluk birim kök testleri logaritmayla", `Fisher ${tr(UR.lninten.fisher_c[0], 2)} ↔ ${tr(UR.inten.fisher_c[0], 2)}`, h("span", { class: "ok" }, "✓")],
         ["Birleşik Krallık 31.12.2020'ye kadar AB ETS'de", "web kaynaklarından teyit", h("span", { class: "ok" }, "✓")],
         ["Pedroni +2,255'in “ret” sayılması şüpheli", "yeniden üretilmedi", h("span", { class: "warn" }, "orta güven")]]),
-        h("p", { class: "small", style: "margin:10px 0 0" }, "İki bağımsız okumanın birbirinden habersiz aynı kritik noktalara ulaşması (kontrol grubu, H5'in stoka bağlılığı, bootstrap gerekçesi, Tablo 5.4, BC aralıkları) bu bulguların güvenilirliğini artırıyor.")));
+        h("p", { class: "small", style: "margin:10px 0 0" }, "İki bağımsız okumanın birbirinden habersiz aynı kritik noktalara ulaşması (kontrol grubu, H5'in stoka bağlılığı, bootstrap gerekçesi, Tablo 5.4, BC aralıkları) bu bulguların güvenilirliğini artırıyor.")),
+      duz: () => h("div", { class: "card" }, h("h3", null, "Önceki incelememdeki düzeltmeler"), h("div", { class: "sub" }, "İlk incelemede yazdığım ve sonraki aşamalarda yanlış ya da eksik çıkan değerlendirmeler"), table(["Önceki ifadem", "Şimdiki durum"], IC.duzeltmeler)),
+    };
+    el.append(h("div", { class: "filters" }, seg([["j2", "2. jüri raporu"], ["j1", "1. jüri raporu"], ["kars", "Karşılaştırma"], ["hakem", "Bağımsız hakem"], ["duz", "Düzeltmelerim"]], tab, (x) => { box.replaceChildren(T[x]()); })));
+    el.append(box); box.append(T.j2());
+  }
+
+  // ================================================================ RAPOR (tam metin)
+  function rapor(el) {
+    el.append(h("h1", null, "Rapor (tam metin)"), h("p", { class: "lede" }, "Kapsamlı yeniden inceleme raporunun ve ikinci jüri değerlendirmesinin tam metni. Rapordaki bütün sayılar hesap çıktılarından otomatik üretilir."));
+    const RD = [["Kapsamli_Yeniden_Inceleme.md", "Kapsamlı yeniden inceleme raporu"], ["Juri2_Raporu_Degerlendirmesi.md", "İkinci jüri raporunun değerlendirmesi"]];
+    let cur = RD[0][0]; try { const x = sessionStorage.getItem("rapor"); if (x) { cur = x; sessionStorage.removeItem("rapor"); } } catch (e) {}
+    const view = h("div", { class: "md" }), toc = h("div", { class: "chips" });
+    const show = async (f) => { await mdView(view, f); toc.replaceChildren(...[...view.querySelectorAll("h2")].map((x, i) => { x.id = "r-" + i; return h("button", { type: "button", onclick: () => x.scrollIntoView({ behavior: "smooth", block: "start" }) }, x.textContent); })); };
+    el.append(h("div", { class: "filters" }, h("label", null, "Belge", sel(RD, cur, show)), h("a", { class: "btn", href: REPO + "analiz/Kapsamli_Yeniden_Inceleme.md" }, "GitHub'da aç")),
+      h("div", { class: "card" }, h("div", { class: "sub" }, "Bölümler"), toc), h("div", { class: "card" }, view));
+    show(cur);
+  }
+
+  // ================================================================ TEZ BÖLÜMLERİ
+  function bolumler(el) {
+    el.append(h("h1", null, "Tez bölümlerine göre değerlendirme"), h("p", { class: "lede" }, "Beşinci bölümün her alt bölümü için: tezde ne yapılıyor, neler doğrulandı, hangi bulgular o bölümle ilgili ve ne düzeltilmeli. Bir bulgu birden çok bölümle ilgiliyse her birinde görünür."));
+    const GIT = { "5.1": [["cikarsama", "Çıkarsama"]], "5.2": [["ozet", "Hipotez tablosu"]], "5.4": [["veri", "Veri gezgini"], ["replikasyon", "Tanımlayıcı tablolar"]], "5.6": [["cikarsama", "Çıkarsama ve benzetim"], ["replikasyon", "Birim kök tabloları"]], "5.7": [["modeller", "Modeller ve yıl etkileri"]], "5.8": [["saglamlik", "Sağlamlık"]], "5.9": [["ozet", "Hipotezler"], ["juri", "Jüri raporları"]] };
+    const box = h("div");
+    const show = (key) => { const b = IC.bolumler.find((x) => x[0] === key), fs = IC.bulgular.filter((x) => x.bolum.includes(key));
+      const cnt = (o) => fs.filter((x) => x.onem === o).length;
+      box.replaceChildren(h("div", { class: "card" }, h("h3", null, b[1]), h("h4", { style: "margin-top:10px;color:var(--ink-2)" }, "Tezde ne var"), h("p", null, b[2]), h("h4", { style: "color:var(--ink-2)" }, "Genel durum"), h("p", null, b[3]),
+        h("div", { class: "chips" }, badge(cnt("kritik") + " kritik", "b-kritik"), badge(cnt("önemli") + " önemli", "b-onemli"), badge(cnt("orta") + " orta", "b-orta"), badge(cnt("küçük") + " küçük", "b-kucuk"), (GIT[key] || []).map(([p_, t]) => h("a", { class: "btn", href: "#" + p_ }, t + " →")))),
+        h("h2", null, "Bu bölümle ilgili bulgular (" + fs.length + ")"), ...fs.map((x) => findingEl(x, "s-")),
+        h("h2", null, "Bu bölüm için yapılacaklar"), h("div", { class: "card" }, h("ul", null, IC.yapilacak.filter((y) => y[2].split(", ").some((r) => fs.some((x) => x.id === r))).map((y) => h("li", null, badge(y[0], y[0] === "A" ? "b-kritik" : y[0] === "B" ? "b-onemli" : y[0] === "C" ? "b-orta" : "b-kucuk"), " " + y[1])))));
+    };
+    el.append(h("div", { class: "filters" }, seg(IC.bolumler.map((b) => [b[0], b[1].split(" ")[0] + " " + b[1].split(" ").slice(1).join(" ")]), "5.1", show)), box); show("5.1");
+  }
+
+  // ================================================================ KAYNAKÇA
+  function kaynakca(el) {
+    const K = IC.kaynakca;
+    el.append(h("h1", null, "Kaynakça ve atıf denetimi"), h("p", { class: "lede" }, K.ozet));
+    el.append(h("div", { class: "grid g4" },
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Bölümdeki farklı atıf"), h("div", { class: "val" }, IC.atiflar.length), h("div", { class: "note" }, "yazar–yıl çifti")),
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Kaynakçada karşılığı olmayan"), h("div", { class: "val" }, IC.atiflar.filter((a) => !a.kaynakcada).length), h("div", { class: "note" }, "programla eşleştirildi")),
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Kaynakça kaydı"), h("div", { class: "val" }, IC.n_kayit), h("div", { class: "note" }, "liste tezin tamamı için")),
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Yazım hatalı atıf"), h("div", { class: "val" }, K.bicim.length), h("div", { class: "note" }, "boşluk, “&”, “and”"))));
+    const q = h("input", { type: "search", placeholder: "yazar ara" }), tb = h("div");
+    const draw = () => { const x = q.value.toLocaleLowerCase("tr"); tb.replaceChildren(table(["Atıf", "Yıl", "Bölümde geçiş sayısı", "Kaynakçada"], IC.atiflar.filter((a) => !x || a.atif.toLocaleLowerCase("tr").includes(x)).map((a) => [a.atif, a.yil, a.adet, a.kaynakcada ? h("span", { class: "ok" }, "✓") : h("span", { class: "bad" }, "yok")]), { num: [2], tall: true })); };
+    q.addEventListener("input", draw);
+    el.append(h("div", { class: "grid g2", style: "margin-top:18px" },
+      h("div", { class: "card" }, h("h3", null, "Metin içi atıflar"), h("div", { class: "sub" }, "Bölüm metninden otomatik çıkarıldı; yazım biçimi birleştirilmiştir"), q, h("div", { style: "height:8px" }), tb),
+      h("div", null,
+        h("div", { class: "card" }, h("h3", null, "Atıf yazım hataları"), table(["Satır", "Metindeki yazım", "Sorun"], K.bicim)),
+        h("div", { class: "card" }, h("h3", null, "Kaynakça kayıtları"), table(["Kayıt", "Sorun"], K.kayit)))));
+    draw();
+    el.append(h("div", { class: "grid g2" },
+      h("div", { class: "card" }, h("h3", null, "Eksik metin içi atıflar"), table(["Yer", "Konu", "Not"], K.eksik_atif)),
+      h("div", { class: "card" }, h("h3", null, "Birincil kaynaktan doğrulanması gereken aktarımlar"), table(["Yer", "İfade", "Durum"], K.dogrulanamayan))));
+    el.append(h("div", { class: "card" }, h("h3", null, "Eklenmesi önerilen kaynaklar"), h("div", { class: "sub" }, "Bulgularda önerilen yöntem ve tartışmalar için"), table(["Kaynak", "Neden"], K.onerilen)));
+    el.append(h("h2", null, "İlgili bulgular"), ...IC.bulgular.filter((x) => x.bolum.includes("kaynakca")).map((x) => findingEl(x, "k-")));
   }
 
   // ================================================================ YAPILACAKLAR
@@ -395,20 +476,21 @@
   // ================================================================ BELGELER
   function belgeler(el) {
     el.append(h("h1", null, "Belgeler"), h("p", { class: "lede" }, "Raporların tam metinleri, tez bölümü, veri seti ve bütün hesapları yeniden üreten kod."));
-    const DOCS = [["Kapsamli_Yeniden_Inceleme.md", "Kapsamlı yeniden inceleme raporu (bu sitenin dayandığı ana rapor)"], ["01_Ilk_Inceleme_ve_Juri_Analizi.md", "İlk inceleme ve jüri analizi (arşiv; bazı değerlendirmeleri güncellendi)"], ["Juri_Degerlendirme_Raporu.md", "Jüri değerlendirme raporu (dış değerlendirme)"], ["Bagimsiz_Hakem_Raporu.md", "Bağımsız hakem raporu (kör ikinci okuma, İngilizce)"]];
+    const DOCS = [["Kapsamli_Yeniden_Inceleme.md", "Kapsamlı yeniden inceleme raporu (ana rapor)"], ["Juri2_Raporu_Degerlendirmesi.md", "İkinci jüri raporunun değerlendirmesi"], ["Juri2_Degerlendirme_Raporu.md", "İkinci jüri ekibinin raporu (dış değerlendirme)"], ["Juri1_Degerlendirme_Raporu.md", "Birinci jüri değerlendirme raporu (dış değerlendirme)"], ["Bagimsiz_Hakem_Raporu.md", "Bağımsız hakem raporu (kör ikinci okuma, İngilizce)"], ["01_Ilk_Inceleme_ve_Juri_Analizi.md", "İlk inceleme ve birinci jüri analizi (arşiv; bazı değerlendirmeleri güncellendi)"], ["Tez_Bolum5_metin.md", "Tez 5. bölüm, düz metin (satır numaraları buna göre)"]];
     const view = h("div", { class: "md" });
-    const show = async (f) => { view.textContent = "Yükleniyor…"; try { const t = await fetch("raporlar/" + f).then((r) => r.text()); view.innerHTML = marked.parse(t); view.querySelectorAll("table").forEach((t_) => { const w = h("div", { class: "tw" }); t_.replaceWith(w); w.append(t_); }); } catch (e) { view.textContent = "Belge yüklenemedi."; } };
+    const show = (f) => mdView(view, f);
     el.append(h("div", { class: "grid g2" },
       h("div", { class: "card" }, h("h3", null, "Depodaki dosyalar"), h("ul", null,
         h("li", null, h("a", { href: REPO + "dokumanlar/Nihai_Model_19112026.docx" }, "Tez 5. bölüm (docx)"), " · ", h("a", { href: REPO + "dokumanlar/Nihai_Model_19112026_metin.md" }, "düz metin (satır numaraları buna göre)")),
         h("li", null, h("a", { href: REPO + "veri/AB14_nihai_veri.xlsx" }, "Veri seti (xlsx)")),
+        h("li", null, h("a", { href: REPO + "dokumanlar/Juri2_Degerlendirme_Raporu.docx" }, "İkinci jüri raporu (özgün docx)"), " · ", h("a", { href: REPO + "analiz/Juri2_Raporu_Degerlendirmesi.md" }, "değerlendirmesi"), " · ", h("a", { href: REPO + "analiz/py/juri2.py" }, "sınama kodu")),
         h("li", null, h("a", { href: REPO + "analiz/py/yeniden_inceleme.py" }, "Ana analiz betiği"), " · ", h("a", { href: REPO + "analiz/py/tezlib.py" }, "tahminciler"), " · ", h("a", { href: REPO + "analiz/py/simulasyon.py" }, "Monte Carlo"), " · ", h("a", { href: REPO + "analiz/py/birim_kok.py" }, "birim kök")),
         h("li", null, h("a", { href: "data/sonuclar.json" }, "Tüm sonuçlar (JSON)"), " · ", h("a", { href: "data/spec_egrisi.json" }, "spesifikasyon eğrisi"), " · ", h("a", { href: "data/panel.json" }, "panel verisi")))),
-      h("div", { class: "card" }, h("h3", null, "Yeniden üretmek için"), h("pre", { style: "background:var(--surface-2);padding:12px;border-radius:8px;overflow-x:auto;font-size:.82rem" }, "pip install pandas numpy scipy statsmodels openpyxl\npython analiz/py/yeniden_inceleme.py 1999\npython analiz/py/birim_kok.py\npython analiz/py/ek_dogrulama.py\npython analiz/py/simulasyon.py 300 199\npython analiz/py/rapor_uret.py"))));
+      h("div", { class: "card" }, h("h3", null, "Yeniden üretmek için"), h("pre", { style: "background:var(--surface-2);padding:12px;border-radius:8px;overflow-x:auto;font-size:.82rem" }, "pip install pandas numpy scipy statsmodels openpyxl\npython analiz/py/yeniden_inceleme.py 1999\npython analiz/py/birim_kok.py\npython analiz/py/ek_dogrulama.py\npython analiz/py/simulasyon.py 300 199\npython analiz/py/simulasyon_p.py 1000\npython analiz/py/juri2.py\npython analiz/py/rapor_uret.py"))));
     el.append(h("div", { class: "filters" }, h("label", null, "Belge", sel(DOCS, DOCS[0][0], show))), h("div", { class: "card" }, view)); show(DOCS[0][0]);
   }
 
-  const BUILD = { ozet, veri, replikasyon, modeller, cikarsama, saglamlik, bulgular, juri, yapilacak, belgeler };
+  const BUILD = { ozet, rapor, bolumler, veri, replikasyon, modeller, cikarsama, saglamlik, bulgular, kaynakca, juri, yapilacak, belgeler };
   function go() {
     let id = (location.hash || "#ozet").slice(1); if (!BUILD[id]) id = "ozet";
     for (const k in pages) pages[k].classList.toggle("on", k === id);
