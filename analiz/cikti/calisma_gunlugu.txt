@@ -1,0 +1,13 @@
+13:32:41 1 veri denetimi
+13:32:41 2 tanimlayici
+13:32:41 3 ana modeller
+13:32:43 4 bootstrap
+13:33:38   boot poisson ok 1999 1999
+13:34:55   boot nb ok 1999 1999
+13:34:55 5 saglamlik
+13:37:09   loo
+13:41:03   yil etkileri, plasebo, gecikme
+13:41:03 6 ek analizler
+13:42:30   spesifikasyon egrisi
+13:42:39 kaydet
+13:42:39 bitti -> /home/user/elifuslu_tez/analiz/cikti/sonuclar.json

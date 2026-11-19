@@ -1,0 +1,8 @@
+Ln yeşil patent yoğunluğu (tezin kullandığı) | Fisher [22.938  0.736] | IPS [-0.156  0.438] | CD 36.913 | CIPS -3.092 p_sim 0.0
+Yeşil patent yoğunluğu (düzey) | Fisher [15.652  0.971] | IPS [2.221 0.987] | CD 34.675 | CIPS -2.091 p_sim 0.12966666666666668
+Ln yeşil patent stoku | Fisher [34.123  0.197] | IPS [-0.42   0.337] | CD 46.561 | CIPS -2.775 p_sim 0.0003333333333333333
+GSYİH büyüme oranı | Fisher [72.485  0.   ] | IPS [-4.77  0.  ] | CD 33.833 | CIPS -2.568 p_sim 0.004333333333333333
+Yenilenebilir enerji payı | Fisher [0.843 1.   ] | IPS [9.966 1.   ] | CD 42.845 | CIPS -1.578 p_sim 0.6366666666666667
+Enerji ithalat bağımlılığı | Fisher [24.572  0.651] | IPS [2.882 0.998] | CD 4.364 | CIPS -0.701 p_sim 0.999
+İmalat payı | Fisher [35.673  0.151] | IPS [-0.476  0.317] | CD 30.745 | CIPS -1.594 p_sim 0.6206666666666667
+Ticaret açıklığı | Fisher [29.537  0.386] | IPS [-1.399  0.081] | CD 39.695 | CIPS -1.724 p_sim 0.4686666666666667
