@@ -136,7 +136,7 @@ Aşağıdaki değerler metindeki katsayılardan bağımsız olarak yeniden hesap
 | Tablo 5.15 sayımları (7 adet p<0,05; 13 adet p<0,10; Fransa hariç) | — | aynı | ✓ |
 | Tablo 5.15 Almanya satırı = Tablo 5.14 (c) Poisson | 0,1323 / 0,2597 / 0,0359 | aynı | ✓ |
 
-**Tablo 5.11'deki asimetrik güven aralıkları (veri setiyle doğrulandı — bkz. Kısım 6.3):**
+**Tablo 5.11'deki asimetrik güven aralıkları (veri setiyle doğrulandı — bkz. Kısım 5.3):**
 
 - *Enerji ithalat bağımlılığı*, NB: katsayı 0,0022, SH 0,0026, BC aralığı [−0,0000; **0,0241**]. Üst sınır nokta tahminin 8 SH üstünde. İlk okumada yazım hatası sanmıştım; veriyle yaptığım bootstrap aynı biçimi veriyor ([0,0001; 0,0197]). Yani hata değil, **BC yönteminin bu veri setinde kararsız çalıştığının** işareti: bootstrap dağılımı çok çarpık (çarpıklık 1,5) ve medyan sapması büyük (z₀ ≈ 0,46). Aşağıda 5.3'te açıklanıyor.
 - *Ticaret açıklığı*, NB: z = −1,96 (p = 0,050), BC aralığı üst sınırı tam −0,0000; yüzdelik aralık ise sıfırı içeriyor ([−0,0066; 0,0020]). "**" işareti savunulamaz; en fazla "*" ya da "sınırda". Aynı durum Model 2'de de var.
