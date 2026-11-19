@@ -138,7 +138,7 @@ Aşağıdaki değerler metindeki katsayılardan bağımsız olarak yeniden hesap
 
 **Tablo 5.11'deki asimetrik güven aralıkları (veri setiyle doğrulandı — bkz. Kısım 6.3):**
 
-- *Enerji ithalat bağımlılığı*, NB: katsayı 0,0022, SH 0,0026, BC aralığı [−0,0000; **0,0241**]. Üst sınır nokta tahminin 8 SH üstünde. İlk okumada yazım hatası sanmıştım; veriyle yaptığım bootstrap aynı biçimi veriyor ([0,0001; 0,0197]). Yani hata değil, **BC yönteminin bu veri setinde kararsız çalıştığının** işareti: bootstrap dağılımı çok çarpık (çarpıklık 1,5) ve medyan sapması büyük (z₀ ≈ 0,46). Aşağıda 6.3'te açıklanıyor.
+- *Enerji ithalat bağımlılığı*, NB: katsayı 0,0022, SH 0,0026, BC aralığı [−0,0000; **0,0241**]. Üst sınır nokta tahminin 8 SH üstünde. İlk okumada yazım hatası sanmıştım; veriyle yaptığım bootstrap aynı biçimi veriyor ([0,0001; 0,0197]). Yani hata değil, **BC yönteminin bu veri setinde kararsız çalıştığının** işareti: bootstrap dağılımı çok çarpık (çarpıklık 1,5) ve medyan sapması büyük (z₀ ≈ 0,46). Aşağıda 5.3'te açıklanıyor.
 - *Ticaret açıklığı*, NB: z = −1,96 (p = 0,050), BC aralığı üst sınırı tam −0,0000; yüzdelik aralık ise sıfırı içeriyor ([−0,0066; 0,0020]). "**" işareti savunulamaz; en fazla "*" ya da "sınırda". Aynı durum Model 2'de de var.
 - *İmalat payı*, NB: [−0,0392; 0,0422] asimetrik aralık da aynı BC kararsızlığının ürünü (replikasyon: [−0,0389; 0,0444]).
 
@@ -185,11 +185,11 @@ Satır 81 "Hausman ve diğ.(1984)", "(Allison&Waterman, 2002)"; satır 109 "(Efr
 
 ---
 
-## 6. Veri seti değerlendirmesi ve replikasyon (AB14_nihai_veri.xlsx)
+## 5. Veri seti değerlendirmesi ve replikasyon (AB14_nihai_veri.xlsx)
 
 Veri seti `veri/AB14_nihai_veri.xlsx` olarak repoya eklendi; tüm hesaplar `analiz/py/replikasyon.py` ile yeniden üretilebilir (çıktı: `analiz/py/replikasyon_cikti.txt`).
 
-### 6.1 Veri setinin yapısı ve kalitesi
+### 5.1 Veri setinin yapısı ve kalitesi
 
 - 3 sayfa: `Veri` (14 ülke × 1990–2020 = 434 satır, 10 sütun), `Yesil_stok` (stok hesabı, formüller ve parametreler), `Kaynaklar` (değişken tanımları). Düzenli ve belgelenmiş; panel tam dengeli.
 - **Eksik değerler yalnızca 1990–1995'te** (gdp_real, manuf, gdp_growth) — tahmin örneklemini (1997–2020) ve gecikmeleri etkilemiyor. Stok için gereken `ccm` 1990'dan itibaren eksiksiz.
@@ -198,7 +198,7 @@ Veri seti `veri/AB14_nihai_veri.xlsx` olarak repoya eklendi; tüm hesaplar `anal
 - Stok hesabı: Excel'deki K değerleri ile Python'da sıfırdan hesaplanan değerler arasındaki en büyük fark 5×10⁻¹¹ — **stok doğru hesaplanmış**; g = 0,0691 ✓.
 - Veri kaynağı tutarlılığı: Tablo 5.1 ile `Kaynaklar` sayfası birebir uyumlu (Eurostat nama_10_gdp, nrg_ind_id; WDI EG.FEC.RNEW.ZS, NV.IND.MANF.ZS, NE.TRD.GNFS.ZS).
 
-### 6.2 Tezdeki tablo ve katsayıların yeniden üretimi
+### 5.2 Tezdeki tablo ve katsayıların yeniden üretimi
 
 | Tez | Replikasyon | Sonuç |
 |---|---|---|
@@ -206,7 +206,7 @@ Veri seti `veri/AB14_nihai_veri.xlsx` olarak repoya eklendi; tüm hesaplar `anal
 | Medyan 142,5; çarpıklık 3,1; toplam 107.759; Almanya %45, Fransa %18 | aynı | ✓ |
 | Tablo 5.3 patent, yoğunluk, stok sütunları | aynı | ✓ |
 | Tablo 5.3 kontrol sütunları | **eşzamanlı (t)** değerlerle eşleşiyor, gecikmeli değil | Tablo notu ekleyin: "kontrol değişkenleri eşzamanlı; modelde t−1" — Tablo 5.4 notu "tümü t−1" dediği için okuyucu karışır |
-| Tablo 5.4 korelasyonlar | aynı | ✓ (ama bkz. 6.4) |
+| Tablo 5.4 korelasyonlar | aynı | ✓ (ama bkz. 5.4) |
 | Tablo 5.6 VIF (ülke-içi) | aynı (9 değer) | ✓ |
 | Tablo 5.11 — Poisson ve NB **tüm katsayılar** | 4 ondalığa kadar aynı | ✓ |
 | α = 0,0178; LR = 669,77 | aynı | ✓ |
@@ -219,7 +219,7 @@ Veri seti `veri/AB14_nihai_veri.xlsx` olarak repoya eklendi; tüm hesaplar `anal
 
 **Sonuç: Stata'da üretilen tüm nokta tahminleri, testler ve bootstrap SH'ler bağımsız yazılımla doğrulandı. Hesaplama hatası yok.**
 
-### 6.3 Bootstrap dağılımları hakkında bulgu (yeni)
+### 5.3 Bootstrap dağılımları hakkında bulgu (yeni)
 
 Kümelenmiş eşli bootstrap'ta Almanya'nın hiç seçilmediği tekrar oranı (13/14)¹⁴ ≈ %35. Bu, bootstrap dağılımlarını çarpık ve yanlı yapıyor:
 
@@ -231,7 +231,7 @@ Kümelenmiş eşli bootstrap'ta Almanya'nın hiç seçilmediği tekrar oranı (1
 
 z₀ değerlerinin 0,5'e yaklaşması BC yüzdeliklerini aşırı kaydırıyor (ln(1+K) için üst yüzdelik %99,9'a çıkıyor). Efron & Tibshirani bu büyüklükte sapmada BCa ya da percentile-t önerir. Tezde BC aralıklarının kullanıldığı yerlerde bu kararsızlık belirtilmeli; ana çıkarsama aracı olarak BC yerine **percentile-t (bootstrap-t)** ya da aşağıdaki jackknife daha savunulabilir.
 
-### 6.4 Çıkarsama yöntemine duyarlılık (yeni — raporun 2.2–2.3 maddelerinin sayısal karşılığı)
+### 5.4 Çıkarsama yöntemine duyarlılık (yeni — raporun 2.2–2.3 maddelerinin sayısal karşılığı)
 
 Model 1 faz katsayıları için farklı standart hata yöntemleri:
 
@@ -248,7 +248,7 @@ Yorum:
 - Wald δ₁=δ₂ testi NB'de asimptotik küme SH ile p = 0,052 (tezde bootstrap ile 0,037) — H3 de sınırda.
 - Model 2'de yıl kümelemesi SH'leri ülke kümelemesinden küçük çıkıyor (S1: 0,009 vs 0,016); yani ITS bulguları (φ₁, λ₂) iki yönlü kümelemede de güçlü kalır.
 
-### 6.5 Stoksuz Model 2 (tezde eksik; H5 için kritik)
+### 5.5 Stoksuz Model 2 (tezde eksik; H5 için kritik)
 
 | | Poisson | NB |
 |---|---|---|
@@ -262,7 +262,7 @@ Yalnızca 1997–2004 alt örnekleminde de aynı: stoksuz eğilim 0,077 (p<0,001
 
 Sonuç: "ETS öncesinde anlamlı eğilim yok" (satır 645) ifadesi **yalnızca stok kontrol edildiğinde** doğru; ham/stoksuz tanımda yılda ≈%3,5–5 artış eğilimi var. İyi haber: Faz 1 eğim ve Faz 2 düzey etkileri stoksuz ITS'de de güçlü — yani bulgular eğilimin stok tarafından emilmesine bağlı değil. H5'i buna göre yeniden yazın ve bu tabloyu Tablo 5.14'e ekleyin. Stoksuz Poisson'da Faz 3 eğiminin **negatif ve anlamlı** olması tartışma bölümünde ele alınmalı (Probst ve diğ., 2021 ile uyumlu).
 
-### 6.6 Tablo 5.4'ün yanıltıcılığı (yeni)
+### 5.6 Tablo 5.4'ün yanıltıcılığı (yeni)
 
 Tablo 5.4 ham korelasyonları veriyor (|r| ≤ 0,35). Model ülke-içi değişimden tahmin edildiğinden ilgili korelasyonlar **ülke-içi** olanlardır:
 
@@ -273,19 +273,77 @@ Tablo 5.4 ham korelasyonları veriyor (|r| ≤ 0,35). Model ülke-içi değişim
 
 "Ciddi çoklu doğrusallık sorunu yok" cümlesi ham korelasyonlara dayanıyor; ülke-içi veride stok–yenilenebilir korelasyonu 0,81. Bu, yenilenebilir enerji payının modelde neden anlamsız çıktığını da açıklıyor (stokla eş hareket). Tablo 5.4'ü ülke-içi değerlerle değiştirin ya da iki paneli birlikte verin; VIF tablosu zaten doğru yaklaşımı kullanıyor.
 
-### 6.7 H1 için doğrudan test (yeni)
+### 5.7 H1 için doğrudan test (yeni)
 
 Tek ETS kuklasıyla (2005–2020 = 1) ana model: Poisson 0,248 (p<0,001), NB 0,255 (p<0,001); stoksuz Poisson 0,334. H1 bu şekilde ana modelle doğrudan desteklenebilir — Tablo 5.17'de (a) modeline başvurmaya gerek kalmaz.
+
+---
+
+## 6. Jüri değerlendirme raporunun analizi
+
+Kullanıcının ilettiği "Doktora tezi – Jüri değerlendirme raporu" bu raporla karşılaştırıldı. Jüri raporu regresyonları yeniden tahmin etmemiş (kendisi de belirtiyor); bu rapor tüm katsayıları veriyle doğruladı (Kısım 5). Aşağıda jürinin her maddesi için: katılıyor muyum, veriyle ne gösterilebiliyor, teze ne eklenmeli.
+
+### 6.1 Madde madde karşılaştırma
+
+| Jüri maddesi | Jüri ağırlığı | Benim değerlendirmem | Veriyle sayısal karşılık |
+|---|---|---|---|
+| 1. Nedensellik / kontrol grubu yok | Çok önemli | **Tamamen katılıyorum** (bu raporda 2.1). Jüri listesine eklenmesi gereken en somut çakışma: **Kyoto 1. taahhüt dönemi = 2008–2012 = Faz 2**. | Çözümü veri içinde yok; ETS maruziyet yoğunluğu (ülke emisyonlarında ETS kapsamı payı) ile etkileşim tasarımı gerekir (2.1'deki öneri). |
+| 2. GSYİH maruziyet "ciddi tutarsızlık", (b) ana model olmalı | Çok önemli | **Kısmen katılıyorum — jüri burada abartıyor.** Bkz. 6.2. | (b) modelinde faz katsayıları değişmiyor (0,1654 vs 0,1338; 0,2743 vs 0,2705); ülke-içi VIF: lngdp 4,35, ama lnK1 10,6'ya çıkıyor. |
+| 3. Patent stoku kontrol mü aracı mı | Çok önemli | **Katılıyorum** (2.5, 5.5). Jürinin eklediği iki nokta doğru: (i) stoklu–stoksuz farkı nedensel aracılık etkisi olarak okumak için *sequential ignorability* gerekir; (ii) stok Ar-Ge *girdisi* değil çıktısıdır. | Stoksuz Model 2'de ETS öncesi eğilim anlamlı (+0,035/+0,049); yani stok yalnızca aracı değil, ortak eğilimi de emiyor. |
+| 4. Yatay kesit bağımlılığı + bootstrap | Önemli | **Katılıyorum** (2.2, 2.3) ve ötesine geçtim: duyarlılık tablosu hazır (5.4). | Faz 1 Poisson: iki yönlü küme p=0,084; CV3 p=0,228. Faz 2 dayanıklı. |
+| 5. Birleşik Krallık ve örneklem | Önemli | **Katılıyorum; jürinin olgusal düzeltmesi doğru.** BK, geçiş dönemi boyunca 31.12.2020'ye kadar AB ETS içinde kaldı; "2020'de ayrıldı" gerekçesi 1997–2020 dışlaması için geçersiz. | Veri setinde BK yok; eklemek için OECD/Eurostat'tan 1990–2020 serileri çekilmeli (Eurostat'ta BK serileri 2019–2020 sonrası kesilebilir; WDI'da var). 15 ülkeyle sağlamlık tahmini önerilir. |
+| 6. Birim kök / eşbütünleşme | Orta | **Katılıyorum.** Ek olarak: bu bölümün sayım modeline katkısı zayıf; asıl endişe (ortak trendlerden sahte ilişki) zaten madde 1. | Öneri: 5.6.7–5.6.8'i kısaltıp eke taşımak; kalacaksa Westerlund (2007) bootstrap-p ile CSD'ye dayanıklı test eklemek. |
+| 7. Üçüncü faz yorumu | Orta | **Katılıyorum.** "Etki yok" değil "kanıt yok" dili; VIF 11,83 ve geniş GA bunu zorunlu kılıyor. | Stoksuz Model 2'de Poisson φ₃ = −0,025 (p=0,002): Faz 3'te eğilim *negatif*. Bu, "stok taşıyor" anlatısını zayıflatan bir bulgu, tartışılmalı. |
+| "Yeşil inovasyon = patent" sınırlaması | — | **Katılıyorum**; başlık/sonuçta operasyonel tanım açıkça yazılmalı. | — |
+| Biçim: sarı vurgu, atıf yazımı | — | Aynı tespitler (Kısım 4). | — |
+| Biçim: tablolarda "küçük boş kare" | — | **Nedeni bulundu:** Tablo 5.11/5.13'te "GSYİH büyüme oranı $_{t-1}$" gibi hücrelerde alt indis, **tabanı boş bir denklem nesnesi** olarak girilmiş; Word boş tabanı kesikli kare yer tutucu olarak gösteriyor. Alt indisi düz metin biçimlendirmesiyle (Ctrl+=) yazınca kaybolur. | — |
+
+### 6.2 Jüriyle ayrıştığım nokta: GSYİH maruziyet varsayımı
+
+Jüri bunu "en dikkat çekici ekonometrik problem" olarak sunuyor ve (b) modelinin ana model olmasını istiyor. Bu talep aşırı; gerekçe:
+
+1. **Maruziyet kısıtı bir davranışsal varsayım değil, bağımlı değişkenin tanımıdır.** Katsayının 1'e sabitlenmesi, modelin açıkladığı büyüklüğü "GSYİH başına patent" (yoğunluk) yapar. Hipotezler H1–H5 açıkça yoğunluk üzerine kurulu. Esnekliğin 0,39 çıkması, "patent *sayısı* GSYİH ile orantısız artar" demektir; bu, yoğunluğun tanımını geçersiz kılmaz — yalnızca yoğunluğun GSYİH büyüdükçe düştüğünü söyler. İkisi farklı sorulara cevaptır.
+2. **Empirik olarak fark yok.** (b) modelinde faz katsayıları ana modelden 0,01–0,03 farklı; işaret, büyüklük sırası ve anlamlılık aynı. Jüri bu benzerliğin "varsayımı geçerli kılmadığını" söylüyor — doğru, ama varsayımın *sonuçlar için önemsiz* olduğunu gösteriyor; bu da raporlanması gereken şeydir.
+3. **(b) modelinin kendi sorunu var:** ln GSYİH ülke içinde güçlü trend taşıyor (ülke-içi korelasyon: stokla 0,77, zaman trendiyle 0,75, Faz 3 ile 0,53). Serbest bırakıldığında stok VIF'i 7,6'dan 10,6'ya çıkıyor; 0,39 esnekliği büyük ölçüde stok ve fazlarla paylaşılan trendden tahmin ediliyor. Yani (b) "daha doğru" bir model değil, farklı bir kimlik sorununa sahip bir model.
+
+**Teze önerim:** Ana modeli değiştirmeyin; ama (i) 5.6.2'de maruziyetin "tanım/normalizasyon" olduğunu, test edilen bir hipotez olmadığını açıkça yazın; (ii) Tablo 5.11'e (b) modelini üçüncü sütun çifti olarak ekleyip "faz etkileri maruziyet kısıtına duyarsızdır" cümlesini ana bulgu kısmına taşıyın; (iii) 6.2'deki üç gerekçeyi savunma için hazır tutun. Jüri Soru 2'nin cevabı budur.
+
+### 6.3 Jüri raporunda eksik olan, bu raporun eklediği bulgular
+
+Savunmada jürinin sormadığı ama sorabileceği, veriyle ortaya çıkan noktalar:
+
+- **ETS öncesi eğilim stoksuz modelde anlamlı** (5.5) — H5'in dayanağı koşullu. Jüri bunu fark etmemiş; başka bir jüri üyesi fark ederse tezin "eğilimden bağımsız" iddiası çöker. Önceden düzeltilmeli.
+- **Ülke-içi korelasyonlar** (5.6): stok–yenilenebilir 0,81. Tablo 5.4 bu hâliyle yanlış izlenim veriyor.
+- **BC aralıklarının kararsızlığı** (5.3) ve **çıkarsama yöntemine duyarlılık** (5.4): Faz 1 bulgusu yöntem seçimine bağlı. Jüri Soru 5'in sayısal cevabı hazır.
+- **Beklenti etkisi** (2.7): Direktif 2003'te kabul edildi; referans dönemin son yılları kirlenmiş olabilir (etkiyi aşağı yanlı yapar — tez lehine).
+- **Tablo 5.3 kontrol sütunlarının eşzamanlı olması** ve yuvarlama kuralı (5.1).
+
+### 6.4 Jürinin altı sorusuna veriyle desteklenen cevap taslakları
+
+1. **Nedensellik:** Dürüst cevap: ayırt edilemiyor; tasarım önce–sonra. Savunulabilir çerçeve: "fazlara göre farklılaşan etki profili (Faz 2 > Faz 1 > Faz 3 ≈ 0) tek bir ortak şokla açıklanması güç; ancak Kyoto/İklim-Enerji Paketi ile çakışma nedeniyle sonuçlar 'AB iklim politikası paketinin ETS merkezli etkisi' olarak yorumlanmalıdır." + ETS maruziyet yoğunluğu etkileşimi sağlamlık tahmini (yapılabilirse).
+2. **GSYİH maruziyeti:** 6.2'deki üç gerekçe.
+3. **Patent stoku:** Stok hem kontrol hem aracı; iki modeli birlikte raporlamak "sınır" (bounds) verir: stoklu = doğrudan etki alt sınırı, stoksuz = toplam etki üst sınırı. Nedensel aracılık iddiasından vazgeçip "ayrıştırma" diliyle sunmak. Ar-Ge girdisi için GERD/GSYİH (Eurostat rd_e_gerdtot, 1990'dan itibaren bu 14 ülke için mevcut) eklenebilir — veri setinde yok, çekilmeli.
+4. **BK:** Olgusal hatayı kabul edip 15 ülkeli sağlamlık tahmini eklemek; 2004 sonrası üyeler için "referans döneminde AB üyesi değil, ETS yasama sürecine taraf değil, 1997–2004 EPO başvuruları çok düşük (sayım modeli için sıfıra yakın hücreler)" gerekçesi.
+5. **Çıkarsama:** 5.4 tablosu + "Faz 2 bulgusu her yöntemde dayanıklı, Faz 1 NB'de dayanıklı, Poisson'da yönteme duyarlı" cümlesi.
+6. **Üçüncü faz:** İki açıklama (etki kaybı vs. stok taşıması) bu veriyle tam ayrıştırılamaz; stoksuz Model 2'de Faz 3 eğiminin negatif olması "etki kaybı" lehine; stoksuz Model 1'de Faz 3 toplam etkisinin NB'de pozitif olması "stok taşıması" lehine. Dürüst sonuç: "üçüncü fazda ek doğrudan etkiye ilişkin kanıt yok; toplam düzey yüksek kalmış; mekanizma ayrıştırılamıyor."
+
+### 6.5 Jüri notuna genel değerlendirme
+
+Jüri raporu dengeli ve büyük ölçüde isabetli; "önemli düzeltme" kararı makul. İki nüans: (i) GSYİH maruziyeti eleştirisi, tezin kendi (b) sonucunun gösterdiği gibi, sonuçlar için önemsiz bir meseleyi "çok önemli" sınıfına koyuyor; (ii) rapor katsayıları doğrulamadığı için tezin güçlü tarafını (hesaplamaların tam tekrarlanabilirliği) kredilendirmiyor — savunmada bu replikasyon (bağımsız yazılımla birebir eşleşme) açıkça söylenmeli.
 
 ---
 
 ## 7. Öncelikli yapılacaklar (özet)
 
 1. **"Sınırlılıklar" alt bölümü** yazın: kontrol grubu yokluğu, ortak şoklar (özellikle Kyoto 2008–2012), yatay kesit bağımlılığı, 14 küme, beklenti etkisi, plasebo gücü.
-2. **Çıkarsama duyarlılık tablosu** ekleyin (6.4'teki tablo hazır): iki yönlü kümeleme ve CV3 jackknife; Faz 1 / H2 yargısını yumuşatın. 5.1.8'deki wild-bootstrap anlatımını uygulananla eşleştirin; BC yerine percentile-t'yi değerlendirin (6.3).
-3. **Stoksuz Model 2**'yi Tablo 5.14'e ekleyin (6.5'te hazır); H5'i "stok kontrol edildiğinde" diye sınırlayın.
-4. **Tablo 5.4**'ü ülke-içi korelasyonlarla değiştirin (6.6); "çoklu doğrusallık yok" cümlesini düzeltin.
-5. **H1** için tek ETS kuklalı modeli raporlayın (6.7); Tablo 5.17'yi buna göre güncelleyin.
+2. **Çıkarsama duyarlılık tablosu** ekleyin (5.4'teki tablo hazır): iki yönlü kümeleme ve CV3 jackknife; Faz 1 / H2 yargısını yumuşatın. 5.1.8'deki wild-bootstrap anlatımını uygulananla eşleştirin; BC yerine percentile-t'yi değerlendirin (5.3).
+3. **Stoksuz Model 2**'yi Tablo 5.14'e ekleyin (5.5'te hazır); H5'i "stok kontrol edildiğinde" diye sınırlayın.
+4. **Tablo 5.4**'ü ülke-içi korelasyonlarla değiştirin (5.6); "çoklu doğrusallık yok" cümlesini düzeltin.
+5. **H1** için tek ETS kuklalı modeli raporlayın (5.7); Tablo 5.17'yi buna göre güncelleyin.
 6. Ticaret açıklığı anlamlılık işaretini (**→* / sınırda) düzeltin; Tablo 5.3'e "kontroller eşzamanlı" notu; "yarım değerler yukarı yuvarlandı" ifadesi; kesirli seriyle sonuçların değişmediği notu.
 7. Poisson Faz 1 ortak test p değerini 0,000 yapın; Tablo 5.5→5.6; başlık stilleri, boş başlıklar, vurgulu metinler, atıf boşlukları, α notasyonu.
-8. Örneklemin "AB-15 − Birleşik Krallık" olduğunu ve 2004 sonrası üyelerin neden dışlandığını yazın.
+8. **Birleşik Krallık gerekçesini düzeltin** (BK 31.12.2020'ye kadar AB ETS içindeydi); 15 ülkeli sağlamlık tahmini için BK verisini ekleyin; 2004 sonrası üyelerin dışlanma ölçütlerini yazın (6.4, soru 4).
+9. **GSYİH maruziyeti savunmasını** 5.6.2'ye yazın: normalizasyon/tanım olduğu, (b) modelinin faz etkilerini değiştirmediği, serbest modelde stok VIF'inin 10,6'ya çıktığı (6.2).
+10. **Stok için dil değişikliği:** "nedensel aracılık" yerine "doğrudan/toplam etki sınırları"; mümkünse GERD/GSYİH (Eurostat rd_e_gerdtot) kontrolü ekleyin (6.4, soru 3).
+11. **Üçüncü faz** için "etki yok" yerine "ek doğrudan etkiye ilişkin kanıt yok"; stoksuz Model 2'de negatif Faz 3 eğimini tartışın (6.1, madde 7).
+12. Birim kök/eşbütünleşme bölümünü kısaltıp eke alın ya da Westerlund (2007) ekleyin; "yeşil inovasyon = EPO patent başvurusu" operasyonel tanımını başlık/sonuçta belirtin; tablolardaki boş-tabanlı denklem alt indislerini düz metne çevirin.
