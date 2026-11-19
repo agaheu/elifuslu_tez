@@ -1,0 +1,452 @@
+"""Bulguların teknik olmayan okur için sade anlatımı ve ayrıntılı düzeltme adımları.
+
+Her bulgu için: baslik, sorun (ne oluyor?), neden (neden önemli?), adimlar (ne yapılmalı, sırayla), ornek (teze yazılabilecek cümle).
+Sayılar hesap çıktılarından çekilir (icerik.py yardımcıları).
+"""
+from icerik import (R, E, S, SP, J, U, tr, pv, pct, c, bo, ek, P, N, yb, pl, loo, loo_p5, ALFA_I, VAR_EGIM, jp, PSA, PSC, mcr, simrg, pt13, EK, SG, vif2, ik, eg, ici, bc_levels)
+
+SOZLUK = [
+    ("Anlamlı (istatistiksel olarak)", "Bulunan farkın tesadüfen ortaya çıkmış olma olasılığının düşük olması. Genelde bu olasılık (p değeri) %5'in altındaysa “anlamlı” denir."),
+    ("p değeri", "Gerçekte hiçbir etki yokken bu büyüklükte bir farkın tesadüfen görülme olasılığı. Küçük olması iyidir: 0,01 güçlü, 0,05 sınır, 0,20 zayıf kanıt demektir."),
+    ("Standart hata ve güven aralığı", "Tahminin ne kadar oynak olduğunun ölçüsü. Güven aralığı, gerçek değerin büyük olasılıkla içinde bulunduğu aralıktır; aralık sıfırı içeriyorsa etkinin varlığından emin olunamaz."),
+    ("Faz kuklası", "Bir yılın hangi ETS fazına ait olduğunu gösteren 0/1 değişken. Katsayısı, o fazdaki ortalama düzeyin ETS öncesine göre farkını verir."),
+    ("Yeşil patent stoku", "Bir ülkenin geçmiş yıllarda yaptığı yeşil patent başvurularının, her yıl %15 eskitilerek toplanmış hâli; “birikmiş bilgi”nin ölçüsü."),
+    ("Sabit etki", "Her ülkenin kendine özgü, zamanla değişmeyen düzey farkını (büyüklük, sanayi yapısı vb.) hesaptan düşen yöntem. Model her ülkeyi kendi geçmişiyle karşılaştırır."),
+    ("Eğilim", "Bir serinin yıldan yıla düzenli artışı ya da azalışı. ETS'den önce de süren bir artış varsa, sonraki artışın tamamı ETS'ye yazılamaz."),
+    ("Poisson ve negatif binom", "Sayım verisi (0, 1, 2, … biçimindeki patent sayıları) için kullanılan iki tahmin yöntemi. Poisson büyük ülkelere daha çok ağırlık verir; negatif binom ülkelere daha eşit ağırlık verir."),
+    ("Bootstrap", "Eldeki veriden (burada ülkelerden) rastgele, tekrar tekrar örnek çekip sonucun ne kadar değiştiğine bakarak belirsizliği ölçen yöntem."),
+    ("Küme jackknife", "Her seferinde bir ülkeyi dışarıda bırakıp hesabı tekrarlayarak belirsizliği ölçen yöntem; az sayıda ülke olduğunda bootstrap'tan daha temkinlidir."),
+    ("Plasebo testi", "Gerçekte hiçbir şeyin değişmediği bir tarihe “sahte başlangıç” koyup orada da etki çıkıp çıkmadığına bakmak. Çıkıyorsa yöntem şüphelidir."),
+    ("Benzetim (Monte Carlo)", "Etkinin sıfır olduğu bilinen yapay veriler üretip yöntemin bu verilerde ne bulduğuna bakmak. Yöntem yine “etki var” diyorsa güvenilmezdir."),
+]
+
+SADE = {
+    # ------------------------------------------------------------------------------------------------ TANIMLAMA
+    "T1": dict(
+        baslik="Karşılaştırma grubu yok: ETS'nin etkisi aynı yıllardaki başka olaylardan ayrılamıyor",
+        sorun="Tez 14 ülkeyi ETS'den önce ve sonra karşılaştırıyor. Ama 14 ülkenin hepsi ETS'ye aynı gün girdi; ETS'ye girmemiş bir “karşılaştırma ülkesi” yok. Bu yüzden 2005 sonrasında patentlerdeki artışın ETS'den mi, yoksa aynı yıllarda yaşanan başka gelişmelerden mi kaynaklandığı bu yöntemle ayırt edilemiyor. En çarpıcı çakışma: Faz 2 (2008–2012), Kyoto Protokolü'nün ilk taahhüt dönemiyle birebir aynı yıllar. Aynı dönemde enerji fiyatları zirve yaptı, AB yenilenebilir enerji direktifi çıktı ve dünyada temiz teknoloji patentleri genel olarak arttı. Tez ayrıca Faz 3'teki düşüşü “küresel eğilim”e, Faz 1–2'deki yükselişi ise ETS'ye bağlıyor; aynı ölçüt iki yöne de uygulanmalı.",
+        neden="Tezin ana cümlesi “AB ETS yeşil inovasyonu artırmıştır”. İki jüri raporunun da ilk sorusu bu: “ETS'yi diğer olaylardan nasıl ayırdınız?” Bu soruya hazır, dürüst bir cevap olmadan savunma zorlaşır.",
+        adimlar=[
+            "Bölümün sonuna “Sınırlılıklar” alt başlığı ekleyin. İlk maddesi bu olsun: karşılaştırma grubu yok; aynı döneme denk gelen olayları (Kyoto 2008–2012, 2004–2008 enerji fiyatı artışı, 2009 yenilenebilir enerji direktifi, küresel temiz teknoloji patent dalgası) tek tek sayın.",
+            "Kesin nedensellik bildiren cümleleri yumuşatın. “AB ETS yeşil patent yoğunluğunu artırmıştır” yerine “AB ETS'nin ilk iki fazına denk gelen dönemde yeşil patent yoğunluğu daha yüksektir” yazın. Öncelikli yerler: 5.2'nin son paragrafı (L127), 5.6.3 (L351), 5.8.3'ün son cümlesi (L761) ve 5.10'un tamamı.",
+            "L351'deki “ortak zaman değişimi, yeşil patent stoku ve kontrol değişkenleri aracılığıyla kontrol edilmektedir” cümlesini “kısmen kontrol edilmektedir; yıl sabit etkileri kullanılamadığı için ortak şoklar tümüyle ayrıştırılamamaktadır” diye değiştirin.",
+            "5.10.3'te Faz 3 düşüşünü küresel eğilime bağlarken, Faz 1–2 yükselişinin de küresel yükselişten etkilenmiş olabileceğini aynı paragrafta kabul edin.",
+            "Ek analiz (yeni veri gerekir, en güçlü çözüm): ülkeden ülkeye değişen bir ETS ölçüsü bulun (örneğin ülkenin emisyonlarının ne kadarının ETS kapsamında olduğu ya da Ulusal Tahsis Planının sıkılığı) ve faz kuklalarıyla çarparak modele ekleyin. Böylece yıl etkileri de eklenebilir ve ortak şoklar temizlenir.",
+            "İkinci jürinin önerisi (yeni veri gerekir): aynı modeli yeşil olmayan EPO patent başvurularıyla tahmin edin. Orada da aynı artış çıkarsa, artış ETS'ye özgü değildir; çıkmazsa iddianız güçlenir.",
+        ],
+        ornek="Bu çalışmanın tasarımı bir önce–sonra karşılaştırmasıdır. Örneklemdeki bütün ülkeler AB ETS'ye aynı tarihte dâhil olduğundan, tahmin edilen faz farkları aynı dönemde gerçekleşen diğer ortak gelişmelerin (Kyoto Protokolü'nün birinci taahhüt dönemi, enerji fiyatları, yenilenebilir enerji politikaları) etkisini de içerebilir. Bu nedenle bulgular nedensel etki olarak değil, AB ETS fazlarıyla ilişkili farklar olarak yorumlanmalıdır."),
+    "T2": dict(
+        baslik="“ETS'den önce artış eğilimi yoktu” sonucu yanıltıcı",
+        sorun=f"Tez, ETS'den önce yeşil patentlerde bir artış eğilimi olmadığını, dolayısıyla sonraki artışın ETS'ye bağlanabileceğini söylüyor (H5). Oysa ham veride ETS öncesinde belirgin bir artış var: toplam başvuru 1997'den 2004'e yaklaşık %60 arttı. Eğilimin modelde “yok” görünmesinin nedeni, modele konan patent stoku. Stok geçmiş patentlerin toplamı olduğu için zamanla neredeyse aynı biçimde artıyor (ikisi arasındaki ilişki {tr(ik['lnK1~zaman'], 2)}; 1 tam örtüşme demek) ve eğilimi kendi üzerine alıyor. Stok modelden çıkarıldığında eğilim ortaya çıkıyor: yılda yaklaşık %{pct(ek('m2_stoksuz', N, 'tstar'))}.",
+        neden="H5 bu hâliyle savunulamaz; bir jüri üyesi “stok olmadan ne çıkıyor?” diye sorarsa “eğilimden bağımsız” iddiası düşer. İyi haber: tezin asıl bulguları (Faz 1'de hızlanma, Faz 2 başında sıçrama) eğilim hesaba katıldığında da duruyor. Yani düzeltme tezi zayıflatmıyor, dürüstleştiriyor.",
+        adimlar=[
+            f"Tablo 5.13'e (ya da sağlamlık tablosu 5.14'e) Model 2'nin stoksuz hâlini ekleyin. Negatif binom sayıları hazır: ETS öncesi eğilim {tr(ek('m2_stoksuz', N, 'tstar'), 3)}, Faz 1 eğimi {tr(ek('m2_stoksuz', N, 'S1'), 3)}, Faz 2 düzeyi {tr(ek('m2_stoksuz', N, 'F2'), 3)}, Faz 3 eğimi {tr(ek('m2_stoksuz', N, 'S3'), 3)}.",
+            "5.7.2'nin ilk bulgusunu (L645) yeniden yazın: “eğilim saptanmamıştır” yerine “stok kontrol edildiğinde saptanmamıştır; stok çıkarıldığında anlamlı bir artış eğilimi görülmektedir”.",
+            "H5'i (5.3) yeniden yazın: “Birinci fazdaki hızlanma ve ikinci fazın başındaki düzey artışı, ETS öncesi eğilim hesaba katıldığında da ortaya çıkmaktadır.” Tablo 5.17'de sonucu “kısmen desteklenmektedir (üçüncü faz hariç)” yapın.",
+            "5.7.3'teki (L663) “ETS'nin başlangıcından önce yeşil patent yoğunluğu istikrarlı bir seyir izlemiştir” cümlesini düzeltin: ETS öncesi yıl katsayılarının yedisi de pozitif ve 2004'e doğru azalıyor; bu “istikrarlı” değil, “stok kontrol edildiğinde hafif azalan” bir seyir.",
+            f"Tablo 5.6'ya Model 2'nin çoklu bağlantı ölçülerini (VIF) de ekleyin: eğilim {tr(vif2['tstar'], 1)}, Faz 3 düzeyi {tr(vif2['F3'], 1)}, stok {tr(vif2['lnK1'], 1)}. Bu değerler, modelin eğilim ile stoku birbirinden ayırmakta zorlandığını gösterir.",
+        ],
+        ornek=f"Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde {pct(ek('m2_stoksuz', N, 'tstar'))} düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı her iki tanımda da anlamlıdır."),
+    "T3": dict(
+        baslik="H1 için gösterilen “toplam etki” rakamları (%44, %101, %89) olduğundan büyük",
+        sorun=f"Tezin ana hipotezi (H1: ETS yoğunluğu artırdı) için gösterilen kanıt bu üç yüzde. Rakamlar stoksuz modelden geliyor ve o modelde zaman eğilimi yok; yani ETS'den önce de süren artış bu rakamların içinde. Yalnızca ETS öncesi eğilim aynen sürseydi bile fazlar için sırasıyla yaklaşık {tr(eg['nb']['F1']['egilimden'], 2)}, {tr(eg['nb']['F2']['egilimden'], 2)} ve {tr(eg['nb']['F3']['egilimden'], 2)} birimlik “artış” görünürdü; tezin raporladığı değerler {tr(eg['nb']['F1']['stoksuz_faz_katsayisi'], 2)}, {tr(eg['nb']['F2']['stoksuz_faz_katsayisi'], 2)} ve {tr(eg['nb']['F3']['stoksuz_faz_katsayisi'], 2)}. Faz 3'ün değeri, eğilimin tek başına öngördüğünden bile düşük.",
+        neden="Tezin en önemli hipotezi en zayıf kanıta dayanıyor. Üstelik H1 “stoksuz ve eğilimsiz” modelle, H5 “stoklu ve eğilimli” modelle destekleniyor; ikisi aynı anda geçerli sayılamaz.",
+        adimlar=[
+            f"Tablo 5.17'de H1'in kanıtını değiştirin. En basit yol: ana modelde üç faz kuklası yerine tek bir “ETS dönemi” kuklası (2005–2020) kullanın. Sonuç hazır: katsayı {tr(ek('ets_tek', N, 'ETS'), 3)} (yaklaşık %{pct(ek('ets_tek', N, 'ETS'))}), negatif binom; Poisson'da {tr(ek('ets_tek', P, 'ETS'), 3)}.",
+            f"“Toplam etki” rakamlarını korumak isterseniz stoksuz modele doğrusal eğilim ekleyin ve o sonucu verin: Faz 1 {tr(ek('m1_trend_stoksuz', N, 'F1'), 3)}, Faz 2 {tr(ek('m1_trend_stoksuz', N, 'F2'), 3)}, Faz 3 {tr(ek('m1_trend_stoksuz', N, 'F3'), 3)} (Faz 3 anlamsız).",
+            "5.8.1 (a) paragrafındaki (L695) “üçüncü fazda toplam etkinin güçlü ve anlamlı olması” cümlesini çıkarın ya da “eğilim hesaba katılmadığında” kaydını ekleyin. Aynı düzeltme 5.10.3 için de geçerli.",
+            "H1'i “AB ETS'nin ilk iki fazında” diye daraltmayı düşünün; kanıt bunu destekliyor, üçüncü fazı desteklemiyor.",
+            "Yüzde 44 / 101 / 89 rakamlarını özet, sonuç ve varsa makale taslağında kullanmayın.",
+        ],
+        ornek=f"AB ETS dönemi (2005–2020), yeşil patent stoku ve kontrol değişkenleri sabitken, ETS öncesi döneme göre yaklaşık yüzde {pct(ek('ets_tek', N, 'ETS'))} daha yüksek yeşil patent yoğunluğuyla ilişkilidir. Bu fark ilk iki fazda yoğunlaşmakta, üçüncü fazda stok sabitken ek bir fark görülmemektedir."),
+    "T4": dict(
+        baslik="“Doğrudan etki” ve “bilgi birikimiyle taşınan etki” ayrımı kanıtlanmış değil",
+        sorun="Tez, stoklu modelin sonucunu “doğrudan etki”, stoksuz modelin sonucunu “toplam etki” sayıyor; aradaki farkı “ETS'nin bilgi birikimi yoluyla sonraki yıllara taşınan etkisi” diye yorumluyor. Ancak patent stoku ETS olmasaydı da büyüyecekti. İki model arasındaki farkın ne kadarı ETS'den, ne kadarı kendiliğinden büyümeden geliyor, bu veriyle ayrılamaz. Ayrıca stok, metinde söylendiği gibi Ar-Ge harcaması benzeri bir girdi değil; geçmiş patentlerin toplamı, yani bir çıktı.",
+        neden="Tezin üçüncü faz yorumunun tamamı (“etki bilgi birikimiyle sürüyor”) bu ayrıma dayanıyor. İki jüri raporu da bu noktayı sorguluyor.",
+        adimlar=[
+            "Terimleri değiştirin: “doğrudan etki” yerine “stok sabitken gözlenen fark”, “toplam etki” yerine “stok hesaba katılmadan gözlenen fark”. Bu değişiklik 5.6.4, 5.8.1, 5.10.3 ve 5.10.4'te tutarlı yapılmalı.",
+            "5.10.3–5.10.4'teki kesin cümleleri yumuşatın: “AB ETS, yarattığı bilgi birikimi aracılığıyla sonraki dönemlerde de yeşil inovasyonu artırmıştır” yerine “bulgular böyle bir kanalla tutarlıdır; ancak stok ETS'den bağımsız olarak da büyüdüğünden bu kanal ayrıştırılamamaktadır”.",
+            "5.4.4 (L179) ve 5.10.4'teki (L807) “stok, ülkelerin Ar-Ge kapasitesini kontrol etmektedir” ifadesini “stok, birikmiş patent çıktısını ölçmekte, Ar-Ge kapasitesinin dolaylı bir göstergesi olarak kullanılmaktadır” diye düzeltin.",
+            "Mümkünse gerçek bir girdi değişkeni ekleyin: Ar-Ge harcamalarının GSYİH'ye oranı (Eurostat). Bu, jürinin “Ar-Ge harcaması neden yok?” sorusunu da karşılar.",
+            "5.6.4'teki (L403) “varyans şişirme faktörlerinin ortalaması 4,08'dir ve 10 eşiğinin altındadır” cümlesini çıkarın; bu eşik tek tek değişkenler içindir, ortalama için bir anlamı yoktur. Üçüncü faz kuklasının değeri (11,83) zaten eşiği aşıyor.",
+        ],
+        ornek="Stoklu ve stoksuz tahminler arasındaki fark, AB ETS'nin bilgi birikimi yoluyla taşınan etkisiyle tutarlıdır; ancak yeşil patent stoku ETS'den bağımsız nedenlerle de büyüdüğünden, bu fark nedensel bir aracılık etkisi olarak yorumlanmamalıdır."),
+    "T5": dict(
+        baslik="Modelin yapısı, birinci modelin faz katsayılarını olduğundan büyük gösteriyor",
+        sorun=f"Patent stoku geçmiş yılların patentlerinden hesaplanıyor; yani açıklayan değişken, açıklanan değişkenin kendi geçmişi. Böyle modellerde bilinen bir kayma olur: stokun etkisi olduğundan küçük, onunla birlikte artan faz kuklalarının etkisi olduğundan büyük çıkar. Tez bu kaymayı “ihmal edilebilir” sayıyor ama sınamamış. Sınadım: ETS etkisinin sıfır olduğu yapay veriler üretip tezin birinci modelini uyguladım. Ortalamada yine de Faz 1 için +{tr(SP['A']['nb']['ort'][0], 2)}, Faz 2 için +{tr(SP['A']['nb']['ort'][1], 2)}, Faz 3 için +{tr(SP['A']['nb']['ort'][2], 2)} çıktı. Ayrıca ikinci jürinin önerdiği başka bir yöntemde (ön-örneklem ortalaması) birinci modelin faz farkları sıfıra iniyor. İyi haber: ikinci modelde (yıllara göre eğim ve düzey) bu kayma yok denecek kadar küçük ve o başka yöntemde de Faz 1'deki hızlanma ile Faz 2'deki sıçrama duruyor.",
+        neden="Tezin ana tablosu (Tablo 5.11) olduğundan iyimser. Kayma Faz 2 sonucunu açıklamaya yetmiyor, ama Faz 1 sonucunun dörtte birini oluşturuyor. Tezin en sağlam kanıtı ikinci model; yorumun ağırlığı oraya kaydırılmalı.",
+        adimlar=[
+            "5.6.4'teki Nickell paragrafını (L373) yeniden yazın. “Sapma ihmal edilebilir” savını çıkarın; yerine benzetim sonucunu yazın (aşağıdaki örnek cümle).",
+            f"Sağlamlık bölümüne küçük bir tablo ekleyin: “Gerçek etki sıfırken ortalama tahmin”. Birinci model: {tr(SP['A']['nb']['ort'][0], 3)} / {tr(SP['A']['nb']['ort'][1], 3)} / {tr(SP['A']['nb']['ort'][2], 3)}; ikinci modelde Faz 1 eğimi {tr(SP['A']['nb']['ort'][4], 3)}, Faz 2 düzeyi {tr(SP['A']['nb']['ort'][5], 3)}. Sayılar ve kod hazır (analiz/py/simulasyon_p.py).",
+            f"İkinci jürinin istediği ön-örneklem ortalaması tahminini Tablo 5.14'e ekleyin: birinci modelde Faz 2 {tr(jp('psm', PSA, N, 'F2'), 3)} (anlamsız); ikinci modelde Faz 1 eğimi {tr(J['psm_m2'][N]['S1']['b'], 3)}, Faz 2 düzeyi {tr(J['psm_m2'][N]['F2']['b'], 3)} (ikisi de anlamlı).",
+            "Tablo 5.11'in altına not düşün: “Stok değişkeni bağımlı değişkenin geçmişinden türetildiği için bu katsayılar yukarı yanlı olabilir; üst sınır olarak okunmalıdır.”",
+            "5.7 ve 5.10'da ana mesajı ikinci modelin bulgularına dayandırın: “birinci faz boyunca hızlanma, ikinci fazın başında düzey artışı”.",
+            "Kaynakçaya ekleyin ve 5.6.4'te atıf yapın: Blundell, Griffith ve Windmeijer (2002); Blundell, Griffith ve Van Reenen (1999).",
+        ],
+        ornek=f"Stok değişkeni bağımlı değişkenin geçmiş değerlerinden türetildiğinden kesin dışsallık varsayımı sağlanmamaktadır. Benzetim sonuçları, gerçek etki sıfırken dahi birinci modelin faz katsayılarının ortalama olarak {tr(SP['A']['nb']['ort'][0], 2)}–{tr(SP['A']['nb']['ort'][2], 2)} yukarı yanlı tahmin edildiğini göstermektedir. Bu nedenle birinci modelin katsayıları üst sınır olarak yorumlanmış, temel çıkarımlar yanlılığın ihmal edilebilir düzeyde kaldığı ikinci modele dayandırılmıştır."),
+    "T6": dict(
+        baslik="Sahte başlangıç (plasebo) testleri eksik raporlanmış ve zayıf",
+        sorun=f"Plasebo testi şudur: ETS'den önceki bir yıla “sahte ETS başlangıcı” koyulur ve orada da bir sıçrama çıkıp çıkmadığına bakılır; çıkmamalıdır. Tez bunu 2000, 2001 ve 2002 için yapmış, sıçrama bulmamış. 2003 için yapılmamış. Ben yaptım: tezin kendi hesap yöntemiyle 2003'te “sıçrama var” sonucu çıkıyor (p = {pv(pl['2003'][P]['p_kume'])}). Ayrıca test yalnızca sekiz yıllık veriyle yapıldığı için zayıf: tezin Faz 1 için bulduğu büyüklükte gerçek bir etki olsaydı bile bu test onu büyük olasılıkla yakalayamazdı.",
+        neden="Tez bu testlerden “etkiler yalnızca ETS dönemine özgüdür” sonucunu çıkarıyor. Eksik raporlanan bir testin tersini göstermesi, jüri fark ederse güven sarsar. Kendiniz raporlayıp açıklamanız çok daha iyidir.",
+        adimlar=[
+            f"Tablo 5.16'ya 1999 ve 2003 satırlarını ekleyin. 2003 için Poisson ki-kare {tr(pl['2003'][P]['chi2_kume'], 2)} (p = {pv(pl['2003'][P]['p_kume'])}), negatif binom {tr(pl['2003'][N]['chi2_kume'], 2)} (p = {pv(pl['2003'][N]['p_kume'])}).",
+            f"Tabloya bootstrap ile hesaplanan p değerlerini de ekleyin; bu yöntemle hiçbir yıl anlamlı çıkmıyor (2003 için p = {pv(pl['2003'][P]['p_boot'])}). İki sütunu yan yana verin.",
+            "2003 sonucunu metinde açıklayın: 2003–2004 yıllarında yoğunluk önceki eğilimin altında kalmıştır; ETS Direktifi Ekim 2003'te kabul edildiğinden bu, firmaların bekleme davranışıyla ilişkili olabilir. Bunu bir olasılık olarak yazın, kesin açıklama olarak değil.",
+            "5.8.3'ün son cümlesini (L761) değiştirin: “rastlantısal kırılmalar olmadığını göstermektedir” çok güçlü. Aşağıdaki örnek cümleyi kullanın.",
+            "Testin gücünün sınırlı olduğunu bir cümleyle belirtin: sekiz yıl, 14 ülke.",
+        ],
+        ornek="ETS öncesi dönemde 1999–2002 yılları için tanımlanan sahte kırılmalarda anlamlı bir sapma bulunmamıştır. 2003 yılı için kümelenmiş standart hatalarla anlamlı, bootstrap ile anlamsız bir sapma görülmektedir; bu sapma, Direktif'in 2003'te kabul edilmesinin ardından oluşan bekleme davranışıyla ilişkili olabilir. Sekiz yıllık dönemde testin gücü sınırlı olduğundan sonuçlar kesin kanıt olarak yorumlanmamalıdır."),
+    "T7": dict(
+        baslik="İkinci fazdaki artış faz boyunca sürmüyor; 2009'da zirve yapıp sönüyor",
+        sorun=f"Tez, ikinci fazın başında ulaşılan yüksek düzeyin “faz boyunca korunduğunu” söylüyor ve bunu kuralların kesinleşmesine (2009 tarihli direktif) bağlıyor. Tezin kendi yıl yıl sonuçları başka bir tablo çiziyor: 2004'e göre fark 2008'de {tr(yb['2008']['b'], 2)}, 2009'da {tr(yb['2009']['b'], 2)} (zirve), 2010'da {tr(yb['2010']['b'], 2)}, 2011'de {tr(yb['2011']['b'], 2)}, 2012'de {tr(yb['2012']['b'], 2)}. Son iki yıl sıfırdan ayırt edilemiyor. Yani artış 2008–2010'da yoğunlaşıyor, sonra kayboluyor. Kurallar Nisan 2009'da kesinleşti; fark tam ondan sonra küçülüyor. Üstelik 2008–2009'da başvurusu yapılan patentler, 2006–2008'de alınmış Ar-Ge kararlarının ürünü.",
+        neden="Tartışma bölümünün en önemli iddiası (“kurumsal kesinlik en güçlü etkiyi yarattı”) zamanlamayla uyuşmuyor. İkinci jüri raporu da “kalıcı düzey sıçraması” diyor; veri bunu desteklemiyor.",
+        adimlar=[
+            "5.7.2'deki (L647 ve L651) “faz boyunca korunmaktadır” ifadesini değiştirin: “ikinci fazın ilk yıllarında (2008–2010) yoğunlaşmakta, fazın sonuna doğru zayıflamaktadır”.",
+            f"Sağlamlık tablosuna ikinci fazı ikiye bölen tahmini ekleyin (hazır): 2008–2009 için {tr(ek('faz2_bolunmus', N, 'F2a'), 3)} (anlamlı), 2010–2012 için {tr(ek('faz2_bolunmus', N, 'F2b'), 3)} (yüzde 5 düzeyinde anlamsız), negatif binom.",
+            "5.10.2'nin başlığını ve içeriğini yeniden yazın. “Kurumsal Kesinlik ve En Güçlü Etki” yerine “İkinci Fazın İlk Yıllarındaki Artış” gibi nötr bir başlık kullanın.",
+            "Aynı alt bölümde olası açıklamaları yan yana sayın: 2008 enerji fiyatı zirvesi, kriz öncesi Ar-Ge yatırımlarının sonuçlanması, Kyoto taahhüt döneminin başlaması, üst sınırın sıkılaştırılması; ardından 2010 sonrasındaki zayıflama için kriz sonrası Ar-Ge kısıntısı ve karbon fiyatındaki düşüş.",
+            "L795'teki “ikinci faz etkisinin 2008 finans krizi ve ardından gelen fiyat düşüşüne karşın sürdüğünü göstermektedir” cümlesini çıkarın; veri sürmediğini gösteriyor.",
+        ],
+        ornek="İkinci fazın başında ETS öncesi eğilime göre belirgin bir düzey farkı oluşmuş, bu fark 2009'da en yüksek değerine ulaştıktan sonra fazın sonuna doğru azalmıştır. Dolayısıyla artış fazın tamamına değil, ilk yıllarına aittir."),
+    "T8": dict(
+        baslik="Birleşik Krallık'ın dışarıda bırakılma gerekçesi yanlış",
+        sorun="Tez Birleşik Krallık'ı “2020'de AB üyeliğinden çıktığı için” analiz dışında bırakıyor. Oysa Birleşik Krallık, geçiş dönemi boyunca 31 Aralık 2020'ye kadar AB ETS içindeydi; yani tezin incelediği üç fazın tamamında sistemin parçasıydı. Ayrıca 2004 ve sonrasında AB'ye katılan ülkelerin neden alınmadığı metinde hiç açıklanmamış.",
+        neden="Olgusal bir hata olduğu için düzeltmesi kolay, ama düzeltilmezse jüri “örneklem neye göre seçildi?” diye sorar. İki jüri raporundan biri bunu açıkça yazmış.",
+        adimlar=[
+            "5.5'teki (L193) “Birleşik Krallık 2020 tarihinde AB üyeliğinden çıktığı için analize dahil edilmemiştir” cümlesini çıkarın.",
+            "En iyi çözüm: Birleşik Krallık'ın verisini (patent: OECD; diğerleri: Eurostat ve Dünya Bankası) ekleyip 15 ülkeyle bir sağlamlık tahmini yapın ve Tablo 5.14'e bir satır olarak koyun. Veriyi bana verirseniz tahmini ben yapabilirim.",
+            "Veri eklenemiyorsa gerçek gerekçeyi yazın (örneğin belirli serilerin Birleşik Krallık için güncellenmemesi). Gerekçe doğru değilse yazmayın; “ana örnekleme alınmamıştır, bu bir sınırlılıktır” demek daha iyidir.",
+            "Örneklemin ölçütünü bir cümleyle belirtin: “ETS öncesi referans dönemin (1997–2004) tamamında AB üyesi olan ülkeler”. Bu, 2004 ve sonrasında katılan ülkelerin neden dışarıda kaldığını da açıklar.",
+        ],
+        ornek="Örneklem, ETS öncesi referans dönemin tamamında AB üyesi olan on beş ülkeden on dördünü kapsamaktadır. Birleşik Krallık 2020 sonuna kadar AB ETS kapsamında kalmış olmakla birlikte ana örnekleme alınmamış; dâhil edildiği tahmin sağlamlık testi olarak sunulmuştur."),
+    "T9": dict(
+        baslik="Karşılaştırma döneminin son iki yılı (2003–2004) birinci faz sonucunu etkiliyor",
+        sorun=f"Tez, ETS'li yılları 1997–2004 ortalamasıyla karşılaştırıyor. ETS Direktifi Ekim 2003'te kabul edildi; firmalar 2003–2004'te sistemin gelmesini bekliyordu. Veride bu iki yıl, önceki yılların eğiliminin altında. Karşılaştırma dönemini aşağı çektikleri için birinci faz farkı büyüyor. 2003–2004 ayrı tutulduğunda birinci faz farkı Poisson'da {tr(ek('beklenti', P, 'F1'), 3)}'e iniyor (anlamsız), negatif binomda {tr(ek('beklenti', N, 'F1'), 3)} (sınırda). İlk incelemede bu etkinin tezin lehine olacağını düşünmüştüm; veri tersini gösterdi.",
+        neden="Birinci faz bulgusu (H2) zaten tezin en kırılgan sonucu; karşılaştırma döneminin seçimine de duyarlı olduğu bilinmeli.",
+        adimlar=[
+            "Sağlamlık tablosuna “karşılaştırma dönemi 1997–2002” satırını ekleyin (sayılar hazır).",
+            "5.2'de karşılaştırma döneminin neden 1997–2004 seçildiğini bir cümleyle gerekçelendirin ve Direktif'in 2003'te kabul edildiğini belirtin.",
+            "5.7.1'de birinci faz sonucunu yorumlarken bu duyarlılığı bir cümleyle yazın.",
+        ],
+        ornek="Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, ikinci faz farkı anlamlı kalmakta, birinci faz farkı ise küçülmektedir."),
+    "T10": dict(
+        baslik="“Kurallar tümüyle AB düzeyinde belirlendi” ifadesi ilk iki faz için eksik",
+        sorun="Tez, fazların kurallarının AB düzeyinde ve ülkelerden bağımsız belirlendiğini söylüyor. Takvim için bu doğru. Ancak birinci ve ikinci fazda her ülke kendi Ulusal Tahsis Planını hazırladı (Komisyon onayladı); AB çapında tek üst sınır üçüncü fazda geldi. Yani ilk iki fazda sistemin ne kadar sıkı olacağı kısmen ülkelerin kendi kararıydı. Ayrıca “2020 yılına kadar geçerli olacak doğrusal indirim faktörü” ifadesi yanlış anlaşılmaya açık; faktörün 2020'de biten bir süresi yoktu.",
+        neden="Küçük bir olgu düzeltmesi; ama aynı zamanda bir fırsat: ülkeler arasındaki bu farklılık, T1'deki en güçlü ek analiz için kullanılabilir.",
+        adimlar=[
+            "5.2'deki (L125) cümleyi düzeltin: “Fazların takvimi AB düzeyinde belirlenmiştir; ilk iki fazda tahsis miktarları ise üye devletlerin Komisyon onayına sunduğu Ulusal Tahsis Planlarıyla saptanmıştır.”",
+            "5.10.2'deki (L793) “2020 yılına kadar geçerli olacak” ifadesini “2013'ten itibaren geçerli olacak” diye düzeltin.",
+            "Bu farkı sınırlılık değil imkân olarak da anın: ulusal planların sıkılığı ülkeden ülkeye değiştiği için ileride karşılaştırmalı bir analiz yapılabilir.",
+        ],
+        ornek=None),
+    "T11": dict(
+        baslik="Karbon fiyatı tezde hiç ele alınmamış",
+        sorun=f"ETS firmaları karbon fiyatı üzerinden teşvik eder: fiyat yüksekse temiz teknoloji geliştirmek daha kazançlıdır. Tezde karbon fiyatı ne modelde ne tartışmada geçiyor. İkinci jüri, üçüncü fazda farkın kaybolmasını 2013–2017'de fiyatın 3–8 avroya düşmesine bağlıyor. Bu makul bir aday, ama kanıtlanmış değil: tezin yıl yıl sonuçları fiyatla birlikte hareket etmiyor. 2007'de birinci faz izinlerinin fiyatı sıfıra yaklaşırken fark artıyor; 2018–2019'da fiyat 15–25 avroya çıkarken fark yok ({tr(yb['2019']['b'], 2)}).",
+        neden="Bir emisyon ticaret sistemi tezinde fiyatın hiç geçmemesi dikkat çeker. Üçüncü faz için hazır bir açıklama sunar, ama sınanmadan yazılırsa yeni bir iddialı cümle olur.",
+        adimlar=[
+            "Yıllık ortalama izin (EUA) fiyat serisini bulun (Avrupa Çevre Ajansı ya da Komisyon'un yıllık karbon piyasası raporları) ve veri setine ekleyin. Bu inceleme sırasında doğrulanmış tam bir seri elde edemedim.",
+            "Bir önceki yılın fiyatını modele ekleyip tahmin edin ve sonucu bir sağlamlık satırı olarak verin. Veriyi eklerseniz tahmini ben yapabilirim.",
+            "5.10'a “Karbon fiyatının rolü” başlıklı bir paragraf ekleyin. Üçüncü fazdaki düşük fiyatı olası açıklamalardan biri olarak sunun; birinci fazda fiyat çökerken farkın arttığını da aynı paragrafta belirtin.",
+            "İsterseniz yıl etkileri şeklinin altına ikinci bir panel olarak yıllık fiyatı ekleyin (iki ayrı eksenli tek grafik değil, alt alta iki grafik).",
+        ],
+        ornek="Karbon fiyatı bu çalışmada açıklayıcı değişken olarak yer almamaktadır. Üçüncü fazın büyük bölümünde izin fiyatının düşük seyretmesi, bu fazda ek bir fark gözlenmemesinin olası açıklamalarından biridir; ancak birinci fazın sonunda fiyat çökerken farkın artması, fiyat ile patentleme arasında basit bir eşzamanlı ilişki bulunmadığına işaret etmektedir."),
+    # ------------------------------------------------------------------------------------------------ ÇIKARSAMA
+    "C1": dict(
+        baslik="Ülkeler birbirinden bağımsız değil, ama hesap bağımsızlarmış gibi yapılmış",
+        sorun="Bir sonucun tesadüf olup olmadığına karar verirken elde kaç tane bağımsız gözlem olduğu önemlidir. Tez her ülkeyi diğerlerinden bağımsız sayıyor. Oysa AB ülkeleri aynı krizleri ve aynı fiyat şoklarını birlikte yaşıyor; tezin kendi testi de (yatay kesit bağımlılığı testi) ülkelerin bağımsız olmadığını gösteriyor. Bağımsız olmayan gözlemleri bağımsız saymak, sonuçları olduğundan kesin gösterir. İlk incelemede bunun için önerdiğim çözümü (iki yönlü kümeleme) sınadım; bu boyuttaki veride işe yaramadığını, hatta en kötü sonucu verdiğini gördüm ve önerimi geri çektim.",
+        neden="Tez bir yandan “ülkeler bağımlı” diyen bir test raporluyor, öte yandan bunu hesaba katmıyor. İki jüri raporundan biri bu çelişkiyi açıkça soruyor.",
+        adimlar=[
+            "5.6.5'e açık bir cümle ekleyin: yatay kesit bağımlılığı testi bağımsızlığı reddetmektedir; ülke bazlı bootstrap bu bağımlılığı hesaba katmadığından anlamlılık düzeyleri iyimser olabilir.",
+            "Ana tablolara ikinci bir belirsizlik ölçüsü ekleyin: küme jackknife ile hesaplanan p değerleri (hazır; raporun 7. kısmı).",
+            "“Sınırlılıklar” alt başlığında bu konuyu ayrı bir madde olarak yazın.",
+            "İki yönlü kümeleme ya da benzeri bir düzeltmeyi çözüm olarak sunmayın; 14 ülke ve 24 yılla güvenilir çalışmıyor.",
+            "Kalıcı çözüm hesapta değil tasarımdadır: T1'deki karşılaştırmalı analiz, ortak şokları doğrudan temizler.",
+        ],
+        ornek="Yatay kesit bağımlılığı testleri ülkeler arasında bağımlılık bulunduğunu göstermektedir. Ülke düzeyinde yeniden örnekleme bu bağımlılığı hesaba katmadığından, raporlanan anlamlılık düzeyleri iyimser olabilir; bu nedenle sonuçlar küme jackknife ile de sınanmıştır."),
+    "C2": dict(
+        baslik="Yöntemin anlatımı ile uygulaması birbirini tutmuyor",
+        sorun="Tez, sonuçların tesadüf olup olmadığını anlamak için bootstrap kullanıyor. Bootstrap'ın birkaç türü var. Tez, yöntemi anlattığı bölümde (5.1.8) bir türü (wild bootstrap) öven kaynaklara dayanıyor; hesap yaparken ise başka bir türü (eşli bootstrap) kullanıyor. Yani “A yöntemi şu yüzden iyidir” deyip B yöntemini uyguluyor. Atıf yapılan kaynaklar da az sayıda ülke olduğunda tezin kullandığı türü değil, öbürünü öneriyor. İkinci bir gerekçe hatası: tez bu yöntemi “ülkelerin veri büyüklükleri çok farklı” diye gerekçelendiriyor; oysa her ülkenin tam 24 yıllık verisi var. Asıl farklı olan, Almanya'nın patentlerin yaklaşık yarısını tek başına üretmesi.",
+        neden=f"Hesaplar doğru: aynı hesabı sıfırdan yaptığımda tezdeki sayılarla neredeyse aynı çıktı ({tr(bo('m1', N, 'F1'), 4)}; tezde 0,0580). Yanlış olan açıklama. Jüri anlatılan ile uygulanan yöntemin farklı olduğunu görürse “neyi neden yaptığınızı biliyor musunuz?” diye sorar; birinci jüri bunu fark etmiş.",
+        adimlar=[
+            "5.1.8'i yeniden yazın. İlk paragrafta az sayıda ülke olduğunda klasik hesabın yetersiz kaldığını anlatmaya devam edin; ikinci paragrafta doğrudan kullandığınız yöntemi (ülkelerin yerine konarak yeniden örneklendiği eşli bootstrap) tanıtın.",
+            "“MacKinnon ve Webb (2017) … göstermiştir. Bu durumlarda çıkarsama kümelenmiş eşli bootstrap ile yapılmaktadır” geçişini çıkarın; bu kaynak eşli bootstrap'ı önermiyor. Kaynağı yalnızca “az ve dengesiz kümelerde klasik hesap güvenilmezdir” savı için kullanın.",
+            "5.6.5'teki (L407) “küme büyüklüklerindeki farklılık” ifadesini “ülkelerin sonuçtaki ağırlıklarının çok farklı olması (Almanya başvuruların yaklaşık yüzde 45'ini oluşturmaktadır)” diye düzeltin.",
+            "Yöntemin sınırını bir cümleyle yazın: 14 ülkeyle eşli bootstrap da iyimser sonuç verebilir (bkz. C9).",
+            "Sonuçları ikinci bir yöntemle (küme jackknife) destekleyin ve tabloya ekleyin; sayılar hazır.",
+            "5.6.5'teki “katsayılar adlandırılmış ifadeler olarak tanımlanarak uygulanmıştır” cümlesini çıkarın ya da nedenini açıklayın; okuyucu için anlaşılmaz bir yazılım ayrıntısı.",
+        ],
+        ornek="Standart hatalar, ülkelerin yerine konarak yeniden örneklendiği kümelenmiş eşli bootstrap ile hesaplanmıştır. Küme sayısının az (14) ve ülkelerin sonuçtaki ağırlıklarının çok dengesiz olması nedeniyle bu yöntemin de sınırlı örneklemde iyimser sonuç verebileceği dikkate alınarak, bulgular küme jackknife ile ayrıca sınanmıştır."),
+    "C3": dict(
+        baslik="Poisson sonuçlarını büyük ölçüde tek ülke (Almanya) belirliyor",
+        sorun=f"Örneklemde 14 ülke var, ama hesapta eşit ağırlıkta değiller. Poisson yöntemi ülkeleri patent sayılarıyla ağırlıklandırır; Almanya patentlerin yaklaşık yarısını ürettiği için Poisson sonuçları fiilen “Almanya ağırlıklı ortalama”dır (Almanya'nın payı %{tr(R['agirlik']['Almanya'][0], 0)}). Negatif binom ülkelere çok daha eşit ağırlık verir (Almanya %{tr(R['agirlik']['Almanya'][1], 0)}). Tezdeki iki yöntemin farklı sonuç vermesinin nedeni budur; tez bunu açıklamıyor. Bir ölçüye göre Poisson'da 14 ülke fiilen {tr(c('m1', P, 'F1', 'Gstar'), 0)}–{tr(c('m1', P, 'F2', 'Gstar'), 0)} ülke kadar bilgi taşıyor.",
+        neden=f"İki yöntem farklı sorulara cevap veriyor: Poisson “patentlerin çoğunun üretildiği yerde ne oldu?”, negatif binom “ortalama bir ülkede ne oldu?”. Bunu söylemeden iki sütunu yan yana koymak okuyucuyu şaşırtır. Almanya çıkarılınca Poisson'un birinci faz sonucu {tr(SG['c'][P]['F1']['b'], 3)} düzeyine çıkıp negatif binomun sonucuyla ({tr(c('m1', N, 'F1'), 3)}) neredeyse eşitleniyor; bu, farkın kaynağını doğruluyor.",
+        adimlar=[
+            "5.6.1'e ya da 5.7.1'in başına kısa bir paragraf ekleyin: iki tahmincinin ülkeleri nasıl ağırlıklandırdığını anlatın (aşağıdaki örnek cümle).",
+            "Ek bir tablo koyun: her ülkenin iki yöntemdeki ağırlık payı (sayılar hazır; sitede Sağlamlık sayfasında).",
+            "Metinde Poisson sonuçlarını “başvuru ağırlıklı”, negatif binom sonuçlarını “ülkelere daha eşit ağırlık veren” tahmin olarak adlandırın.",
+            "5.8.1 (c) paragrafını (Almanya hariç) bu çerçeveyle yeniden yorumlayın: Almanya çıkarıldığında iki yöntem birbirine yaklaşıyor.",
+            "İsterseniz ülke bazındaki faz farklarını bir ek tabloda gösterin; küçük ülkelerde değerler oynaktır, bu notla birlikte verin.",
+        ],
+        ornek=f"Poisson tahmincisi gözlemleri beklenen başvuru sayısıyla ağırlıklandırdığından Almanya'nın tahmindeki payı yaklaşık yüzde {tr(R['agirlik']['Almanya'][0], 0)}'tir; negatif binom tahmincisinde bu pay yaklaşık yüzde {tr(R['agirlik']['Almanya'][1], 0)}'dir. Dolayısıyla Poisson katsayıları başvuru ağırlıklı, negatif binom katsayıları ülkelere daha eşit ağırlık veren ortalama farkları göstermektedir; iki tahminci arasındaki fark büyük ölçüde bu ağırlıklandırmadan kaynaklanmaktadır."),
+    "C4": dict(
+        baslik="Tablolardaki güven aralıkları bu veride güvenilir çalışmıyor",
+        sorun=f"Güven aralığı, gerçek değerin büyük olasılıkla içinde bulunduğu aralıktır. Tez bunu “sapma düzeltmeli” (BC) denen bir yöntemle hesaplıyor. Bu yöntem bu veride tuhaf sonuçlar veriyor. Örnek: enerji ithalat bağımlılığında tahmin {tr(c('m1', N, 'impdep_l1'), 4)}, ama aralığın üst ucu {tr(bo('m1', N, 'impdep_l1', 'bc')[1], 4)}; yani tahminin sekiz katından fazla. Nedeni şu: yeniden örneklemelerin yaklaşık üçte birinde Almanya hiç yer almıyor ve sonuçlar bir yöne kayıyor; yöntem bu kaymayı aşırı “düzeltiyor”. Aynı katsayı için üç farklı hesap üç farklı aralık veriyor. İlk incelemede bu aralığı yazım hatası sanmıştım; hata değil, yöntemin bu verideki zaafı.",
+        neden="Tez bazı sonuçları “güven aralığı sıfırı içermiyor” diye anlamlı sayıyor. Aralığın kendisi güvenilir değilse bu yargı da güvenilir olmaz.",
+        adimlar=[
+            "Tablo 5.11 ve 5.13'te BC aralığının yanına sade “yüzdelik” aralığı da verin; iki aralık birbirinden çok farklıysa okuyucu görsün (sayılar hazır).",
+            "Tablo notlarına ekleyin: “Bootstrap dağılımları çarpık olduğundan sapma düzeltmeli aralıklar asimetriktir; yüzdelik aralıklar karşılaştırma için verilmiştir.”",
+            "Tablo 5.12'de üçüncü faz için “Anlamsız” yazmak yerine aralığın kendisini yazın.",
+            "Tablo 5.13'te kontrol değişkenlerinin boş bırakılan güven aralığı hücrelerini doldurun.",
+            "Metinde anlamlılık yargısını “aralık sıfırı içermiyor” cümlesine değil, p değerlerine (tercihen küme jackknife) dayandırın. Örneğin 5.7.1'deki “her iki fazın sapma düzeltmeli güven aralığı sıfırı içermemektedir” cümlesini çıkarın.",
+            "5.1.8'e yöntemin sınırını yazın: bootstrap dağılımı nokta tahmine göre kaymışsa bu aralıklar kararsızlaşır.",
+        ],
+        ornek=None),
+    "C5": dict(
+        baslik="Hangi sonuç her sınamadan geçiyor? İkinci faz ve ikinci model evet, birinci faz hayır",
+        sorun=f"Tez tek bir hesap yöntemiyle “anlamlı” ya da “anlamsız” diyor. Aynı sonuçları dört farklı yöntemle ve “etki sıfır olsaydı ne görürdük?” benzetimiyle sınadım. Tablo şöyle: ikinci faz farkı ve ikinci modelin iki bulgusu (birinci fazda hızlanma, ikinci fazın başında sıçrama) negatif binomda her sınamadan geçiyor. Birinci faz farkı (birinci model) geçemiyor: Poisson'da sıfır etkiyle tamamen uyumlu (benzetimde p = {mcr(P, 0)}), negatif binomda sınırda (p = {mcr(N, 0)}).",
+        neden="Tezin H2 hipotezi (“birinci faz pozitif etki yaratmıştır”) “desteklenmektedir” diye sunuluyor. Kanıt bu kadar net değil. Buna karşılık ikinci faz bulgusu tezin sandığından da sağlam; ana mesaj buraya kurulmalı.",
+        adimlar=[
+            "Teze “çıkarsama duyarlılığı” başlıklı yeni bir tablo ekleyin: satırlarda faz katsayıları, sütunlarda dört yöntemin p değerleri ve benzetim p değerleri. Tablo hazır (raporun 7. kısmı; sitede Çıkarsama sayfası).",
+            "Tablo 5.17'de H2'nin sonucunu “kısmen desteklenmektedir” yapın; kanıt sütununa “negatif binomda anlamlı, Poisson'da çıkarsama yöntemine duyarlı” yazın.",
+            "5.7.1'deki “ilk iki fazda anlamlı biçimde yükseldiğini göstermektedir” cümlesini ikiye ayırın: ikinci faz için güçlü, birinci faz için temkinli ifade.",
+            "Özet ve sonuç bölümlerinde ana mesajı ikinci faz ve ikinci modelin bulgularına dayandırın.",
+            "Birinci faz için asıl kanıtın ikinci modeldeki eğim artışı olduğunu belirtin; bu bulgu negatif binomda her sınamadan geçiyor.",
+        ],
+        ornek="İkinci faz farkı ve kesintili zaman serisi modelindeki birinci faz eğim artışı ile ikinci faz düzey farkı, kullanılan bütün çıkarsama yöntemlerinde anlamlıdır. Birinci modeldeki birinci faz farkı ise negatif binom tahmincisinde anlamlı, Poisson tahmincisinde çıkarsama yöntemine duyarlıdır."),
+    "C6": dict(
+        baslik="Tablolardaki yıldızlar (anlamlılık işaretleri) biraz cömert",
+        sorun=f"Tablolardaki *, ** ve *** işaretleri, sonucun tesadüf olma olasılığının ne kadar düşük olduğunu gösterir. Bu işaretler hesaplanırken çok sayıda bağımsız gözlem varmış gibi davranılmış. Yalnızca 14 ülke olduğunda daha temkinli bir ölçü kullanılması önerilir. Bu ölçüyle sınırdaki sonuçlar bir kademe düşüyor: Poisson birinci faz p = {pv(bo('m1', P, 'F1', 'p'))} yerine {pv(pt13(c('m1', P, 'F1'), bo('m1', P, 'F1')))}; negatif binom ticaret açıklığı {pv(bo('m1', N, 'trade_l1', 'p'))} yerine {pv(pt13(c('m1', N, 'trade_l1'), bo('m1', N, 'trade_l1')))}.",
+        neden="Küçük bir düzeltme, ama iki sonucun yıldızı ** yerine * oluyor ve metindeki “yüzde 5 düzeyinde anlamlıdır” cümleleri değişiyor.",
+        adimlar=[
+            "Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), negatif binom ticaret açıklığı (** → *). İkinci faz ve stok katsayıları değişmiyor.",
+            "Tablo notlarına ekleyin: “Anlamlılık düzeyleri 13 serbestlik dereceli t dağılımına göre belirlenmiştir.”",
+            "5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde” deyin.",
+        ],
+        ornek=None),
+    "C7": dict(
+        baslik="Yıl etkileri grafiği ve plasebo tablosu, tezin kendisinin “güvenilmez” dediği hesapla yapılmış",
+        sorun=f"Tez 5.1.8'de, az sayıda ülke olduğunda klasik standart hataların güvenilmez olduğunu söylüyor ve bu yüzden bootstrap kullanıyor. Ancak yıl etkileri grafiği (Şekil 5.5) ve plasebo testleri (Tablo 5.16) tam da o klasik hesapla yapılmış. Grafiği bootstrap ile yeniden hesapladığımda “katsayılar 2006'dan itibaren anlamlı” sonucu değişiyor: yüzde 5 düzeyinde yalnızca 2009 anlamlı kalıyor (2006: p = {pv(yb['2006']['p_boot'])}, 2007: {pv(yb['2007']['p_boot'])}, 2008: {pv(yb['2008']['p_boot'])}, 2009: {pv(yb['2009']['p_boot'])}, 2010: {pv(yb['2010']['p_boot'])}).",
+        neden="Aynı bölümde iki farklı ölçüt kullanmak tutarsızlık olarak görülür; üstelik daha zayıf ölçüt, tezin lehine sonuç veren yerde kullanılmış.",
+        adimlar=[
+            "Şekil 5.5'i bootstrap aralıklarıyla yeniden çizin. Alternatif: iki tür aralığı aynı grafikte farklı kalınlıkta gösterin. Yeniden hesaplanmış değerler hazır.",
+            "5.7.3'teki (L663) “Katsayılar 2006'dan itibaren anlamlı hale gelmekte” cümlesini değiştirin: “2006–2010 arasında pozitiftir; bootstrap standart hatalarıyla yüzde 5 düzeyinde yalnızca 2009, yüzde 10 düzeyinde 2006–2008 anlamlıdır.”",
+            "Tablo 5.16'ya bootstrap p değerleri sütunu ekleyin (bkz. T6).",
+            "5.6.5'teki (L407) “yıl etkileri modeli ile plasebo kırılma testlerinde ülke düzeyinde kümelenmiş standart hatalar kullanılmıştır” cümlesini çıkarın; yerine bütün tablolarda aynı yöntemin kullanıldığını yazın.",
+        ],
+        ornek=None),
+    "C8": dict(
+        baslik="Ticaret açıklığı sonucu abartılmış",
+        sorun=f"Kontrol değişkenleri içinde yalnızca ticaret açıklığı “anlamlı” çıkıyor ve tez bunu yorumluyor (“10 puanlık artış yoğunluğu yüzde 4,8 azaltmaktadır”). Sonuç tam sınırda: p değeri {pv(bo('m1', N, 'trade_l1', 'p'))}; daha temkinli hesaplarla anlamlı değil (jackknife p = {pv(c('m1', N, 'trade_l1', 'p_cv3'))}); Poisson'da hiç anlamlı değil (p = {pv(bo('m1', P, 'trade_l1', 'p'))}).",
+        neden="Tek bir tahmincide sınırda çıkan bir sonuca iktisadi yorum yüklemek, jürinin kolayca eleştireceği bir noktadır.",
+        adimlar=[
+            "Tablo 5.11 ve 5.13'te ticaret açıklığının işaretini ** yerine * yapın.",
+            "5.7.1'in son paragrafındaki (L595) cümleyi yumuşatın (aşağıdaki örnek).",
+            "Aynı paragraftaki “enerji yapısı, sanayi yapısı ve iktisadi büyümenin anlamlı bir ek etkisinin saptanmadığını göstermektedir” cümlesine “bu değişkenler ülke içinde stokla birlikte hareket ettiğinden etkileri ayrıştırılamamış olabilir” kaydını ekleyin (bkz. M3).",
+        ],
+        ornek="Dış ticaret açıklığının katsayısı negatif binom modelinde negatif ve sınırda anlamlıdır; Poisson modelinde anlamlı değildir. Bu nedenle ticaret açıklığına ilişkin güçlü bir yorum yapılmamıştır."),
+    "C9": dict(
+        baslik="Tezin kullandığı yöntem, hiçbir etki yokken de sık sık “etki var” diyor",
+        sorun=f"Bir yöntemin güvenilirliğini sınamanın yolu şudur: etkinin kesinlikle sıfır olduğu yapay veriler üretilir ve yöntemin bu verilerde ne dediğine bakılır. İyi çalışan bir yöntem 100 denemenin yaklaşık 5'inde yanlışlıkla “etki var” der. Tezin yöntemi bu sınamada 100 denemenin {simrg('rej_boot', 'A').replace('%', '')}'inde “etki var” diyor; üstelik en elverişli koşullarda (veri tezin kendi modeline göre üretilmiş, ülkeler arası ortak şok yok). Küçük bir ortak şok eklenince oran {simrg('rej_boot', 'B')}. İki nedeni var: birinci modelin katsayıları yukarı kayıyor (T5) ve 14 ülkeyle belirsizlik olduğundan küçük ölçülüyor. İkinci jüri raporu bu yöntemin hatayı “başarıyla kontrol ettiğini” yazıyor; sayılar bunu desteklemiyor.",
+        neden="Tezin bütün “anlamlı” yargıları bu yönteme dayanıyor. Sınırdaki sonuçlar (birinci faz, ticaret açıklığı) bu yüzden güvenilir değil; güçlü sonuçlar (ikinci faz) ise bu sınamadan sonra da ayakta.",
+        adimlar=[
+            "5.6.5'e benzetim sonucunu bir paragraf ve küçük bir tabloyla ekleyin: “gerçek etki sıfırken yüzde 5 düzeyinde ret oranı” (tablo hazır; raporun 6. kısmı).",
+            f"Anlamlılık yargılarını ikinci bir yöntemle destekleyin: küme jackknife (aynı sınamada {simrg('rej_cv3', 'A')} ile yüzde 5'e en yakın yöntem) ve/veya parametrik bootstrap.",
+            "“Yüzde 5 düzeyinde anlamlıdır” ifadesini sınırdaki sonuçlar için kullanmayın; “sınırda” ya da “yönteme duyarlı” deyin.",
+            "“Sınırlılıklar” alt başlığına ekleyin: az sayıda ve dengesiz ağırlıklı ülke nedeniyle bütün çıkarsama yöntemleri iyimser sonuç vermektedir.",
+            "Benzetim kodunu (analiz/py/simulasyon.py) tezin ekine ya da çevrimiçi eke koyun; jüri sorarsa gösterilebilir.",
+        ],
+        ornek=f"Gerçek etkinin sıfır olduğu benzetimlerde, kümelenmiş eşli bootstrap standart hatalarına dayanan testler yüzde 5 anlamlılık düzeyinde boş hipotezi {simrg('rej_boot', 'A')} oranında reddetmektedir. Bu nedenle sınırdaki sonuçlar temkinle yorumlanmış, temel bulgular küme jackknife ve parametrik bootstrap ile doğrulanmıştır."),
+    # ------------------------------------------------------------------------------------------------ MODEL
+    "M1": dict(
+        baslik="“Ekonomi büyüdükçe patentler de aynı oranda artar” varsayımı veriye uymuyor",
+        sorun=f"Ana model, ekonomi yüzde 10 büyürse patentlerin de yüzde 10 artacağını varsayıyor; böylece “GSYİH başına patent” (yoğunluk) incelenmiş oluyor. Tez bu varsayımı kendisi test etmiş ve veri reddetmiş: ekonomi yüzde 10 büyüdüğünde patentler yaklaşık yüzde {tr(10 * SG['b'][N]['lngdp']['b'], 0)} artıyor. Tez yine de varsayımı korumuş. İki jüri raporu da bunu eleştiriyor. İyi haber: varsayım kaldırıldığında faz sonuçları bozulmuyor, hatta birinci faz biraz büyüyor ({tr(c('m1', N, 'F1'), 3)} → {tr(SG['b'][N]['F1']['b'], 3)}). İkinci jürinin işaret ettiği İrlanda'nın 2015'teki olağanüstü GSYİH sıçraması da sonuçları etkilemiyor.",
+        neden="İlk incelemede jürinin bu eleştirisini abartılı bulmuştum; yeniden değerlendirince jürinin ilkesel olarak haklı olduğunu kabul ediyorum: veriyle reddedilen bir varsayımı “sonuçlar yakın” diyerek korumak zayıf bir savunma. Çözüm kolay: iki sonucu birlikte vermek.",
+        adimlar=[
+            f"Tablo 5.11'e iki sütun daha ekleyin: “GSYİH esnekliği serbest” modeli. Negatif binom: birinci faz {tr(SG['b'][N]['F1']['b'], 4)}, ikinci faz {tr(SG['b'][N]['F2']['b'], 4)}, üçüncü faz {tr(SG['b'][N]['F3']['b'], 4)}, GSYİH esnekliği {tr(SG['b'][N]['lngdp']['b'], 3)}.",
+            "5.6.2'yi yeniden yazın: yoğunluk tanımının bir tercih olduğunu, birim esneklik kısıtının veriyle reddedildiğini ve sonuçların her iki tanımda da raporlandığını belirtin.",
+            "5.8.1 (b) paragrafındaki (L697) “faz katsayıları birinci modeldekilere yakındır” cümlesini rakamlarla değiştirin; birinci fazdaki yaklaşık yüzde 24'lük artışı gizlemeyin.",
+            "Hipotezlerin her iki tanımda da aynı sonucu verdiğini Tablo 5.17'nin notunda belirtin.",
+            f"İrlanda için bir dipnot ekleyin: 2015'teki yüzde 24,6'lık GSYİH artışı nedeniyle İrlanda çıkarılarak yapılan tahminde sonuçlar değişmemektedir ({tr(jp('irlanda', 'haric', N, 'F1'), 3)} ve {tr(jp('irlanda', 'haric', N, 'F2'), 3)}).",
+        ],
+        ornek="Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti ve anlamlılığı iki tanımda aynıdır."),
+    "M2": dict(
+        baslik="Gecikme karşılaştırması anlatıldığı gibi yapılmamış",
+        sorun=f"Tez, kontrol değişkenlerinin modele bir yıl mı yoksa iki yıl gecikmeyle mi girmesi gerektiğini iki modeli karşılaştırarak belirliyor ve bir yılı seçiyor. Ancak raporlanan iki yıllık model yalnızca kontrol değişkenlerini değil, patent stokunu da iki yıl geciktiriyor. Yalnızca kontroller iki yıl geciktirildiğinde iki model arasındaki fark çok daha küçük: uyum ölçüsü (AIC; küçük olan daha iyi) {tr(R['gecikme'][N]['lag2_yalniz_kontrol'], 2)}; tezde verilen değer {tr(R['gecikme'][N]['lag2_hepsi'], 2)}, bir yıllık modelin değeri {tr(R['gecikme'][N]['lag1'], 2)}. Sonuç değişmiyor; bir yıllık gecikme yine daha iyi.",
+        neden="Küçük bir tutarsızlık; ama sayıyı yeniden hesaplayan biri farkı görür.",
+        adimlar=[
+            "5.6.9'daki (L523) cümleyi “kontrol değişkenlerinin ve yeşil patent stokunun gecikme yapısı” diye düzeltin; ya da yalnızca kontrollerin geciktirildiği karşılaştırmanın sayısını verin.",
+            "İsterseniz iki karşılaştırmayı birlikte raporlayın; ikisinde de bir yıllık gecikme tercih ediliyor.",
+        ],
+        ornek=None),
+    "M3": dict(
+        baslik="Değişkenler arası ilişki tablosu yanlış soruya cevap veriyor",
+        sorun=f"Tablo 5.4, açıklayıcı değişkenlerin birbirleriyle ne kadar birlikte hareket ettiğini gösteriyor ve “en yüksek ilişki 0,35, sorun yok” sonucuna varıyor. Bu tablo bütün ülkeler bir arada hesaplanmış. Model ise her ülkenin kendi içindeki zaman değişimine bakıyor. Ülke içinde bakıldığında tablo çok farklı: stok ile yenilenebilir enerji payı arasındaki ilişki {tr(ici[('lnK1', 'renew_wdi_l1')], 2)}, stok ile ticaret açıklığı arasında {tr(ici[('lnK1', 'trade_l1')], 2)}. Yani bu değişkenler zaman içinde birlikte artıyor ve model etkilerini birbirinden ayırmakta zorlanıyor. Yenilenebilir enerji payının “etkisiz” görünmesi büyük olasılıkla bundan.",
+        neden="Tez bu tablodan “çoklu doğrusallık sorunu yok” sonucunu çıkarıyor; oysa kendi VIF tablosu sorunu gösteriyor. İki tablo birbiriyle çelişiyor.",
+        adimlar=[
+            "Tablo 5.4'ü iki panelli yapın: (A) bütün gözlemlerle, (B) ülke ortalamalarından arındırılmış (ülke içi) değerlerle. İkinci panelin sayıları hazır (sitede Yeniden üretim sayfası).",
+            "5.5.1'deki (L271) sonuç cümlesini değiştirin (aşağıdaki örnek).",
+            f"“0,35'i aşmamaktadır” ifadesini düzeltin; en yüksek değer {tr(E['kucuk']['max_ham_korelasyon'], 3)}.",
+            "5.7.1'de kontrol değişkenlerinin anlamsızlığını yorumlarken bu birlikte hareketi belirtin: “etkisi yok” değil, “stoktan ayrıştırılamadı”.",
+        ],
+        ornek=f"Havuzlanmış korelasyonlar düşük olmakla birlikte, sabit etkili modelde belirleyici olan ülke içi korelasyonlar daha yüksektir: yeşil patent stoku ile yenilenebilir enerji payı arasında {tr(ici[('lnK1', 'renew_wdi_l1')], 2)}, ticaret açıklığı ile {tr(ici[('lnK1', 'trade_l1')], 2)}. Bu nedenle söz konusu kontrol değişkenlerinin katsayıları stokun etkisinden tam olarak ayrıştırılamamaktadır."),
+    "M4": dict(
+        baslik="Durağanlık testleri bölümünde etiket ve tutarlılık sorunları",
+        sorun=f"Bu bölüm, değişkenlerin zaman içinde “başıboş” dolaşıp dolaşmadığını sınıyor; çünkü başıboş dolaşan iki seri arasında gerçekte olmayan bir ilişki görülebilir. Dört sorun var. Birincisi: tablolarda “yeşil patent yoğunluğu” yazıyor, ama testler yoğunluğun logaritmasıyla yapılmış. Yoğunluğun kendisiyle yapıldığında testlerden biri (CIPS) tersine dönüyor ({tr(U['inten']['cips_c']['stat'], 2)}; durağan sayılamıyor). İkincisi: bir test 1996–2020, bir diğeri 1997–2020 dönemiyle yapılmış; metinde yazmıyor. Üçüncüsü: tez önce “ülkeler birbirinden bağımsız değil” sonucuna varıyor, ardından bağımsızlık varsayan testler kullanıyor (iki jüri raporu da bunu söylüyor). Dördüncüsü: bir test istatistiği (+2,255) “ilişki var” yönünde yorumlanmış; işareti ters yönü gösteriyor olabilir.",
+        neden="Bu bölüm tezin ana bulgularını taşımıyor; ama üç ayrı değerlendirme de buradaki tutarsızlığa işaret etti. Kısaltmak hem riski hem sayfa sayısını azaltır.",
+        adimlar=[
+            "Tablo 5.7, 5.8 ve 5.9'da satır adını “ln(Yeşil patent yoğunluğu)” olarak düzeltin.",
+            "Tablo notlarına her testin dönemini yazın (birim kök ve yatay kesit bağımlılığı: 1996–2020; Kao: 1997–2020).",
+            "Bölümü kısaltın: ana metinde tek paragraf bırakıp tabloları eke taşıyın.",
+            "5.6.8'in son cümlesini (L519: “düzey değerleriyle tahmin, her iki test grubunun sonuçları altında da geçerlidir”) çıkarın; testler bunu göstermiyor.",
+            "Pedroni çıktısını kontrol edin: değiştirilmiş Phillips-Perron istatistiği pozitif (+2,255). Yazılımın bu değeri hangi yönde test ettiğine bakın; emin değilseniz “üç istatistiğin tamamı” yerine “üç istatistikten ikisi” yazın.",
+            "Tablo 5.8'de ticaret açıklığı “trend durağan” görünüyor, bir sonraki tabloda aynı değişken durağan değil; metinde bu farkı bir cümleyle belirtin.",
+            "İsterseniz ülkeler arası bağımlılığa dayanıklı bir test (Westerlund, 2007) ekleyin; zorunlu değil.",
+        ],
+        ornek=None),
+    "M5": dict(
+        baslik="Yöntem için gösterilen kaynak eksik aktarılmış",
+        sorun="Tez, ülke kuklalı negatif binom yöntemini Allison ve Waterman'ın (2002) çalışmasına dayandırıyor ve yöntemin sorunsuz olduğunu söylüyor. Sonraki çalışmalar bu yöntemin güven aralıklarını dar verdiğini ve tartışmanın kapanmadığını belirtiyor. Tez bootstrap kullandığı için bunun pratik etkisi sınırlı. Ayrıca sabit etkili Poisson'un sağlamlığı için asıl kaynak Wooldridge (1999); kaynakçada var ama metinde atıf yok.",
+        neden="Küçük bir eksik; bir cümleyle giderilir ve yöntem bilgisinin güncel olduğunu gösterir.",
+        adimlar=[
+            "5.6.1'e bir cümle ekleyin: “Bu tahmincinin standart hatalarının küçük kalabildiği bilinmektedir; bu nedenle çıkarsama bootstrap ile yapılmıştır.”",
+            "5.1.5'te sabit etkili Poisson'un dağılım varsayımına dayanıklılığı için Wooldridge'e (1999) atıf yapın.",
+            "İsterseniz Guimarães (2008) atfını ekleyin.",
+        ],
+        ornek=None),
+    "M6": dict(
+        baslik="Patent sayılarının yuvarlama kuralı net yazılmamış",
+        sorun=f"OECD, birden fazla ülkeden başvuru sahibi olan patentleri ülkeler arasında paylaştırır; bu yüzden ham sayılar kesirlidir. Tez bunları tam sayıya çevirmiş. Metin “en yakın tam sayıya yuvarlandı” diyor, veri dosyası “yarım değerler yukarı yuvarlandı” diyor. Tahmin döneminde tam yarım değerli {R['veri']['yuvarlama_yarim']} gözlem var. Yuvarlanmamış sayılarla yaptığım tahminde sonuçlar aynı çıktı.",
+        neden="Sonuçları etkilemiyor; yalnızca metin ile veri dosyasının aynı şeyi söylemesi gerekiyor.",
+        adimlar=[
+            "5.4.1'deki (L149) cümleyi “kesirli değerler en yakın tam sayıya, yarım değerler yukarı yuvarlanmıştır” diye netleştirin.",
+            "Bir dipnot ekleyin: “Yuvarlanmamış değerlerle yapılan Poisson tahmininde katsayılar üçüncü ondalıkta aynıdır.”",
+        ],
+        ornek=None),
+    "M7": dict(
+        baslik="Negatif binom yönteminin bir varsayımı sağlanmıyor",
+        sorun=f"Negatif binom yöntemi, verideki dağınıklığın bütün ülkelerde aynı kurala uyduğunu varsayar. Veride dağınıklık ülkeden ülkeye çok farklı: Lüksemburg'da çok yüksek ({tr(ALFA_I['Lüksemburg'], 2)}), Almanya'da çok düşük ({tr(ALFA_I['Almanya'], 3)}); modelin tek tahmini {tr(R['m1'][N]['alpha'], 3)}. Bu durum katsayıları bozmaz, ama tezin “negatif binom verinin yayılım yapısıyla uyumludur ve daha etkindir” gerekçesini zayıflatır.",
+        neden="Tez negatif binomu ana yöntem olarak seçiyor ve bunu “veriye daha uygun” diye gerekçelendiriyor. Gerekçe değişmeli; seçimin kendisi savunulabilir.",
+        adimlar=[
+            "5.6.6'daki (L417) “verinin yayılım yapısıyla uyumlu olan negatif binom modeli ana tahminci olarak kullanılmış” cümlesini değiştirin.",
+            "Negatif binomu ana yöntem olarak tutmanın daha sağlam gerekçesini yazın: ülkelere daha eşit ağırlık verir, sonuçlar tek bir büyük ülkeye bağlı kalmaz (bkz. C3).",
+            "Poisson'u “alternatif” değil “eş düzeyde ikinci tahminci” olarak sunun.",
+            "Bir dipnotla aşırı yayılımın ülkeler arasında farklılaştığını belirtin.",
+        ],
+        ornek="Aşırı yayılım ülkeler arasında belirgin biçimde farklılaşmaktadır; bu nedenle negatif binom modelinin etkinlik üstünlüğü kesin değildir. Negatif binom tahmincisi, ülkelere daha dengeli ağırlık verdiği için ana tahminci olarak kullanılmış, Poisson sözde en çok olabilirlik tahmincisi eş düzeyde raporlanmıştır."),
+    "M8": dict(
+        baslik="Veride sıfır yok diye özel bir model gerekmiyor",
+        sorun=f"İkinci jüri, tahmin döneminde hiç sıfır patentli gözlem bulunmadığı için sonuçların “sıfır-kesikli” bir modelle kontrol edilmesini önerdi. Bu tür modeller, sıfırın hiç gözlenemeyeceği veriler içindir (örneğin hastanede kalış süresi: kalmayan kişi veride yoktur). Burada sıfır gözlenebilir; yalnızca gerçekleşmemiş. Modele göre beklenen sıfır sayısı da zaten {tr(J['sifir']['beklenen_sifir_nb'], 1)}. Öneriyi yine de uyguladım: Poisson'da sonuçlar dördüncü ondalığa kadar aynı, negatif binomda fark yalnızca dördüncü ondalıkta ({tr(c('m1', N, 'F1'), 4)} → {tr(J['sifir']['zt_nb']['F1'], 4)}).",
+        neden="Bir sorun değil; yalnızca jürinin sorusuna hazır cevap olması için.",
+        adimlar=[
+            "5.4.1'e ya da 5.6.1'e bir dipnot ekleyin (aşağıdaki örnek).",
+            "Başka bir değişiklik gerekmiyor.",
+        ],
+        ornek=f"Tahmin örnekleminde sıfır değerli gözlem bulunmamaktadır. Sıfır-kesikli negatif binom tahmininde katsayılar yalnızca dördüncü ondalıkta değişmektedir (birinci faz {tr(J['sifir']['zt_nb']['F1'], 4)}; ikinci faz {tr(J['sifir']['zt_nb']['F2'], 4)})."),
+    # ------------------------------------------------------------------------------------------------ YORUM
+    "Y1": dict(
+        baslik="“Sonuçlar hiçbir ülkeye bağlı değil” ifadesi fazla genel",
+        sorun=f"Tez, her seferinde bir ülkeyi dışarıda bırakıp hesabı tekrarlıyor ve “bulgular herhangi bir ülkeye bağlı değildir” sonucuna varıyor. İkinci faz için bu doğru. Birinci faz için değil: on dört tekrarın yalnızca {loo_p5}'sinde yüzde 5 düzeyinde anlamlı. Danimarka ya da Almanya çıkarıldığında ikinci faz farkı büyüyor ({tr(loo['Danimarka']['hesap'][1][0], 2)} ve {tr(loo['Almanya']['hesap'][1][0], 2)}) ve üçüncü fazın işareti eksiden artıya dönüyor.",
+        neden="Tablonun kendisi doğru; yalnızca altındaki yorum tablonun gösterdiğinden daha güçlü.",
+        adimlar=[
+            "5.8.2'nin son cümlesini (L741) değiştirin (aşağıdaki örnek).",
+            "Danimarka ve Almanya'nın etkisini bir cümleyle belirtin: bu iki ülke çıkarıldığında farklar büyüyor; yani sonuçları aşağı çeken ülkeler bunlar.",
+            "“Sapma düzeltmeli güven aralığı on üç tahminde sıfırı içermemektedir” cümlesini çıkarın ya da ilgili aralıkları tabloya ekleyin; şu an tabloda karşılığı yok.",
+        ],
+        ornek=f"İkinci faz farkı on dört tahminin tamamında anlamlıdır ve herhangi bir ülkenin örneklemde bulunmasına bağlı değildir. Birinci faz farkı on dört tahminin tamamında pozitif olmakla birlikte {loo_p5}'sinde yüzde 5 düzeyinde anlamlıdır; dolayısıyla ülke bileşimine duyarlıdır."),
+    "Y2": dict(
+        baslik="Hipotez tablosu, kanıtın söylediğinden fazlasını söylüyor",
+        sorun="Tablo 5.17 beş hipotezden dördünü “desteklenmektedir” diye gösteriyor. Yeniden değerlendirince tablo şöyle olmalı: H1 koşullu (karşılaştırma grubu yok; gösterilen kanıt eğilimi de içeriyor), H2 kısmen (negatif binomda evet, Poisson'da hayır), H3 destekleniyor, H4 desteklenmiyor (tezle aynı), H5 bu hâliyle desteklenmiyor (eğilim stokun içinde gizli).",
+        neden="Jüri en çok bu tabloya bakar. Tablonun temkinli olması, eleştirilerin çoğunu baştan karşılar.",
+        adimlar=[
+            "H1 satırı: kanıtı “tek ETS kuklası pozitif ve anlamlı” olarak değiştirin; sonucu “desteklenmektedir (önce–sonra karşılaştırması olarak)” yapın.",
+            "H2 satırı: sonucu “kısmen desteklenmektedir” yapın; kanıta “Poisson'da çıkarsama yöntemine duyarlı” ekleyin.",
+            "H3 satırı: aynen kalabilir; “fark ikinci fazın ilk yıllarında yoğunlaşmaktadır” notunu ekleyin.",
+            "H4 satırı: aynen kalır.",
+            "H5 satırı: hipotezi yeniden yazın (bkz. T2) ve sonucu “kısmen desteklenmektedir (üçüncü faz hariç)” yapın.",
+            "Tablonun altına not: “Sonuçlar nedensel etki değil, fazlarla ilişkili farklar olarak yorumlanmalıdır.”",
+            "5.3'teki hipotez cümlelerinde “etki yaratmıştır” yerine “daha yüksektir / farklılaşmaktadır” gibi betimleyici fiiller kullanmayı düşünün.",
+        ],
+        ornek=None),
+    "Y3": dict(
+        baslik="Üçüncü faz: “etki yok” demek ile “kanıt bulunamadı” demek aynı şey değil",
+        sorun=f"Tez üçüncü fazda ek bir etki olmadığını söylüyor. Aslında söylenebilecek olan şu: etki olduğuna dair yeterli kanıt bulunamadı. Çünkü belirsizlik çok büyük: negatif binomda üçüncü faz farkı için güven aralığı yaklaşık −%{tr(-100 * (2.718281828 ** bo('m1', N, 'F3', 'pct')[0] - 1), 0)} ile +%{tr(100 * (2.718281828 ** bo('m1', N, 'F3', 'pct')[1] - 1), 0)} arasında; yani hem belirgin bir düşüşle hem belirgin bir artışla bağdaşıyor. Ayrıca “önceki fazların bilgi birikimi düzeyi sürdürüyor” yorumunu zayıflatan bir bulgu var: stok hesaba katılmadığında üçüncü faz boyunca eğim Poisson'da negatif ({tr(ek('m2_stoksuz', P, 'S3'), 3)}).",
+        neden="Birinci jüri raporu tam olarak bu ifade değişikliğini istiyor.",
+        adimlar=[
+            "5.7.1 ve 5.7.2'de “üçüncü fazda ek bir etki bulunmamaktadır” yerine birinci jürinin önerdiği cümleyi kullanın (aşağıdaki örnek).",
+            "Tablo 5.12'de üçüncü faz için güven aralığını yazın; “Anlamsız” sözcüğünü kaldırın.",
+            "5.10.3'ü yeniden yazın: iki olası açıklamayı (etkinin zayıflaması; birikmiş bilginin düzeyi sürdürmesi) yan yana koyun ve bu verinin ikisini ayırt edemediğini belirtin.",
+            "İki tahminci arasındaki farkı (stoksuz modelde negatif binom anlamlı, Poisson anlamsız) ağırlıklandırmayla açıklayın (bkz. C3).",
+        ],
+        ornek="Üçüncü fazda, yeşil patent stoku sabitken ETS öncesine göre ek bir fark bulunduğuna ilişkin yeterli istatistiksel kanıt elde edilememiştir. Tahminin belirsizliği yüksek olduğundan bu sonuç, üçüncü fazın etkisiz olduğu biçiminde yorumlanmamalıdır."),
+    "Y4": dict(
+        baslik="İki kaynak aktarımı doğrulanamadı",
+        sorun="Birincisi: tez “Pakes ve Griliches (1984), Ar-Ge harcamaları ile patent başvuruları arasındaki ortalama gecikmenin yaklaşık 1,6 yıl olduğunu tespit etmiştir” diyor. Kaynağa ilişkin ulaşabildiğim bilgilerde bu rakamı bulamadım; kaynak, patentlerin Ar-Ge'ye hızlı tepki verdiğini söylüyor. İkincisi: tez, Bel ve Joseph'in (2018) “ana modelinin enerji teknolojilerine dayandığını”, kendi çalışmasının ise bütün iklim teknolojilerini kapsadığını söyleyerek bunu bir katkı olarak sunuyor. Makalenin özeti, genel iklim teknolojileri patentlerinin de kullanıldığını ve 28 ülkenin kapsandığını belirtiyor. Tam metinlere erişemediğim için bunlar kesin hüküm değil, kontrol çağrısıdır.",
+        neden="Jüride bu çalışmaları iyi bilen biri varsa, yanlış aktarım güveni zedeler; “katkı” olarak sunulan farkın gerçek olması gerekir.",
+        adimlar=[
+            "Pakes ve Griliches (1984) bölümünü açın, 1,6 yıl rakamını bulun ve sayfa numarasıyla atıf verin. Bulamazsanız cümleyi şöyle değiştirin: “Pakes ve Griliches (1984), patent başvurularının Ar-Ge harcamalarına büyük ölçüde aynı yıl ve izleyen yıl içinde tepki verdiğini göstermiştir.”",
+            "Bel ve Joseph (2018) makalesinin veri ve yöntem bölümünü kontrol edin: hangi patent sınıfları, kaç ülke, hangi tahminci.",
+            "5.10.5'teki katkı cümlelerini buna göre düzeltin. Farkı “kapsam” üzerinden değil, gerçekten farklı olduğunuz noktalar üzerinden kurun: ETS öncesi dönemle karşılaştırma, fazlara göre ayrıştırma, yıllara göre profil.",
+            "“Rassal etkili model yerine sabit etkili model kullanılmıştır” cümlesini, makalede gerçekten rassal etkili model kullanıldığını doğruladıktan sonra tutun.",
+        ],
+        ornek=None),
+    "Y5": dict(
+        baslik="“Yeşil inovasyon” aslında “yeşil patent başvurusu” olarak ölçülüyor",
+        sorun="Tezin başlığı ve sonuçları “yeşil inovasyon”dan söz ediyor; ölçülen şey ise Avrupa Patent Ofisi'ne yapılan iklim teknolojisi patent başvurularının sayısı. Patent başvurusu buluş faaliyetinin bir göstergesidir; buluşun kalitesini, ticari olarak uygulanıp uygulanmadığını ya da çevreye gerçekten fayda sağlayıp sağlamadığını göstermez. Ayrıca son yılların (2018–2020) patent verisi, verinin çekildiği tarihe göre eksik olabilir.",
+        neden="Birinci jüri bunu açıkça istiyor. Düzeltmesi kolay ve tezin iddiasını ölçtüğü şeyle uyumlu hâle getirir.",
+        adimlar=[
+            "5.4.1'e bir paragraf ekleyin: patent başvurusunun inovasyonun hangi yönünü ölçtüğünü ve hangi yönlerini ölçmediğini belirtin.",
+            "Bölüm başlığında ya da ilk paragrafında işlemsel tanımı verin: “Bu çalışmada yeşil inovasyon, EPO'ya yapılan iklim değişikliği azaltım teknolojisi patent başvurularıyla ölçülmektedir.”",
+            "Sonuç ve tartışmada “yeşil inovasyonu artırmıştır” yerine “yeşil patent başvurularını / yeşil patentlemeyi” deyin.",
+            f"Son yılların verisinin eksik olabileceğini bir dipnotla belirtin ve 2018–2020 çıkarıldığında sonuçların zayıflamadığını yazın (ikinci faz farkı {tr(ek('2018_2020_haric', N, 'F2'), 3)}; tam örneklemde {tr(c('m1', N, 'F2'), 3)}).",
+            "“Sınırlılıklar” alt başlığına bir madde olarak ekleyin.",
+        ],
+        ornek="Bu çalışmada yeşil inovasyon, Avrupa Patent Ofisine yapılan iklim değişikliği azaltım teknolojisi patent başvurularıyla ölçülmektedir. Patent başvuruları buluş faaliyetinin göstergesidir; buluşların niteliğini, yayılmasını ve çevresel etkisini doğrudan ölçmez."),
+    "Y6": dict(
+        baslik="Küçük ifade ve tutarlılık hataları",
+        sorun="Tek tek küçük, ama toplamda dikkat çeken ifade hataları var: yanlış birim, tablolar arası uyumsuzluk, yanlış tablo numarası, eksik gerekçe. Hiçbiri sonuçları etkilemiyor; son okumada düzeltilmeli.",
+        neden="İkinci jüri raporu bunların bir kısmını “baskı öncesinde düzeltilmesi gereken teknik hatalar” olarak listelemiş.",
+        adimlar=[
+            "L645: “yıllık artış hızı … yaklaşık yüzde 11,7 yükselmiştir” ifadesini “yıllık artış hızı … yaklaşık 11,7 yüzde puan daha yüksektir” diye düzeltin.",
+            f"L161: “En yüksek yoğunluk Danimarka, Almanya, Finlandiya ve İsveç'te” cümlesine “ETS döneminde” kaydını ekleyin; ETS öncesinde en yüksek değer Lüksemburg'da ({tr(R['veri']['yogunluk_ulke']['Lüksemburg'][0], 2)}).",
+            "L179: “ortalama yıllık büyüme oranı (0,0691)” ifadesini “ortalama yıllık logaritmik büyüme (0,0691)” diye düzeltin.",
+            "Tablo 5.3: başlığın altına “Kontrol değişkenleri ve stok cari dönem (t) değerleriyle verilmiştir; modelde bir dönem gecikmeli girmektedir” notunu ekleyin.",
+            "L173: “altı kontrol değişkeni” ile Tablo 5.5'teki “stok ve beş kontrol değişkeni” ifadesini tutarlı hâle getirin.",
+            "Tablo 5.13: Poisson birinci faz ortak testinin p değerini 0,001 yerine 0,000 yapın.",
+            "L375: “(Tablo 5.5)” atfını “(Tablo 5.6)” olarak düzeltin.",
+            "5.5: tahmin döneminin neden 1997'de başladığını açıkça yazın: reel GSYİH 1995'ten, büyüme oranı 1996'dan itibaren bütün ülkeler için mevcut; bir yıllık gecikmeyle ilk kullanılabilir yıl 1997.",
+            "5.4.4 (L179): eskime oranı (0,15) ve başlangıç stoku formülü için metin içi atıf ekleyin: Noailly ve Smeets (2015), Hall ve Mairesse (1995), Popp (2002).",
+            "L13: “bağımlı değişkenin yalnızca pozitif değerler alabildiği” ifadesini “negatif olmayan” yapın. L49: modelin NB2 biçimi olduğunu adlandırın. L57: “daha etkin tahminler üretmektedir” cümlesine “varyans fonksiyonu doğru tanımlandığında” kaydını ekleyin.",
+        ],
+        ornek=None),
+    # ------------------------------------------------------------------------------------------------ BİÇİM
+    "B1": dict(
+        baslik="Belge biçimi: son nüshada düzeltilmesi gerekenler",
+        sorun="Word dosyasında, basılı nüshada görünecek biçim sorunları var: başlık olarak işaretlenmiş paragraf, boş başlıklar, sarı vurgular, numarasız denklemler, tablolarda küçük boş kareler, aynı sembolün üç farklı anlamda kullanılması.",
+        neden="İçeriği etkilemez, ama içindekiler tablosunu bozar ve özensiz görünür. İki jüri raporu da biçim sorunlarına değinmiş.",
+        adimlar=[
+            "5.2'nin son paragrafı (“Birinci model, AB ETS'nin her bir fazda…”) yanlışlıkla “Başlık 2” stilinde; paragrafı seçip “Normal” stiline alın. Aksi hâlde içindekiler tablosunda görünür.",
+            "İki boş başlık paragrafını silin: Tablo 5.5'ten hemen sonra ve 5.10 başlığından hemen önce.",
+            "“5.8 Sağlamlık Testleri” satırına başlık stili uygulayın.",
+            "Bütün alt başlıkları Word başlık stillerine çevirin; şu an bir kısmı yalnızca kalın yazılmış paragraf (5.1.1–5.1.5, 5.2, 5.4.2 gibi).",
+            "Denklemleri baştan sona numaralandırın; (13)'ten sonrakiler numarasız.",
+            "Sarı vurguları kaldırın: 5.6.3, 5.6.4'ün ilk cümlesi ve VIF paragrafının son cümlesi.",
+            "Tablo 5.11 ve 5.13'teki alt indisleri (t−1) denklem nesnesi yerine düz metin alt indisi olarak yazın (Ctrl ve = tuşları). Küçük boş kareler bundan kaynaklanıyor.",
+            "α sembolünü ayırın: ülke sabit etkisi için c ya da η, aşırı yayılım için α, güven düzeyi için başka bir harf kullanın.",
+            "Aynı değişkene tek ad verin: “dış ticaret hacmi”, “dış ticaret açıklığı” ve “ticaret açıklığı” arasında birini seçin; “Enerji İthalat bağımlılığı” yazımını da tekleştirin.",
+        ],
+        ornek=None),
+    "B2": dict(
+        baslik="Atıf yazımı ve kaynakça biçimi",
+        sorun="Metindeki bütün atıfların kaynakçada karşılığı var; eksik ya da yanlış yıl yok. Sorun yazımda: bazı atıflarda “&” ve “and” kullanılmış, boşluklar eksik; kaynakçada iki kayıt farklı biçimde yazılmış, biri iki kez geçiyor.",
+        neden="İki jüri raporu da belirtmiş. Düzeltmesi yarım saatlik bir iş.",
+        adimlar=[
+            "Metinde “&” ve “and” kullanılan atıfları “ve” ile yazın ve boşlukları düzeltin: “Allison&Waterman”, “Allison andWaterman”, “Efron&Tibshirani”, “Bel&Joseph”, “Pakes&Griliches(1984)”.",
+            "Parantez ve virgül boşluklarını düzeltin: “Hausman ve diğ.(1984)”, “(OECD,2026)”, “sağlamaktadır(Bel ve Joseph,2018)”, “Haščič ve Migotto 2015”.",
+            "Kaynakçada Dechezleprêtre ve diğ. (2011) kaydını diğerleriyle aynı biçime getirin (“&” yerine “ve”, başlıktaki tırnakları kaldırın).",
+            "OECD veri seti kaydını teke indirin; şu an iki yerde, iki farklı yılla (2024 ve 2026) geçiyor. Metindeki “(OECD, 2026)” atfı ile aynı yılı kullanın.",
+            "Stata için kaynakça kaydı ekleyin.",
+            "Wooldridge (1999) kaynakçada var; 5.1.5'te atıf yapın ya da listeden çıkarın.",
+            "Önerilen yeni kaynakları (T5, C1, C3, M4) ekleyin; liste sitede Kaynakça sayfasında.",
+        ],
+        ornek=None),
+}

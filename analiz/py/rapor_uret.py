@@ -7,6 +7,8 @@ import json, shutil, datetime
 import icerik as I
 from icerik import R, E, U, S, tr, pv, pct, c, bo, ek, P, N, ROOT, pt13
 import tez_degerleri as TEZ
+import sade as SD
+for _b in I.BULGULAR: _b["sade"] = SD.SADE[_b["id"]]
 
 DOCS = ROOT / "docs"; (DOCS / "data").mkdir(parents=True, exist_ok=True); (DOCS / "raporlar").mkdir(parents=True, exist_ok=True)
 AD = {"F1": "Faz 1 (2005–2007)", "F2": "Faz 2 (2008–2012)", "F3": "Faz 3 (2013–2020)", "lnK1": "ln(1+K₍t−1₎)", "gdp_growth_l1": "GSYİH büyümesi₍t−1₎",
@@ -202,7 +204,7 @@ tablo(["", "Hipotez", "Tezin sonucu", "Yeniden değerlendirme", "Gerekçe"], [[h
 
 # ---- 5
 w("## 5. Bulgular"); w("")
-w("Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Nihai_Model_19112026_metin.md` dosyasına göre), hangi incelemede ortaya çıktığı, tespit, sayısal kanıt ve öneri. Etkileşimli, süzülebilir sürümü sitededir.")
+w("Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Nihai_Model_19112026_metin.md` dosyasına göre), hangi incelemede ortaya çıktığı, tespit, sayısal kanıt, öneri ve **adım adım düzeltme** (tezde hangi cümlenin, tablonun nasıl değişeceği; varsa teze yazılabilecek örnek metin). Aynı bulguların teknik olmayan okur için yazılmış sürümü ayrı bir belgededir: `analiz/Sade_Anlatim_ve_Duzeltme_Rehberi.md`. Etkileşimli, süzülebilir sürümü sitededir (sade / teknik anlatım seçeneğiyle).")
 w("")
 for kat in ["Tanımlama", "Çıkarsama", "Model", "Yorum", "Biçim", "Kaynakça"]:
     bs = [b for b in I.BULGULAR if b["kat"] == kat]
@@ -214,6 +216,11 @@ for kat in ["Tanımlama", "Çıkarsama", "Model", "Yorum", "Biçim", "Kaynakça"
         w(f"**Tespit.** {b['tespit']}"); w("")
         w(f"**Kanıt.** {b['kanit']}"); w("")
         w(f"**Öneri.** {b['oneri']}"); w("")
+        w("**Adım adım düzeltme.**"); w("")
+        for i_, a_ in enumerate(b["sade"]["adimlar"], 1): w(f"{i_}. {a_}")
+        w("")
+        if b["sade"]["ornek"]:
+            w("**Teze yazılabilecek örnek metin.**"); w(""); w(f"> {b['sade']['ornek']}"); w("")
 w("### 5.7 Doğrulanan (sorun bulunmayan) noktalar"); w("")
 for a, b_ in I.DOGRULANAN: w(f"- **{a}.** {b_}")
 w("")
@@ -351,6 +358,7 @@ tablo(["Dosya", "İçerik"], [
     ["`veri/AB14_nihai_veri.xlsx`", "Ham panel, stok sayfası, kaynaklar"],
     ["`dokumanlar/`", "Tez bölümü (docx + metin), şekiller, iki jüri raporu, bağımsız hakem raporu"],
     ["`analiz/Juri2_Raporu_Degerlendirmesi.md`", "İkinci jüri raporunun madde madde değerlendirmesi"],
+    ["`analiz/Sade_Anlatim_ve_Duzeltme_Rehberi.md`", "Bulguların teknik olmayan okur için sade anlatımı ve adım adım düzeltme rehberi (`analiz/py/sade.py`)"],
     ["`analiz/py/juri2.py`", "İkinci jürinin önerdiği sınamalar → `analiz/cikti/juri2.json`"],
     ["`analiz/py/tezlib.py`", "Veri hazırlama, Poisson IRLS, NB2 en çok olabilirlik, kümelenmiş kovaryanslar, bootstrap yardımcıları"],
     ["`analiz/py/yeniden_inceleme.py`", "Tüm tabloların yeniden üretimi ve ek analizler → `analiz/cikti/sonuclar.json`"],
@@ -372,19 +380,67 @@ except Exception as ex:
     raise
 (ROOT / "analiz" / "Kapsamli_Yeniden_Inceleme.md").write_text(rapor, encoding="utf8")
 
+# ---------------------------------------------------------------- sade anlatım ve düzeltme rehberi
+G = []
+g = G.append
+ONEM_SIRA = ["kritik", "önemli", "orta", "küçük"]
+g("# Sade Anlatım ve Düzeltme Rehberi"); g("")
+g(f"**Konu:** Doktora tezi, Beşinci Bölüm (AB ETS ve yeşil inovasyon) · **Tarih:** {bugun}"); g("")
+g("> Bu belge, kapsamlı yeniden inceleme raporundaki 36 bulgunun teknik olmayan okur için yazılmış sürümüdür. Her bulgu üç soruya cevap verir: **Sorun ne? Neden önemli? Ne yapılmalı?** Düzeltme adımları tezde hangi cümlenin ya da tablonun nasıl değişeceğini sırayla söyler; uygun yerlerde teze doğrudan yazılabilecek örnek metin vardır. Sayılar hesap çıktılarından otomatik çekilir. Teknik gerekçe ve kanıt için ana rapora bakın: `analiz/Kapsamli_Yeniden_Inceleme.md`, Kısım 5 (bulgu numaraları aynıdır).")
+g("")
+g("## Bu belge nasıl okunur?"); g("")
+g("- **Önem dereceleri.** *Kritik:* tezin ana iddiasını etkiler, savunmadan önce mutlaka ele alınmalı. *Önemli:* bir hipotezin ya da ana tablonun yorumunu değiştirir. *Orta:* tutarlılık ve gerekçe sorunu; düzeltmesi kolaydır. *Küçük:* ifade ve biçim.")
+g("- **Satır numaraları (L…)** tezin düz metin dosyasına göredir: `dokumanlar/Nihai_Model_19112026_metin.md`.")
+g("- **“Hazır” denilen sayılar ve tablolar** ana raporda ve sitede bulunur; yeniden hesap gerekmez.")
+g("- **“Yeni veri gerekir” denilen adımlar** bu inceleme sırasında yapılamadı; veri sağlanırsa yapılabilir.")
+g("- Örnek metinler öneridir; tezin üslubuna göre uyarlanmalıdır.")
+g("")
+g("## Genel tablo"); g("")
+g(f"Tezdeki hesaplar doğru: karşılaştırılan {OK} sayının {OK}'ü yeniden üretilebildi. Sorunlar hesapta değil, sonuçların nasıl yorumlandığında ve yöntemin nasıl gerekçelendirildiğinde. Bulguların dağılımı: " + ", ".join(f"{sum(1 for b in I.BULGULAR if b['onem'] == o)} {o}" for o in ONEM_SIRA) + ".")
+g("")
+g("### Önce bunlar (kritik bulgular)"); g("")
+for b in I.BULGULAR:
+    if b["onem"] == "kritik": g(f"- **{b['id']}** · {b['sade']['baslik']}")
+g("")
+g("### Bütün bulgular"); g("")
+G.append("| No | Önem | Konu | Tezdeki yer |"); G.append("|---|---|---|---|")
+for b in sorted(I.BULGULAR, key=lambda x: ONEM_SIRA.index(x["onem"])): G.append(f"| {b['id']} | {b['onem']} | {b['sade']['baslik']} | {b['yer']} |")
+g("")
+g("## Terimler sözlüğü"); g("")
+for a_, t_ in SD.SOZLUK: g(f"- **{a_}.** {t_}")
+g("")
+KAT_AD = {"Tanımlama": "ETS'nin etkisi gerçekten ayırt edilebiliyor mu? (tanımlama)", "Çıkarsama": "Sonuçlar tesadüf olabilir mi? (çıkarsama)", "Model": "Modelin kuruluşu", "Yorum": "Sonuçların yorumu", "Biçim": "Biçim", "Kaynakça": "Kaynakça"}
+for kat in ["Tanımlama", "Çıkarsama", "Model", "Yorum", "Biçim", "Kaynakça"]:
+    bs = [b for b in I.BULGULAR if b["kat"] == kat]
+    if not bs: continue
+    g(f"## {KAT_AD[kat]}"); g("")
+    for b in bs:
+        sd = b["sade"]
+        g(f"### {b['id']} · {sd['baslik']}"); g("")
+        g(f"**Önem:** {b['onem']} · **Tezdeki yer:** {b['yer']}"); g("")
+        g(f"**Sorun ne?** {sd['sorun']}"); g("")
+        g(f"**Neden önemli?** {sd['neden']}"); g("")
+        g("**Ne yapılmalı?**"); g("")
+        for i_, a_ in enumerate(sd["adimlar"], 1): g(f"{i_}. {a_}")
+        g("")
+        if sd["ornek"]:
+            g("**Teze yazılabilecek örnek metin:**"); g(""); g(f"> {sd['ornek']}"); g("")
+rehber = "\n".join(G)
+(ROOT / "analiz" / "Sade_Anlatim_ve_Duzeltme_Rehberi.md").write_text(rehber, encoding="utf8")
+
 # ---------------------------------------------------------------- site verisi
 import juri2_rapor
 J2W = juri2_rapor.uret(bugun)
 for f in ["sonuclar.json", "panel.json", "spec_egrisi.json", "bootstrap_m1.json", "birim_kok.json", "ek_dogrulama.json", "simulasyon.json", "simulasyon_p.json", "juri2.json"]:
     if (I.CK / f).exists(): shutil.copy(I.CK / f, DOCS / "data" / f)
 json.dump({"bulgular": I.BULGULAR, "dogrulanan": I.DOGRULANAN, "duzeltmeler": I.DUZELTMELER, "hipotez": I.HIPOTEZ, "juri": I.JURI, "juri2": I.JURI2, "juri_karsilastirma": I.JURI_KARSILASTIRMA, "juri2_cevap": I.JURI2_CEVAP, "bolumler": I.BOLUMLER, "kaynakca": I.KAYNAKCA, "atiflar": ATIFLAR, "n_kayit": N_KAYIT,
-           "yapilacak": I.YAPILACAK, "oncelik": I.ONCELIK,
+           "yapilacak": I.YAPILACAK, "oncelik": I.ONCELIK, "sozluk": SD.SOZLUK,
            "ozet": {"uyum": [OK, TOT], "se_fark": se_fark, "se_med": se_med, "tarih": bugun, "sim_yorum": SIMY}},
           open(DOCS / "data" / "icerik.json", "w"), ensure_ascii=False, default=float)
 for src, dst in [(ROOT / "analiz" / "Kapsamli_Yeniden_Inceleme.md", "Kapsamli_Yeniden_Inceleme.md"), (ROOT / "analiz" / "arsiv" / "01_Ilk_Inceleme_ve_Juri_Analizi.md", "01_Ilk_Inceleme_ve_Juri_Analizi.md"),
                  (ROOT / "dokumanlar" / "Juri1_Degerlendirme_Raporu.md", "Juri1_Degerlendirme_Raporu.md"), (ROOT / "dokumanlar" / "Juri2_Degerlendirme_Raporu.md", "Juri2_Degerlendirme_Raporu.md"),
-                 (ROOT / "analiz" / "Juri2_Raporu_Degerlendirmesi.md", "Juri2_Raporu_Degerlendirmesi.md"), (ROOT / "dokumanlar" / "Bagimsiz_Hakem_Raporu.md", "Bagimsiz_Hakem_Raporu.md"),
+                 (ROOT / "analiz" / "Juri2_Raporu_Degerlendirmesi.md", "Juri2_Raporu_Degerlendirmesi.md"), (ROOT / "analiz" / "Sade_Anlatim_ve_Duzeltme_Rehberi.md", "Sade_Anlatim_ve_Duzeltme_Rehberi.md"), (ROOT / "dokumanlar" / "Bagimsiz_Hakem_Raporu.md", "Bagimsiz_Hakem_Raporu.md"),
                  (ROOT / "dokumanlar" / "Nihai_Model_19112026_metin.md", "Tez_Bolum5_metin.md")]:
     shutil.copy(src, DOCS / "raporlar" / dst)
 print("atıf:", len(ATIFLAR), "kaynakça kaydı:", N_KAYIT, "eşleşmeyen:", [a["atif"] + " " + a["yil"] for a in ATIFLAR if not a["kaynakcada"]], "| jüri2 raporu:", J2W, "kelime")
-print("uyum:", OK, "/", TOT, " | SH en büyük göreli fark:", round(se_fark, 3), " | rapor:", len(rapor.split()), "kelime")
+print("uyum:", OK, "/", TOT, " | SH en büyük göreli fark:", round(se_fark, 3), " | rapor:", len(rapor.split()), "kelime | rehber:", len(rehber.split()), "kelime")

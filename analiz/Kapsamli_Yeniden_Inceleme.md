@@ -140,7 +140,7 @@
 
 ## 5. Bulgular
 
-Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Nihai_Model_19112026_metin.md` dosyasına göre), hangi incelemede ortaya çıktığı, tespit, sayısal kanıt ve öneri. Etkileşimli, süzülebilir sürümü sitededir.
+Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Nihai_Model_19112026_metin.md` dosyasına göre), hangi incelemede ortaya çıktığı, tespit, sayısal kanıt, öneri ve **adım adım düzeltme** (tezde hangi cümlenin, tablonun nasıl değişeceği; varsa teze yazılabilecek örnek metin). Aynı bulguların teknik olmayan okur için yazılmış sürümü ayrı bir belgededir: `analiz/Sade_Anlatim_ve_Duzeltme_Rehberi.md`. Etkileşimli, süzülebilir sürümü sitededir (sade / teknik anlatım seçeneğiyle).
 
 ### 5.1 Tanımlama
 
@@ -154,6 +154,19 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** (1) Bölüme “Sınırlılıklar” alt başlığı ekleyin ve nedensel dili daraltın: “AB ETS'nin etkisi” yerine “AB ETS dönemleriyle ilişkili fark”. (2) Ülkeler arası değişen bir maruziyet ölçüsüyle etkileşim tasarımı kurun: Faz 1–2'de üst sınırlar Ulusal Tahsis Planlarıyla (NAP) ülke bazında belirlendi; NAP sıkılığı ya da ETS kapsamındaki emisyon payı × faz etkileşimi, yıl sabit etkilerinin eklenmesine izin verir. (3) İkinci jürinin önerdiği plasebo sonuç sınamasını yapın: aynı modeli yeşil olmayan EPO başvurularıyla tahmin edin (ya da bağımlı değişken olarak yeşil patentlerin toplam EPO başvurularındaki payını kullanın); ortak patentleme eğilimlerini ayıklar. (4) Enerji fiyatı kontrolü ekleyin.
 
+**Adım adım düzeltme.**
+
+1. Bölümün sonuna “Sınırlılıklar” alt başlığı ekleyin. İlk maddesi bu olsun: karşılaştırma grubu yok; aynı döneme denk gelen olayları (Kyoto 2008–2012, 2004–2008 enerji fiyatı artışı, 2009 yenilenebilir enerji direktifi, küresel temiz teknoloji patent dalgası) tek tek sayın.
+2. Kesin nedensellik bildiren cümleleri yumuşatın. “AB ETS yeşil patent yoğunluğunu artırmıştır” yerine “AB ETS'nin ilk iki fazına denk gelen dönemde yeşil patent yoğunluğu daha yüksektir” yazın. Öncelikli yerler: 5.2'nin son paragrafı (L127), 5.6.3 (L351), 5.8.3'ün son cümlesi (L761) ve 5.10'un tamamı.
+3. L351'deki “ortak zaman değişimi, yeşil patent stoku ve kontrol değişkenleri aracılığıyla kontrol edilmektedir” cümlesini “kısmen kontrol edilmektedir; yıl sabit etkileri kullanılamadığı için ortak şoklar tümüyle ayrıştırılamamaktadır” diye değiştirin.
+4. 5.10.3'te Faz 3 düşüşünü küresel eğilime bağlarken, Faz 1–2 yükselişinin de küresel yükselişten etkilenmiş olabileceğini aynı paragrafta kabul edin.
+5. Ek analiz (yeni veri gerekir, en güçlü çözüm): ülkeden ülkeye değişen bir ETS ölçüsü bulun (örneğin ülkenin emisyonlarının ne kadarının ETS kapsamında olduğu ya da Ulusal Tahsis Planının sıkılığı) ve faz kuklalarıyla çarparak modele ekleyin. Böylece yıl etkileri de eklenebilir ve ortak şoklar temizlenir.
+6. İkinci jürinin önerisi (yeni veri gerekir): aynı modeli yeşil olmayan EPO patent başvurularıyla tahmin edin. Orada da aynı artış çıkarsa, artış ETS'ye özgü değildir; çıkmazsa iddianız güçlenir.
+
+**Teze yazılabilecek örnek metin.**
+
+> Bu çalışmanın tasarımı bir önce–sonra karşılaştırmasıdır. Örneklemdeki bütün ülkeler AB ETS'ye aynı tarihte dâhil olduğundan, tahmin edilen faz farkları aynı dönemde gerçekleşen diğer ortak gelişmelerin (Kyoto Protokolü'nün birinci taahhüt dönemi, enerji fiyatları, yenilenebilir enerji politikaları) etkisini de içerebilir. Bu nedenle bulgular nedensel etki olarak değil, AB ETS fazlarıyla ilişkili farklar olarak yorumlanmalıdır.
+
 #### T2 · “ETS öncesi eğilim yok” bulgusu (H5) stok değişkeninin yan ürünü
 
 **Önem:** kritik · **Yer:** 5.7.2 (L645), Tablo 5.13, Tablo 5.17 H5 · **Kaynak:** İlk inceleme, Bağımsız hakem, Yeniden inceleme · **Durum:** doğrulandı
@@ -163,6 +176,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Ülke-içi korelasyon: ln(1+K₍t−1₎) ile zaman 0,95. Model 2'nin (tezde raporlanmayan) ülke-içi VIF değerleri: eğilim 42,8, Faz 3 düzey 25,4, stok 12,0. Eğilim katsayısı: stoklu Model 2'de −0,0225 (Poisson) / −0,0068 (NB); stoksuz Model 2'de 0,0354 / 0,0486 (bootstrap p = 0,007 / <0,001); yalnız 1997–2004 örnekleminde stoklu 0,057 / 0,059, stoksuz 0,077 / 0,073. Stoksuz yıl etkilerinde 1997 katsayısı −0,28 olup 2004'e kadar düzenli yükseliyor. Şekil 5.5'te ETS öncesi yedi katsayının tamamı pozitif ve sıfıra doğru azalıyor; bu “istikrarlı seyir” (L663) değil.
 
 **Öneri.** Stoksuz Model 2'yi tabloya ekleyin. H5'i “stok kontrol edildiğinde” diye sınırlayın ya da kaldırın; eğilimden bağımsızlık iddiasını stoksuz ITS'deki Faz 1 eğim ve Faz 2 düzey katsayılarına dayandırın (bunlar stoksuz da anlamlı). Model 2 için de VIF raporlayın.
+
+**Adım adım düzeltme.**
+
+1. Tablo 5.13'e (ya da sağlamlık tablosu 5.14'e) Model 2'nin stoksuz hâlini ekleyin. Negatif binom sayıları hazır: ETS öncesi eğilim 0,049, Faz 1 eğimi 0,117, Faz 2 düzeyi 0,369, Faz 3 eğimi −0,019.
+2. 5.7.2'nin ilk bulgusunu (L645) yeniden yazın: “eğilim saptanmamıştır” yerine “stok kontrol edildiğinde saptanmamıştır; stok çıkarıldığında anlamlı bir artış eğilimi görülmektedir”.
+3. H5'i (5.3) yeniden yazın: “Birinci fazdaki hızlanma ve ikinci fazın başındaki düzey artışı, ETS öncesi eğilim hesaba katıldığında da ortaya çıkmaktadır.” Tablo 5.17'de sonucu “kısmen desteklenmektedir (üçüncü faz hariç)” yapın.
+4. 5.7.3'teki (L663) “ETS'nin başlangıcından önce yeşil patent yoğunluğu istikrarlı bir seyir izlemiştir” cümlesini düzeltin: ETS öncesi yıl katsayılarının yedisi de pozitif ve 2004'e doğru azalıyor; bu “istikrarlı” değil, “stok kontrol edildiğinde hafif azalan” bir seyir.
+5. Tablo 5.6'ya Model 2'nin çoklu bağlantı ölçülerini (VIF) de ekleyin: eğilim 42,8, Faz 3 düzeyi 25,4, stok 12,0. Bu değerler, modelin eğilim ile stoku birbirinden ayırmakta zorlandığını gösterir.
+
+**Teze yazılabilecek örnek metin.**
+
+> Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde 5,0 düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı her iki tanımda da anlamlıdır.
 
 #### T3 · H1'in kanıtı (“toplam etki %43,8 / %101,2 / %88,8”) eğilimle kirlenmiş
 
@@ -174,6 +199,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** H1'i “ilk iki fazda” diye daraltın ya da ana modelde tek bir ETS kuklasıyla (2005–2020 = 1) doğrudan sınayın: katsayı 0,248 (Poisson) / 0,255 (NB), bootstrap SH 0,034 / 0,050. “Toplam etki” yüzdelerini H1 kanıtı olarak kullanmayın; kullanılacaksa eğilimli stoksuz modeli raporlayın.
 
+**Adım adım düzeltme.**
+
+1. Tablo 5.17'de H1'in kanıtını değiştirin. En basit yol: ana modelde üç faz kuklası yerine tek bir “ETS dönemi” kuklası (2005–2020) kullanın. Sonuç hazır: katsayı 0,255 (yaklaşık %29,1), negatif binom; Poisson'da 0,248.
+2. “Toplam etki” rakamlarını korumak isterseniz stoksuz modele doğrusal eğilim ekleyin ve o sonucu verin: Faz 1 0,188, Faz 2 0,420, Faz 3 0,178 (Faz 3 anlamsız).
+3. 5.8.1 (a) paragrafındaki (L695) “üçüncü fazda toplam etkinin güçlü ve anlamlı olması” cümlesini çıkarın ya da “eğilim hesaba katılmadığında” kaydını ekleyin. Aynı düzeltme 5.10.3 için de geçerli.
+4. H1'i “AB ETS'nin ilk iki fazında” diye daraltmayı düşünün; kanıt bunu destekliyor, üçüncü fazı desteklemiyor.
+5. Yüzde 44 / 101 / 89 rakamlarını özet, sonuç ve varsa makale taslağında kullanmayın.
+
+**Teze yazılabilecek örnek metin.**
+
+> AB ETS dönemi (2005–2020), yeşil patent stoku ve kontrol değişkenleri sabitken, ETS öncesi döneme göre yaklaşık yüzde 29,1 daha yüksek yeşil patent yoğunluğuyla ilişkilidir. Bu fark ilk iki fazda yoğunlaşmakta, üçüncü fazda stok sabitken ek bir fark görülmemektedir.
+
 #### T4 · “Doğrudan etki / stokla taşınan etki” ayrıştırması tanımlı değil
 
 **Önem:** önemli · **Yer:** 5.6.4 (L371), 5.8.1, 5.10.3–5.10.4 · **Kaynak:** 1. jüri raporu, Bağımsız hakem, İlk inceleme, Yeniden inceleme, 2. jüri raporu · **Durum:** doğrulandı
@@ -183,6 +220,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Ülke-içi korelasyonlar: Faz 3 kuklası ile stok 0,74, yenilenebilir enerji payı ile 0,79; Faz 3 VIF 11,83. Tez (L403) ortalama VIF'i (4,08) 10 eşiğiyle karşılaştırıyor; ortalama VIF için böyle bir eşik yorumu yok.
 
 **Öneri.** “Nedensel aracılık” dilinden vazgeçin; stoklu ve stoksuz tahminleri “stok koşullu” ve “stok koşulsuz” ilişkiler olarak adlandırın. Ar-Ge harcaması/GSYİH (Eurostat rd_e_gerdtot) gibi gerçek bir girdi kontrolü eklemeyi deneyin.
+
+**Adım adım düzeltme.**
+
+1. Terimleri değiştirin: “doğrudan etki” yerine “stok sabitken gözlenen fark”, “toplam etki” yerine “stok hesaba katılmadan gözlenen fark”. Bu değişiklik 5.6.4, 5.8.1, 5.10.3 ve 5.10.4'te tutarlı yapılmalı.
+2. 5.10.3–5.10.4'teki kesin cümleleri yumuşatın: “AB ETS, yarattığı bilgi birikimi aracılığıyla sonraki dönemlerde de yeşil inovasyonu artırmıştır” yerine “bulgular böyle bir kanalla tutarlıdır; ancak stok ETS'den bağımsız olarak da büyüdüğünden bu kanal ayrıştırılamamaktadır”.
+3. 5.4.4 (L179) ve 5.10.4'teki (L807) “stok, ülkelerin Ar-Ge kapasitesini kontrol etmektedir” ifadesini “stok, birikmiş patent çıktısını ölçmekte, Ar-Ge kapasitesinin dolaylı bir göstergesi olarak kullanılmaktadır” diye düzeltin.
+4. Mümkünse gerçek bir girdi değişkeni ekleyin: Ar-Ge harcamalarının GSYİH'ye oranı (Eurostat). Bu, jürinin “Ar-Ge harcaması neden yok?” sorusunu da karşılar.
+5. 5.6.4'teki (L403) “varyans şişirme faktörlerinin ortalaması 4,08'dir ve 10 eşiğinin altındadır” cümlesini çıkarın; bu eşik tek tek değişkenler içindir, ortalama için bir anlamı yoktur. Üçüncü faz kuklasının değeri (11,83) zaten eşiği aşıyor.
+
+**Teze yazılabilecek örnek metin.**
+
+> Stoklu ve stoksuz tahminler arasındaki fark, AB ETS'nin bilgi birikimi yoluyla taşınan etkisiyle tutarlıdır; ancak yeşil patent stoku ETS'den bağımsız nedenlerle de büyüdüğünden, bu fark nedensel bir aracılık etkisi olarak yorumlanmamalıdır.
 
 #### T5 · Sabit etki + gecikmeli stok: Model 1'in faz katsayıları yukarı yanlı ve ön-örneklem tahmincisinde kayboluyor; Model 2'ninkiler korunuyor
 
@@ -194,6 +243,19 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** İki tanımı birlikte raporlayın ve bulguları aralık olarak sunun (sabit etkili tahmin üst, ön-örneklem ortalamalı tahmin alt uç); yanlılığı benzetimle raporlayıp katsayıları buna göre yorumlayın; 5.6.4'teki Nickell paragrafını yeniden yazın. Blundell-Griffith-Windmeijer (2002) ve Blundell-Griffith-Van Reenen (1999) atıflarıyla tartışın. Bu, jürinin “stok kontrol mü aracı mı” sorusunun ekonometrik karşılığıdır.
 
+**Adım adım düzeltme.**
+
+1. 5.6.4'teki Nickell paragrafını (L373) yeniden yazın. “Sapma ihmal edilebilir” savını çıkarın; yerine benzetim sonucunu yazın (aşağıdaki örnek cümle).
+2. Sağlamlık bölümüne küçük bir tablo ekleyin: “Gerçek etki sıfırken ortalama tahmin”. Birinci model: 0,032 / 0,046 / 0,065; ikinci modelde Faz 1 eğimi −0,003, Faz 2 düzeyi −0,006. Sayılar ve kod hazır (analiz/py/simulasyon_p.py).
+3. İkinci jürinin istediği ön-örneklem ortalaması tahminini Tablo 5.14'e ekleyin: birinci modelde Faz 2 0,017 (anlamsız); ikinci modelde Faz 1 eğimi 0,111, Faz 2 düzeyi 0,380 (ikisi de anlamlı).
+4. Tablo 5.11'in altına not düşün: “Stok değişkeni bağımlı değişkenin geçmişinden türetildiği için bu katsayılar yukarı yanlı olabilir; üst sınır olarak okunmalıdır.”
+5. 5.7 ve 5.10'da ana mesajı ikinci modelin bulgularına dayandırın: “birinci faz boyunca hızlanma, ikinci fazın başında düzey artışı”.
+6. Kaynakçaya ekleyin ve 5.6.4'te atıf yapın: Blundell, Griffith ve Windmeijer (2002); Blundell, Griffith ve Van Reenen (1999).
+
+**Teze yazılabilecek örnek metin.**
+
+> Stok değişkeni bağımlı değişkenin geçmiş değerlerinden türetildiğinden kesin dışsallık varsayımı sağlanmamaktadır. Benzetim sonuçları, gerçek etki sıfırken dahi birinci modelin faz katsayılarının ortalama olarak 0,03–0,06 yukarı yanlı tahmin edildiğini göstermektedir. Bu nedenle birinci modelin katsayıları üst sınır olarak yorumlanmış, temel çıkarımlar yanlılığın ihmal edilebilir düzeyde kaldığı ikinci modele dayandırılmıştır.
+
 #### T6 · Plasebo kırılma testleri seçici raporlanmış ve gücü düşük
 
 **Önem:** önemli · **Yer:** 5.8.3, Tablo 5.16 (L745–761) · **Kaynak:** İlk inceleme, Bağımsız hakem, Yeniden inceleme · **Durum:** doğrulandı
@@ -203,6 +265,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** 2003 sahte kırılması: Poisson χ²(2) = 9,51 (p = 0,009), NB 5,45 (p = 0,066); bootstrap kovaryansıyla p = 0,129 / 0,128 (reddedilmiyor). 2003 sonrası eğim katsayısı negatif (−0,077): 2003–2004 eğilimin altında. Güç: plasebo eğim teriminin SH'si 0,028–0,070; %80 güçle saptanabilir en küçük eğim ≈ 0,08–0,20, oysa ana bulgu olan Faz 1 eğimi 0,087–0,111. Tezde raporlanan dört χ² değeri birebir yeniden üretildi.
 
 **Öneri.** 1999–2003'ün tamamını raporlayın; plasebo ve ana tahminlerde aynı çıkarsama yöntemini kullanın; sonucu “kırılma kanıtı bulunamamıştır, ancak testin gücü sınırlıdır” diye yazın. 2003 sonucunu beklenti etkisi bağlamında tartışın.
+
+**Adım adım düzeltme.**
+
+1. Tablo 5.16'ya 1999 ve 2003 satırlarını ekleyin. 2003 için Poisson ki-kare 9,51 (p = 0,009), negatif binom 5,45 (p = 0,066).
+2. Tabloya bootstrap ile hesaplanan p değerlerini de ekleyin; bu yöntemle hiçbir yıl anlamlı çıkmıyor (2003 için p = 0,129). İki sütunu yan yana verin.
+3. 2003 sonucunu metinde açıklayın: 2003–2004 yıllarında yoğunluk önceki eğilimin altında kalmıştır; ETS Direktifi Ekim 2003'te kabul edildiğinden bu, firmaların bekleme davranışıyla ilişkili olabilir. Bunu bir olasılık olarak yazın, kesin açıklama olarak değil.
+4. 5.8.3'ün son cümlesini (L761) değiştirin: “rastlantısal kırılmalar olmadığını göstermektedir” çok güçlü. Aşağıdaki örnek cümleyi kullanın.
+5. Testin gücünün sınırlı olduğunu bir cümleyle belirtin: sekiz yıl, 14 ülke.
+
+**Teze yazılabilecek örnek metin.**
+
+> ETS öncesi dönemde 1999–2002 yılları için tanımlanan sahte kırılmalarda anlamlı bir sapma bulunmamıştır. 2003 yılı için kümelenmiş standart hatalarla anlamlı, bootstrap ile anlamsız bir sapma görülmektedir; bu sapma, Direktif'in 2003'te kabul edilmesinin ardından oluşan bekleme davranışıyla ilişkili olabilir. Sekiz yıllık dönemde testin gücü sınırlı olduğundan sonuçlar kesin kanıt olarak yorumlanmamalıdır.
 
 #### T7 · Faz 2 etkisi “faz boyunca korunuyor” iddiası tezin kendi yıl etkileriyle çelişiyor
 
@@ -214,6 +288,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** “Korunmaktadır” ifadesini düzeltin: etki 2008–2010'da yoğunlaşıyor, sonra zayıflıyor. Tartışmada alternatif açıklamaları (2008 enerji fiyatı zirvesi, kriz öncesi Ar-Ge dalgası, Kyoto dönemi başlangıcı, kriz sonrası Ar-Ge kısıntısı) ele alın.
 
+**Adım adım düzeltme.**
+
+1. 5.7.2'deki (L647 ve L651) “faz boyunca korunmaktadır” ifadesini değiştirin: “ikinci fazın ilk yıllarında (2008–2010) yoğunlaşmakta, fazın sonuna doğru zayıflamaktadır”.
+2. Sağlamlık tablosuna ikinci fazı ikiye bölen tahmini ekleyin (hazır): 2008–2009 için 0,290 (anlamlı), 2010–2012 için 0,187 (yüzde 5 düzeyinde anlamsız), negatif binom.
+3. 5.10.2'nin başlığını ve içeriğini yeniden yazın. “Kurumsal Kesinlik ve En Güçlü Etki” yerine “İkinci Fazın İlk Yıllarındaki Artış” gibi nötr bir başlık kullanın.
+4. Aynı alt bölümde olası açıklamaları yan yana sayın: 2008 enerji fiyatı zirvesi, kriz öncesi Ar-Ge yatırımlarının sonuçlanması, Kyoto taahhüt döneminin başlaması, üst sınırın sıkılaştırılması; ardından 2010 sonrasındaki zayıflama için kriz sonrası Ar-Ge kısıntısı ve karbon fiyatındaki düşüş.
+5. L795'teki “ikinci faz etkisinin 2008 finans krizi ve ardından gelen fiyat düşüşüne karşın sürdüğünü göstermektedir” cümlesini çıkarın; veri sürmediğini gösteriyor.
+
+**Teze yazılabilecek örnek metin.**
+
+> İkinci fazın başında ETS öncesi eğilime göre belirgin bir düzey farkı oluşmuş, bu fark 2009'da en yüksek değerine ulaştıktan sonra fazın sonuna doğru azalmıştır. Dolayısıyla artış fazın tamamına değil, ilk yıllarına aittir.
+
 #### T8 · Örneklem gerekçesi hatalı: Birleşik Krallık 2020 sonuna kadar AB ETS içindeydi
 
 **Önem:** önemli · **Yer:** 5.5 (L193) · **Kaynak:** 1. jüri raporu, Bağımsız hakem, İlk inceleme · **Durum:** doğrulandı
@@ -223,6 +309,17 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Olgu web kaynaklarından teyit edildi (ICAP; Avrupa Komisyonu duyurusu). Veri setinde Birleşik Krallık yok; bu yüzden dahil edildiğinde sonuçların değişip değişmediği sınanamadı.
 
 **Öneri.** Gerekçeyi düzeltin. Birleşik Krallık verisini (OECD, Eurostat/WDI) ekleyip 15 ülkeli tahmini sağlamlık testi olarak raporlayın. 2004 sonrası üyeler için dışlama ölçütünü yazın (ETS öncesi dönemde AB üyesi olmama, erken yıllarda sıfıra yakın EPO başvurusu vb.).
+
+**Adım adım düzeltme.**
+
+1. 5.5'teki (L193) “Birleşik Krallık 2020 tarihinde AB üyeliğinden çıktığı için analize dahil edilmemiştir” cümlesini çıkarın.
+2. En iyi çözüm: Birleşik Krallık'ın verisini (patent: OECD; diğerleri: Eurostat ve Dünya Bankası) ekleyip 15 ülkeyle bir sağlamlık tahmini yapın ve Tablo 5.14'e bir satır olarak koyun. Veriyi bana verirseniz tahmini ben yapabilirim.
+3. Veri eklenemiyorsa gerçek gerekçeyi yazın (örneğin belirli serilerin Birleşik Krallık için güncellenmemesi). Gerekçe doğru değilse yazmayın; “ana örnekleme alınmamıştır, bu bir sınırlılıktır” demek daha iyidir.
+4. Örneklemin ölçütünü bir cümleyle belirtin: “ETS öncesi referans dönemin (1997–2004) tamamında AB üyesi olan ülkeler”. Bu, 2004 ve sonrasında katılan ülkelerin neden dışarıda kaldığını da açıklar.
+
+**Teze yazılabilecek örnek metin.**
+
+> Örneklem, ETS öncesi referans dönemin tamamında AB üyesi olan on beş ülkeden on dördünü kapsamaktadır. Birleşik Krallık 2020 sonuna kadar AB ETS kapsamında kalmış olmakla birlikte ana örnekleme alınmamış; dâhil edildiği tahmin sağlamlık testi olarak sunulmuştur.
 
 #### T9 · Referans dönem ve beklenti etkisi: 2003–2004 ayrıldığında Poisson Faz 1 anlamsızlaşıyor
 
@@ -234,6 +331,16 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Referans dönem seçimine duyarlılığı raporlayın; Faz 1 bulgusunu buna göre ihtiyatla yorumlayın.
 
+**Adım adım düzeltme.**
+
+1. Sağlamlık tablosuna “karşılaştırma dönemi 1997–2002” satırını ekleyin (sayılar hazır).
+2. 5.2'de karşılaştırma döneminin neden 1997–2004 seçildiğini bir cümleyle gerekçelendirin ve Direktif'in 2003'te kabul edildiğini belirtin.
+3. 5.7.1'de birinci faz sonucunu yorumlarken bu duyarlılığı bir cümleyle yazın.
+
+**Teze yazılabilecek örnek metin.**
+
+> Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, ikinci faz farkı anlamlı kalmakta, birinci faz farkı ise küçülmektedir.
+
 #### T10 · “Faz kuralları AB düzeyinde, ülkelerden bağımsız belirlendi” ifadesi Faz 1–2 için tam doğru değil
 
 **Önem:** orta · **Yer:** 5.2 (L125), 5.10.2 (L793) · **Kaynak:** Bağımsız hakem · **Durum:** doğrulandı (orta güven)
@@ -244,6 +351,12 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** İfadeyi düzeltin; dışsallık savını “faz takvimi” ile sınırlayın.
 
+**Adım adım düzeltme.**
+
+1. 5.2'deki (L125) cümleyi düzeltin: “Fazların takvimi AB düzeyinde belirlenmiştir; ilk iki fazda tahsis miktarları ise üye devletlerin Komisyon onayına sunduğu Ulusal Tahsis Planlarıyla saptanmıştır.”
+2. 5.10.2'deki (L793) “2020 yılına kadar geçerli olacak” ifadesini “2013'ten itibaren geçerli olacak” diye düzeltin.
+3. Bu farkı sınırlılık değil imkân olarak da anın: ulusal planların sıkılığı ülkeden ülkeye değiştiği için ileride karşılaştırmalı bir analiz yapılabilir.
+
 #### T11 · Karbon fiyatı ne modelde ne tartışmada var; “Faz 3'te etki fiyat çöktüğü için kayboldu” açıklaması sınanmalı
 
 **Önem:** orta · **Yer:** 5.4.4, 5.10.2–5.10.3 · **Kaynak:** 2. jüri raporu, Yeniden inceleme · **Durum:** kısmen doğrulandı
@@ -253,6 +366,17 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Fiyat ve yıl etkilerinin (Poisson, 2004 = 0) yan yana okunması: (i) Faz 1 izinlerinin fiyatı 2007'de sıfıra yaklaştı (Ellerman ve Buchner, 2007; Ellerman ve diğ., 2010; ikisi de tezin kaynakçasında), yıl etkisi ise 2006–2007'de yükseliyor (0,102 → 0,156); (ii) fiyat 2008 ortasındaki ≈30 €'dan sonra ≈10–15 €'ya geriledi, yıl etkisi 2009'da zirve yapıyor (0,308); (iii) Avrupa Çevre Ajansı'na göre yıllık ortalama fiyat 2018'de 15,5 €, 2019'da 24,7 €; Faz 3 yıl etkileri 2020'ye kadar sıfırın altında ya da çevresinde (−0,186; −0,160; −0,104). Patentlerin fiyata gecikmeli tepki vermesi bu tabloyu kısmen açıklayabilir, ama fiyat kanalı kanıtlanmış değil. Yıllık EUA fiyat serisi veri setinde yok; doğrulanmış tam bir seri bu incelemede elde edilemedi, bu yüzden fiyat kontrollü tahmin yapılmadı.
 
 **Öneri.** Gecikmeli yıllık ortalama EUA fiyatını modele ekleyin (faz kuklalarıyla birlikte faz içi fiyat değişiminden tanımlanır) ve sonucu raporlayın; 5.10'da fiyat dinamiğini tartışın, ancak Faz 3 için tek açıklama olarak sunmayın.
+
+**Adım adım düzeltme.**
+
+1. Yıllık ortalama izin (EUA) fiyat serisini bulun (Avrupa Çevre Ajansı ya da Komisyon'un yıllık karbon piyasası raporları) ve veri setine ekleyin. Bu inceleme sırasında doğrulanmış tam bir seri elde edemedim.
+2. Bir önceki yılın fiyatını modele ekleyip tahmin edin ve sonucu bir sağlamlık satırı olarak verin. Veriyi eklerseniz tahmini ben yapabilirim.
+3. 5.10'a “Karbon fiyatının rolü” başlıklı bir paragraf ekleyin. Üçüncü fazdaki düşük fiyatı olası açıklamalardan biri olarak sunun; birinci fazda fiyat çökerken farkın arttığını da aynı paragrafta belirtin.
+4. İsterseniz yıl etkileri şeklinin altına ikinci bir panel olarak yıllık fiyatı ekleyin (iki ayrı eksenli tek grafik değil, alt alta iki grafik).
+
+**Teze yazılabilecek örnek metin.**
+
+> Karbon fiyatı bu çalışmada açıklayıcı değişken olarak yer almamaktadır. Üçüncü fazın büyük bölümünde izin fiyatının düşük seyretmesi, bu fazda ek bir fark gözlenmemesinin olası açıklamalarından biridir; ancak birinci fazın sonunda fiyat çökerken farkın artması, fiyat ile patentleme arasında basit bir eşzamanlı ilişki bulunmadığına işaret etmektedir.
 
 ### 5.2 Çıkarsama
 
@@ -266,6 +390,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Ana tabloya küme jackknife (CV3) ve parametrik bootstrap p değerlerini ekleyin; hangi bulguların her yöntemde ayakta kaldığını açıkça yazın (bkz. C5, C9). Ortak şoklar çıkarsamayla değil tasarımla ele alınmalı (T1).
 
+**Adım adım düzeltme.**
+
+1. 5.6.5'e açık bir cümle ekleyin: yatay kesit bağımlılığı testi bağımsızlığı reddetmektedir; ülke bazlı bootstrap bu bağımlılığı hesaba katmadığından anlamlılık düzeyleri iyimser olabilir.
+2. Ana tablolara ikinci bir belirsizlik ölçüsü ekleyin: küme jackknife ile hesaplanan p değerleri (hazır; raporun 7. kısmı).
+3. “Sınırlılıklar” alt başlığında bu konuyu ayrı bir madde olarak yazın.
+4. İki yönlü kümeleme ya da benzeri bir düzeltmeyi çözüm olarak sunmayın; 14 ülke ve 24 yılla güvenilir çalışmıyor.
+5. Kalıcı çözüm hesapta değil tasarımdadır: T1'deki karşılaştırmalı analiz, ortak şokları doğrudan temizler.
+
+**Teze yazılabilecek örnek metin.**
+
+> Yatay kesit bağımlılığı testleri ülkeler arasında bağımlılık bulunduğunu göstermektedir. Ülke düzeyinde yeniden örnekleme bu bağımlılığı hesaba katmadığından, raporlanan anlamlılık düzeyleri iyimser olabilir; bu nedenle sonuçlar küme jackknife ile de sınanmıştır.
+
 #### C2 · Bootstrap gerekçesi ile uygulanan yöntem uyuşmuyor
 
 **Önem:** önemli · **Yer:** 5.1.8 (L103), 5.6.5 (L407) · **Kaynak:** İlk inceleme, 1. jüri raporu, Bağımsız hakem · **Durum:** doğrulandı
@@ -275,6 +411,19 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Bootstrap SH'leri yeniden üretildi (B = 1999): NB Faz 1 0,0568 (tez 0,0580), Faz 2 0,0849 (0,0842); Poisson 0,0378 (0,0383), 0,0654 (0,0651). Uygulama doğru, gerekçelendirme yanlış.
 
 **Öneri.** 5.1.8'i uygulanan yönteme göre yeniden yazın; yöntemin az kümedeki sınırlarını belirtin; alternatif olarak küme jackknife (CV3; MacKinnon, Nielsen ve Webb, 2023) sonuçlarını ekleyin.
+
+**Adım adım düzeltme.**
+
+1. 5.1.8'i yeniden yazın. İlk paragrafta az sayıda ülke olduğunda klasik hesabın yetersiz kaldığını anlatmaya devam edin; ikinci paragrafta doğrudan kullandığınız yöntemi (ülkelerin yerine konarak yeniden örneklendiği eşli bootstrap) tanıtın.
+2. “MacKinnon ve Webb (2017) … göstermiştir. Bu durumlarda çıkarsama kümelenmiş eşli bootstrap ile yapılmaktadır” geçişini çıkarın; bu kaynak eşli bootstrap'ı önermiyor. Kaynağı yalnızca “az ve dengesiz kümelerde klasik hesap güvenilmezdir” savı için kullanın.
+3. 5.6.5'teki (L407) “küme büyüklüklerindeki farklılık” ifadesini “ülkelerin sonuçtaki ağırlıklarının çok farklı olması (Almanya başvuruların yaklaşık yüzde 45'ini oluşturmaktadır)” diye düzeltin.
+4. Yöntemin sınırını bir cümleyle yazın: 14 ülkeyle eşli bootstrap da iyimser sonuç verebilir (bkz. C9).
+5. Sonuçları ikinci bir yöntemle (küme jackknife) destekleyin ve tabloya ekleyin; sayılar hazır.
+6. 5.6.5'teki “katsayılar adlandırılmış ifadeler olarak tanımlanarak uygulanmıştır” cümlesini çıkarın ya da nedenini açıklayın; okuyucu için anlaşılmaz bir yazılım ayrıntısı.
+
+**Teze yazılabilecek örnek metin.**
+
+> Standart hatalar, ülkelerin yerine konarak yeniden örneklendiği kümelenmiş eşli bootstrap ile hesaplanmıştır. Küme sayısının az (14) ve ülkelerin sonuçtaki ağırlıklarının çok dengesiz olması nedeniyle bu yöntemin de sınırlı örneklemde iyimser sonuç verebileceği dikkate alınarak, bulgular küme jackknife ile ayrıca sınanmıştır.
 
 #### C3 · Etkin küme sayısı 4–5: Poisson tahminleri fiilen Almanya ağırlıklı
 
@@ -286,6 +435,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** İki tahmincinin neyi ağırlıklandırdığını metinde açıklayın; Poisson sonuçlarını “Almanya ağırlıklı” diye nitelendirin; ülke heterojenliğini (ülke × faz) bir ek tabloda gösterin.
 
+**Adım adım düzeltme.**
+
+1. 5.6.1'e ya da 5.7.1'in başına kısa bir paragraf ekleyin: iki tahmincinin ülkeleri nasıl ağırlıklandırdığını anlatın (aşağıdaki örnek cümle).
+2. Ek bir tablo koyun: her ülkenin iki yöntemdeki ağırlık payı (sayılar hazır; sitede Sağlamlık sayfasında).
+3. Metinde Poisson sonuçlarını “başvuru ağırlıklı”, negatif binom sonuçlarını “ülkelere daha eşit ağırlık veren” tahmin olarak adlandırın.
+4. 5.8.1 (c) paragrafını (Almanya hariç) bu çerçeveyle yeniden yorumlayın: Almanya çıkarıldığında iki yöntem birbirine yaklaşıyor.
+5. İsterseniz ülke bazındaki faz farklarını bir ek tabloda gösterin; küçük ülkelerde değerler oynaktır, bu notla birlikte verin.
+
+**Teze yazılabilecek örnek metin.**
+
+> Poisson tahmincisi gözlemleri beklenen başvuru sayısıyla ağırlıklandırdığından Almanya'nın tahmindeki payı yaklaşık yüzde 45'tir; negatif binom tahmincisinde bu pay yaklaşık yüzde 11'dir. Dolayısıyla Poisson katsayıları başvuru ağırlıklı, negatif binom katsayıları ülkelere daha eşit ağırlık veren ortalama farkları göstermektedir; iki tahminci arasındaki fark büyük ölçüde bu ağırlıklandırmadan kaynaklanmaktadır.
+
 #### C4 · Sapma düzeltmeli (BC) güven aralıkları bu veride kararsız
 
 **Önem:** önemli · **Yer:** 5.1.8, Tablo 5.11–5.13 · **Kaynak:** İlk inceleme, Bağımsız hakem, Yeniden inceleme · **Durum:** doğrulandı
@@ -295,6 +456,15 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Poisson Faz 1: nokta tahmin 0,0772, bootstrap ortalaması 0,0975, z₀ = −0,47; “%95 BC aralığı” fiilen bootstrap dağılımının %0,2–%84,6 yüzdelikleri. Aynı katsayı için üç aralık: BC [0,013; 0,135], yüzdelik [0,036; 0,181], bootstrap-t [0,012; 0,118]. Stok katsayısında z₀ = 0,52. Enerji ithalat bağımlılığı (NB): katsayı 0,0022, bootstrap SH 0,0024, BC [−0,0000; 0,0192] (tez: [−0,0000; 0,0241]). Farklı tohumla (Monte Carlo hatası) BC sınırları: Faz 1 NB [0,049; 0,274].
 
 **Öneri.** BC aralıklarını ana çıkarsama aracı yapmayın; yüzdelik ve bootstrap-t aralıklarını da verin ya da küme jackknife SH + t(13) kullanın. Tablo 5.12'de Faz 3 için “Anlamsız” yerine aralığı yazın.
+
+**Adım adım düzeltme.**
+
+1. Tablo 5.11 ve 5.13'te BC aralığının yanına sade “yüzdelik” aralığı da verin; iki aralık birbirinden çok farklıysa okuyucu görsün (sayılar hazır).
+2. Tablo notlarına ekleyin: “Bootstrap dağılımları çarpık olduğundan sapma düzeltmeli aralıklar asimetriktir; yüzdelik aralıklar karşılaştırma için verilmiştir.”
+3. Tablo 5.12'de üçüncü faz için “Anlamsız” yazmak yerine aralığın kendisini yazın.
+4. Tablo 5.13'te kontrol değişkenlerinin boş bırakılan güven aralığı hücrelerini doldurun.
+5. Metinde anlamlılık yargısını “aralık sıfırı içermiyor” cümlesine değil, p değerlerine (tercihen küme jackknife) dayandırın. Örneğin 5.7.1'deki “her iki fazın sapma düzeltmeli güven aralığı sıfırı içermemektedir” cümlesini çıkarın.
+6. 5.1.8'e yöntemin sınırını yazın: bootstrap dağılımı nokta tahmine göre kaymışsa bu aralıklar kararsızlaşır.
 
 #### C5 · Hangi bulgu hangi çıkarsama yönteminde ayakta kalıyor? Faz 2 ve Model 2 dayanıklı; Faz 1 kırılgan
 
@@ -306,6 +476,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Bu tabloyu teze ekleyin. H2 için “negatif binomda sınırda, Poisson'da anlamsız; çıkarsama yöntemine duyarlı” deyin; ana kanıtı Faz 2 ve Model 2 katsayılarına dayandırın.
 
+**Adım adım düzeltme.**
+
+1. Teze “çıkarsama duyarlılığı” başlıklı yeni bir tablo ekleyin: satırlarda faz katsayıları, sütunlarda dört yöntemin p değerleri ve benzetim p değerleri. Tablo hazır (raporun 7. kısmı; sitede Çıkarsama sayfası).
+2. Tablo 5.17'de H2'nin sonucunu “kısmen desteklenmektedir” yapın; kanıt sütununa “negatif binomda anlamlı, Poisson'da çıkarsama yöntemine duyarlı” yazın.
+3. 5.7.1'deki “ilk iki fazda anlamlı biçimde yükseldiğini göstermektedir” cümlesini ikiye ayırın: ikinci faz için güçlü, birinci faz için temkinli ifade.
+4. Özet ve sonuç bölümlerinde ana mesajı ikinci faz ve ikinci modelin bulgularına dayandırın.
+5. Birinci faz için asıl kanıtın ikinci modeldeki eğim artışı olduğunu belirtin; bu bulgu negatif binomda her sınamadan geçiyor.
+
+**Teze yazılabilecek örnek metin.**
+
+> İkinci faz farkı ve kesintili zaman serisi modelindeki birinci faz eğim artışı ile ikinci faz düzey farkı, kullanılan bütün çıkarsama yöntemlerinde anlamlıdır. Birinci modeldeki birinci faz farkı ise negatif binom tahmincisinde anlamlı, Poisson tahmincisinde çıkarsama yöntemine duyarlıdır.
+
 #### C6 · Anlamlılık yıldızları normal dağılım kritik değerleriyle verilmiş; 14 kümede t(13) daha uygun
 
 **Önem:** orta · **Yer:** Tablo 5.11, 5.13, 5.14 · **Kaynak:** Bağımsız hakem, Yeniden inceleme · **Durum:** doğrulandı
@@ -315,6 +497,12 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Bootstrap SH ile t(13): Poisson Faz 1 p = 0,062 (normal: 0,041); NB ticaret açıklığı p = 0,072 (normal: 0,049); NB Faz 1 p = 0,035.
 
 **Öneri.** Yıldızları t(13) ile verin ya da tablo notunda kritik değer seçimini belirtin.
+
+**Adım adım düzeltme.**
+
+1. Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), negatif binom ticaret açıklığı (** → *). İkinci faz ve stok katsayıları değişmiyor.
+2. Tablo notlarına ekleyin: “Anlamlılık düzeyleri 13 serbestlik dereceli t dağılımına göre belirlenmiştir.”
+3. 5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde” deyin.
 
 #### C7 · Yıl etkileri ve plasebo testlerinde, tezin kendisinin güvenilmez dediği asimptotik SH kullanılmış
 
@@ -326,6 +514,13 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Şekil 5.5 ve Tablo 5.16'yı ana tablolarla aynı çıkarsama yöntemiyle yeniden üretin ya da farkı gerekçelendirin.
 
+**Adım adım düzeltme.**
+
+1. Şekil 5.5'i bootstrap aralıklarıyla yeniden çizin. Alternatif: iki tür aralığı aynı grafikte farklı kalınlıkta gösterin. Yeniden hesaplanmış değerler hazır.
+2. 5.7.3'teki (L663) “Katsayılar 2006'dan itibaren anlamlı hale gelmekte” cümlesini değiştirin: “2006–2010 arasında pozitiftir; bootstrap standart hatalarıyla yüzde 5 düzeyinde yalnızca 2009, yüzde 10 düzeyinde 2006–2008 anlamlıdır.”
+3. Tablo 5.16'ya bootstrap p değerleri sütunu ekleyin (bkz. T6).
+4. 5.6.5'teki (L407) “yıl etkileri modeli ile plasebo kırılma testlerinde ülke düzeyinde kümelenmiş standart hatalar kullanılmıştır” cümlesini çıkarın; yerine bütün tablolarda aynı yöntemin kullanıldığını yazın.
+
 #### C8 · Ticaret açıklığının “**” işareti savunulamıyor
 
 **Önem:** orta · **Yer:** Tablo 5.11, 5.13 (L554, L595) · **Kaynak:** İlk inceleme, Bağımsız hakem · **Durum:** doğrulandı
@@ -336,6 +531,16 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** “Sınırda anlamlı” deyin; L595'teki yorumu yumuşatın.
 
+**Adım adım düzeltme.**
+
+1. Tablo 5.11 ve 5.13'te ticaret açıklığının işaretini ** yerine * yapın.
+2. 5.7.1'in son paragrafındaki (L595) cümleyi yumuşatın (aşağıdaki örnek).
+3. Aynı paragraftaki “enerji yapısı, sanayi yapısı ve iktisadi büyümenin anlamlı bir ek etkisinin saptanmadığını göstermektedir” cümlesine “bu değişkenler ülke içinde stokla birlikte hareket ettiğinden etkileri ayrıştırılamamış olabilir” kaydını ekleyin (bkz. M3).
+
+**Teze yazılabilecek örnek metin.**
+
+> Dış ticaret açıklığının katsayısı negatif binom modelinde negatif ve sınırda anlamlıdır; Poisson modelinde anlamlı değildir. Bu nedenle ticaret açıklığına ilişkin güçlü bir yorum yapılmamıştır.
+
 #### C9 · Tezin çıkarsama yöntemi, gerçek etki sıfırken nominal düzeyin üç-dört katı “anlamlı” sonuç üretiyor
 
 **Önem:** önemli · **Yer:** 5.1.8, 5.6.5, Tablo 5.11–5.14 · **Kaynak:** Yeniden inceleme · **Durum:** yeni
@@ -345,6 +550,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Boş hipotez altında ret oranları (300 benzetim, Model 1, üç faz katsayısı, iki tahminci): eşli bootstrap SH + z (tezin yöntemi) %13–21; ülke-küme t(13) %10–26; iki yönlü küme %21–31; küme jackknife CV3 + t(13) %8–12. Küçük ortak yıl şokuyla tezin yöntemi %17–23, jackknife %11–15. Sınananlar içinde nominal düzeye en yakın yöntem küme jackknife. İkinci jüri raporu bu yöntemin “birinci tip hata riskini başarıyla kontrol ettiğini” belirtiyor; benzetim sonuçları bu değerlendirmeyi desteklemiyor.
 
 **Öneri.** Anlamlılık yargılarını küme jackknife + t(13) ve/veya parametrik bootstrap p değerleriyle verin; yıldızları buna göre güncelleyin. Tek yöntemle raporlanan sınırdaki sonuçları (Faz 1, ticaret açıklığı) “anlamlı” diye sunmayın.
+
+**Adım adım düzeltme.**
+
+1. 5.6.5'e benzetim sonucunu bir paragraf ve küçük bir tabloyla ekleyin: “gerçek etki sıfırken yüzde 5 düzeyinde ret oranı” (tablo hazır; raporun 6. kısmı).
+2. Anlamlılık yargılarını ikinci bir yöntemle destekleyin: küme jackknife (aynı sınamada %8–12 ile yüzde 5'e en yakın yöntem) ve/veya parametrik bootstrap.
+3. “Yüzde 5 düzeyinde anlamlıdır” ifadesini sınırdaki sonuçlar için kullanmayın; “sınırda” ya da “yönteme duyarlı” deyin.
+4. “Sınırlılıklar” alt başlığına ekleyin: az sayıda ve dengesiz ağırlıklı ülke nedeniyle bütün çıkarsama yöntemleri iyimser sonuç vermektedir.
+5. Benzetim kodunu (analiz/py/simulasyon.py) tezin ekine ya da çevrimiçi eke koyun; jüri sorarsa gösterilebilir.
+
+**Teze yazılabilecek örnek metin.**
+
+> Gerçek etkinin sıfır olduğu benzetimlerde, kümelenmiş eşli bootstrap standart hatalarına dayanan testler yüzde 5 anlamlılık düzeyinde boş hipotezi %13–21 oranında reddetmektedir. Bu nedenle sınırdaki sonuçlar temkinle yorumlanmış, temel bulgular küme jackknife ve parametrik bootstrap ile doğrulanmıştır.
 
 ### 5.3 Model
 
@@ -358,6 +575,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** İki tanımı ana tabloda yan yana verin ya da serbest esneklikli modeli ana model yapıp hipotezleri “GSYİH'ye koşullu patent sayısı” üzerinden yazın. 5.6.2'de maruziyetin bir normalizasyon olduğunu, kısıtın reddedildiğini ve bulguların buna duyarsız olduğunu açıkça belirtin.
 
+**Adım adım düzeltme.**
+
+1. Tablo 5.11'e iki sütun daha ekleyin: “GSYİH esnekliği serbest” modeli. Negatif binom: birinci faz 0,1654, ikinci faz 0,2743, üçüncü faz 0,0349, GSYİH esnekliği 0,393.
+2. 5.6.2'yi yeniden yazın: yoğunluk tanımının bir tercih olduğunu, birim esneklik kısıtının veriyle reddedildiğini ve sonuçların her iki tanımda da raporlandığını belirtin.
+3. 5.8.1 (b) paragrafındaki (L697) “faz katsayıları birinci modeldekilere yakındır” cümlesini rakamlarla değiştirin; birinci fazdaki yaklaşık yüzde 24'lük artışı gizlemeyin.
+4. Hipotezlerin her iki tanımda da aynı sonucu verdiğini Tablo 5.17'nin notunda belirtin.
+5. İrlanda için bir dipnot ekleyin: 2015'teki yüzde 24,6'lık GSYİH artışı nedeniyle İrlanda çıkarılarak yapılan tahminde sonuçlar değişmemektedir (0,140 ve 0,264).
+
+**Teze yazılabilecek örnek metin.**
+
+> Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti ve anlamlılığı iki tanımda aynıdır.
+
 #### M2 · Gecikme seçimi karşılaştırması stoku da iki dönem geciktiriyor
 
 **Önem:** orta · **Yer:** 5.6.9 (L523) · **Kaynak:** Bağımsız hakem, Yeniden inceleme · **Durum:** doğrulandı
@@ -367,6 +596,11 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** NB, 1998–2020, N = 322: bir gecikme AIC = 2.958,25 (tez 2958,25); stok dahil hepsi iki gecikme 2.999,78 (tez 2999,78); yalnız kontroller iki gecikme 2.966,65 (fark 41,5 değil 8,4). İki gecikmeli modelde faz katsayıları büyüyor (NB: 0,185 / 0,413 / 0,195).
 
 **Öneri.** Karşılaştırmanın neyi içerdiğini doğru yazın; sonuç (bir gecikme tercih edilir) değişmiyor.
+
+**Adım adım düzeltme.**
+
+1. 5.6.9'daki (L523) cümleyi “kontrol değişkenlerinin ve yeşil patent stokunun gecikme yapısı” diye düzeltin; ya da yalnızca kontrollerin geciktirildiği karşılaştırmanın sayısını verin.
+2. İsterseniz iki karşılaştırmayı birlikte raporlayın; ikisinde de bir yıllık gecikme tercih ediliyor.
 
 #### M3 · Tablo 5.4 ham korelasyonları veriyor; sabit etkili model için ilgili olan ülke-içi korelasyonlar çok daha yüksek
 
@@ -378,6 +612,17 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Tablo 5.4'ü ülke-içi korelasyonlarla verin (ya da iki panel); sonucu VIF tablosuyla tutarlı yazın.
 
+**Adım adım düzeltme.**
+
+1. Tablo 5.4'ü iki panelli yapın: (A) bütün gözlemlerle, (B) ülke ortalamalarından arındırılmış (ülke içi) değerlerle. İkinci panelin sayıları hazır (sitede Yeniden üretim sayfası).
+2. 5.5.1'deki (L271) sonuç cümlesini değiştirin (aşağıdaki örnek).
+3. “0,35'i aşmamaktadır” ifadesini düzeltin; en yüksek değer 0,351.
+4. 5.7.1'de kontrol değişkenlerinin anlamsızlığını yorumlarken bu birlikte hareketi belirtin: “etkisi yok” değil, “stoktan ayrıştırılamadı”.
+
+**Teze yazılabilecek örnek metin.**
+
+> Havuzlanmış korelasyonlar düşük olmakla birlikte, sabit etkili modelde belirleyici olan ülke içi korelasyonlar daha yüksektir: yeşil patent stoku ile yenilenebilir enerji payı arasında 0,81, ticaret açıklığı ile 0,64. Bu nedenle söz konusu kontrol değişkenlerinin katsayıları stokun etkisinden tam olarak ayrıştırılamamaktadır.
+
 #### M4 · Birim kök / eşbütünleşme bölümü: etiket, dönem ve yorum sorunları
 
 **Önem:** orta · **Yer:** 5.6.7–5.6.8, Tablo 5.7–5.10 · **Kaynak:** 1. jüri raporu, Bağımsız hakem, Yeniden inceleme, 2. jüri raporu · **Durum:** doğrulandı
@@ -387,6 +632,16 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Log yoğunlukla: Fisher-ADF 22,94 (tez 22,94), CD 36,913 (36,913), CIPS −3,092 (−3,092). Düzey yoğunlukla: Fisher-ADF 15,65, CD 34,675, CIPS −2,091 (benzetimle p ≈ 0,13; %5 kritik değer ≈ −2,25: birim kök reddedilemiyor). Diğer altı değişkende Fisher-ADF, CD ve CIPS istatistikleri üç ondalığa kadar, IPS istatistikleri ±0,2 içinde yeniden üretildi. Kao'nun düzeltilmemiş iki istatistiği log yoğunluk ve 1997–2020 ile birebir çıkıyor (−18,260; −11,433). Pedroni ve Kao'nun düzeltilmiş istatistikleri yeniden üretilmedi.
 
 **Öneri.** Satır etiketini “ln(yeşil patent yoğunluğu)” yapın; dönemleri yazın; bölümü kısaltıp eke alın ya da yatay kesit bağımlılığına dayanıklı bir test (Westerlund, 2007) ekleyin; Pedroni yorumunu kontrol edin; L519'daki genellemeyi çıkarın.
+
+**Adım adım düzeltme.**
+
+1. Tablo 5.7, 5.8 ve 5.9'da satır adını “ln(Yeşil patent yoğunluğu)” olarak düzeltin.
+2. Tablo notlarına her testin dönemini yazın (birim kök ve yatay kesit bağımlılığı: 1996–2020; Kao: 1997–2020).
+3. Bölümü kısaltın: ana metinde tek paragraf bırakıp tabloları eke taşıyın.
+4. 5.6.8'in son cümlesini (L519: “düzey değerleriyle tahmin, her iki test grubunun sonuçları altında da geçerlidir”) çıkarın; testler bunu göstermiyor.
+5. Pedroni çıktısını kontrol edin: değiştirilmiş Phillips-Perron istatistiği pozitif (+2,255). Yazılımın bu değeri hangi yönde test ettiğine bakın; emin değilseniz “üç istatistiğin tamamı” yerine “üç istatistikten ikisi” yazın.
+6. Tablo 5.8'de ticaret açıklığı “trend durağan” görünüyor, bir sonraki tabloda aynı değişken durağan değil; metinde bu farkı bir cümleyle belirtin.
+7. İsterseniz ülkeler arası bağımlılığa dayanıklı bir test (Westerlund, 2007) ekleyin; zorunlu değil.
 
 #### M5 · Koşulsuz sabit etkili NB için kaynak okuması eksik
 
@@ -398,6 +653,12 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Bir cümleyle bu tartışmaya değinin; Wooldridge (1999) atfını ekleyin.
 
+**Adım adım düzeltme.**
+
+1. 5.6.1'e bir cümle ekleyin: “Bu tahmincinin standart hatalarının küçük kalabildiği bilinmektedir; bu nedenle çıkarsama bootstrap ile yapılmıştır.”
+2. 5.1.5'te sabit etkili Poisson'un dağılım varsayımına dayanıklılığı için Wooldridge'e (1999) atıf yapın.
+3. İsterseniz Guimarães (2008) atfını ekleyin.
+
 #### M6 · Kesirli sayımların yuvarlanması: sonuçları etkilemiyor, ifade netleştirilmeli
 
 **Önem:** küçük · **Yer:** 5.4.1 (L149) · **Kaynak:** İlk inceleme, Yeniden inceleme · **Durum:** doğrulandı
@@ -407,6 +668,11 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Tahmin örnekleminde tam yarım değerli 62 gözlem var. Yuvarlanmamış seriyle Poisson: 0,0774 / 0,1955 / −0,0927 (yuvarlanmış: 0,0772 / 0,1954 / −0,0926).
 
 **Öneri.** Kuralı yazın ve sonuçların değişmediğini bir cümleyle belirtin.
+
+**Adım adım düzeltme.**
+
+1. 5.4.1'deki (L149) cümleyi “kesirli değerler en yakın tam sayıya, yarım değerler yukarı yuvarlanmıştır” diye netleştirin.
+2. Bir dipnot ekleyin: “Yuvarlanmamış değerlerle yapılan Poisson tahmininde katsayılar üçüncü ondalıkta aynıdır.”
 
 #### M7 · Negatif binomun ortak aşırı yayılım varsayımı sağlanmıyor
 
@@ -418,6 +684,17 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Bir cümleyle belirtin; ana tahminci gerekçesini etkinlik yerine “ülkelere daha eşit ağırlık verme” (C3) üzerine kurun ya da Poisson QML'i eş-ana tahminci olarak sunun.
 
+**Adım adım düzeltme.**
+
+1. 5.6.6'daki (L417) “verinin yayılım yapısıyla uyumlu olan negatif binom modeli ana tahminci olarak kullanılmış” cümlesini değiştirin.
+2. Negatif binomu ana yöntem olarak tutmanın daha sağlam gerekçesini yazın: ülkelere daha eşit ağırlık verir, sonuçlar tek bir büyük ülkeye bağlı kalmaz (bkz. C3).
+3. Poisson'u “alternatif” değil “eş düzeyde ikinci tahminci” olarak sunun.
+4. Bir dipnotla aşırı yayılımın ülkeler arasında farklılaştığını belirtin.
+
+**Teze yazılabilecek örnek metin.**
+
+> Aşırı yayılım ülkeler arasında belirgin biçimde farklılaşmaktadır; bu nedenle negatif binom modelinin etkinlik üstünlüğü kesin değildir. Negatif binom tahmincisi, ülkelere daha dengeli ağırlık verdiği için ana tahminci olarak kullanılmış, Poisson sözde en çok olabilirlik tahmincisi eş düzeyde raporlanmıştır.
+
 #### M8 · Sıfır-kesikli (zero-truncated) model önerisi: kavramsal olarak gerekli değil; sınandı, sonuç değişmiyor
 
 **Önem:** küçük · **Yer:** 5.4.1 (L153), 5.6.1 · **Kaynak:** 2. jüri raporu, Yeniden inceleme · **Durum:** sınandı — sorun yok
@@ -427,6 +704,15 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Tahmin edilen modele göre beklenen sıfır sayısı 0,34 (Poisson) / 0,42 (NB); hiç sıfır gözlenmemesi şaşırtıcı değil. En küçük beklenen değer 2,9; 3 ve altında 12 gözlem var. Sıfır-kesikli Poisson: 0,0772 / 0,1954 / −0,0926 (olağan: 0,0772 / 0,1954 / −0,0926). Sıfır-kesikli NB: 0,1342 / 0,2709 / 0,0385 (olağan: 0,1338 / 0,2705 / 0,0381). Yunanistan ve Portekiz çıkarıldığında NB 0,119 / 0,277.
 
 **Öneri.** Dipnotla belirtmek yeterli: “örneklemde sıfır yoktur; sıfır-kesikli tahminler katsayıları dördüncü ondalıkta değiştirmektedir.”
+
+**Adım adım düzeltme.**
+
+1. 5.4.1'e ya da 5.6.1'e bir dipnot ekleyin (aşağıdaki örnek).
+2. Başka bir değişiklik gerekmiyor.
+
+**Teze yazılabilecek örnek metin.**
+
+> Tahmin örnekleminde sıfır değerli gözlem bulunmamaktadır. Sıfır-kesikli negatif binom tahmininde katsayılar yalnızca dördüncü ondalıkta değişmektedir (birinci faz 0,1342; ikinci faz 0,2709).
 
 ### 5.4 Yorum
 
@@ -440,6 +726,16 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Cümleyi “Faz 2 bulgusu hiçbir ülkeye bağlı değildir; Faz 1 bulgusu Poisson'da ülke bileşimine duyarlıdır” diye değiştirin.
 
+**Adım adım düzeltme.**
+
+1. 5.8.2'nin son cümlesini (L741) değiştirin (aşağıdaki örnek).
+2. Danimarka ve Almanya'nın etkisini bir cümleyle belirtin: bu iki ülke çıkarıldığında farklar büyüyor; yani sonuçları aşağı çeken ülkeler bunlar.
+3. “Sapma düzeltmeli güven aralığı on üç tahminde sıfırı içermemektedir” cümlesini çıkarın ya da ilgili aralıkları tabloya ekleyin; şu an tabloda karşılığı yok.
+
+**Teze yazılabilecek örnek metin.**
+
+> İkinci faz farkı on dört tahminin tamamında anlamlıdır ve herhangi bir ülkenin örneklemde bulunmasına bağlı değildir. Birinci faz farkı on dört tahminin tamamında pozitif olmakla birlikte 7'sinde yüzde 5 düzeyinde anlamlıdır; dolayısıyla ülke bileşimine duyarlıdır.
+
 #### Y2 · Hipotez tablosu (Tablo 5.17) kanıtın taşıdığından fazlasını söylüyor
 
 **Önem:** önemli · **Yer:** 5.9, Tablo 5.17 · **Kaynak:** İlk inceleme, Bağımsız hakem, Yeniden inceleme · **Durum:** doğrulandı
@@ -449,6 +745,16 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** H3: bootstrap Wald p = 0,039 (NB), 0,012 (Poisson). “İkinci fazın etkisi birincinin yaklaşık iki katı” NB için doğru (2,02 kat), Poisson için 2,53 kat. H4: δ₂ = δ₃ bootstrap p < 0,001; Faz 3 katsayısı her tanımda Faz 2'den küçük.
 
 **Öneri.** Tabloyu Özet sayfasındaki yeniden değerlendirmeye göre güncelleyin: H1 koşullu, H2 kısmen, H3 destekleniyor, H4 desteklenmiyor, H5 bu hâliyle desteklenmiyor.
+
+**Adım adım düzeltme.**
+
+1. H1 satırı: kanıtı “tek ETS kuklası pozitif ve anlamlı” olarak değiştirin; sonucu “desteklenmektedir (önce–sonra karşılaştırması olarak)” yapın.
+2. H2 satırı: sonucu “kısmen desteklenmektedir” yapın; kanıta “Poisson'da çıkarsama yöntemine duyarlı” ekleyin.
+3. H3 satırı: aynen kalabilir; “fark ikinci fazın ilk yıllarında yoğunlaşmaktadır” notunu ekleyin.
+4. H4 satırı: aynen kalır.
+5. H5 satırı: hipotezi yeniden yazın (bkz. T2) ve sonucu “kısmen desteklenmektedir (üçüncü faz hariç)” yapın.
+6. Tablonun altına not: “Sonuçlar nedensel etki değil, fazlarla ilişkili farklar olarak yorumlanmalıdır.”
+7. 5.3'teki hipotez cümlelerinde “etki yaratmıştır” yerine “daha yüksektir / farklılaşmaktadır” gibi betimleyici fiiller kullanmayı düşünün.
 
 #### Y3 · Üçüncü faz: “etki yok” değil “kanıt yok”; stoksuz ITS'de Faz 3 eğimi negatif
 
@@ -460,6 +766,17 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Jürinin önerdiği ifadeyi kullanın: “üçüncü fazda stokun üzerinde ek bir doğrudan etkiye ilişkin yeterli kanıt elde edilememiştir.” İki tahminci arasındaki farkı (C3) tartışın.
 
+**Adım adım düzeltme.**
+
+1. 5.7.1 ve 5.7.2'de “üçüncü fazda ek bir etki bulunmamaktadır” yerine birinci jürinin önerdiği cümleyi kullanın (aşağıdaki örnek).
+2. Tablo 5.12'de üçüncü faz için güven aralığını yazın; “Anlamsız” sözcüğünü kaldırın.
+3. 5.10.3'ü yeniden yazın: iki olası açıklamayı (etkinin zayıflaması; birikmiş bilginin düzeyi sürdürmesi) yan yana koyun ve bu verinin ikisini ayırt edemediğini belirtin.
+4. İki tahminci arasındaki farkı (stoksuz modelde negatif binom anlamlı, Poisson anlamsız) ağırlıklandırmayla açıklayın (bkz. C3).
+
+**Teze yazılabilecek örnek metin.**
+
+> Üçüncü fazda, yeşil patent stoku sabitken ETS öncesine göre ek bir fark bulunduğuna ilişkin yeterli istatistiksel kanıt elde edilememiştir. Tahminin belirsizliği yüksek olduğundan bu sonuç, üçüncü fazın etkisiz olduğu biçiminde yorumlanmamalıdır.
+
 #### Y4 · Literatür aktarımlarında doğrulanamayan iki ifade
 
 **Önem:** orta · **Yer:** 5.6.9 (L525), 5.10.5 (L811) · **Kaynak:** Yeniden inceleme, Bağımsız hakem · **Durum:** doğrulanamadı
@@ -469,6 +786,13 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** Web araması (NBER bölüm kaydı; Energy Policy 117, 434–444 özeti). Tam metinlere erişilemedi; bu yüzden hüküm değil, kontrol çağrısı.
 
 **Öneri.** İki ifadeyi birincil kaynaktan kontrol edin; sayfa numarasıyla atıf verin ya da ifadeyi değiştirin.
+
+**Adım adım düzeltme.**
+
+1. Pakes ve Griliches (1984) bölümünü açın, 1,6 yıl rakamını bulun ve sayfa numarasıyla atıf verin. Bulamazsanız cümleyi şöyle değiştirin: “Pakes ve Griliches (1984), patent başvurularının Ar-Ge harcamalarına büyük ölçüde aynı yıl ve izleyen yıl içinde tepki verdiğini göstermiştir.”
+2. Bel ve Joseph (2018) makalesinin veri ve yöntem bölümünü kontrol edin: hangi patent sınıfları, kaç ülke, hangi tahminci.
+3. 5.10.5'teki katkı cümlelerini buna göre düzeltin. Farkı “kapsam” üzerinden değil, gerçekten farklı olduğunuz noktalar üzerinden kurun: ETS öncesi dönemle karşılaştırma, fazlara göre ayrıştırma, yıllara göre profil.
+4. “Rassal etkili model yerine sabit etkili model kullanılmıştır” cümlesini, makalede gerçekten rassal etkili model kullanıldığını doğruladıktan sonra tutun.
 
 #### Y5 · “Yeşil inovasyon” yalnızca EPO patent başvurusuyla ölçülüyor
 
@@ -480,6 +804,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Başlıkta/sonuçta operasyonel tanımı belirtin; OECD'nin son yıllara ilişkin uyarısına atıf yapın.
 
+**Adım adım düzeltme.**
+
+1. 5.4.1'e bir paragraf ekleyin: patent başvurusunun inovasyonun hangi yönünü ölçtüğünü ve hangi yönlerini ölçmediğini belirtin.
+2. Bölüm başlığında ya da ilk paragrafında işlemsel tanımı verin: “Bu çalışmada yeşil inovasyon, EPO'ya yapılan iklim değişikliği azaltım teknolojisi patent başvurularıyla ölçülmektedir.”
+3. Sonuç ve tartışmada “yeşil inovasyonu artırmıştır” yerine “yeşil patent başvurularını / yeşil patentlemeyi” deyin.
+4. Son yılların verisinin eksik olabileceğini bir dipnotla belirtin ve 2018–2020 çıkarıldığında sonuçların zayıflamadığını yazın (ikinci faz farkı 0,333; tam örneklemde 0,271).
+5. “Sınırlılıklar” alt başlığına bir madde olarak ekleyin.
+
+**Teze yazılabilecek örnek metin.**
+
+> Bu çalışmada yeşil inovasyon, Avrupa Patent Ofisine yapılan iklim değişikliği azaltım teknolojisi patent başvurularıyla ölçülmektedir. Patent başvuruları buluş faaliyetinin göstergesidir; buluşların niteliğini, yayılmasını ve çevresel etkisini doğrudan ölçmez.
+
 #### Y6 · Küçük ifade ve tutarlılık sorunları
 
 **Önem:** küçük · **Yer:** çeşitli · **Kaynak:** İlk inceleme, Bağımsız hakem, Yeniden inceleme, 2. jüri raporu · **Durum:** doğrulandı
@@ -489,6 +825,19 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** • L645 “yıllık artış hızı … %11,7 yükselmiştir”: bu, yıllık büyüme oranına eklenen yüzde puandır. • L161 “en yüksek yoğunluk Danimarka, Almanya, Finlandiya, İsveç”: yalnız ETS dönemi için doğru; ETS öncesinde en yüksek Lüksemburg (0,517), muhtemelen başvuru sahibi ülkesine göre sayımın (holdingler) etkisi. • L179 g = 0,0691 ortalama log büyümedir (aritmetik ortalama 0,0769, bileşik 0,0716). • Tablo 5.3 kontrolleri eşzamanlı, Tablo 5.2 gecikmeli veriyor; ikisi de etiketsiz. • L173 “altı kontrol değişkeni” ↔ Tablo 5.5 “stok ve beş kontrol”. • L636 Poisson Faz 1 ortak testi: χ²(2) = 15,39 için p = 0,000 (0,001 değil). • L375 “Tablo 5.5” → Tablo 5.6. • L13 “bağımlı değişken yalnızca pozitif” (sayım verisi negatif olmayandır; log bağlantı ortalamayı pozitif tutar); L49 NB2 adı verilmemiş; L57 “daha etkin” ancak varyans fonksiyonu doğruysa. • δ = 0,15 ve başlangıç stoku formülü için metinde atıf yok (veri dosyasında var). • İrlanda'nın 2015 GSYİH sıçraması (%24,6) yoğunluğu mekanik düşürür; İrlanda hariç sonuç değişmiyor (0,140 / 0,264). • Tahmin döneminin neden 1997'de başladığı metinde yalnız dolaylı söyleniyor (L193): reel GSYİH 1995'ten, büyüme oranı 1996'dan itibaren 14 ülkenin tamamı için mevcut (1990–1995'te 10–12 ülke eksik); bir dönem gecikmeyle ilk kullanılabilir yıl 1997 (ikinci jüri notu; veriyle doğrulandı).
 
 **Öneri.** Tek tek düzeltin.
+
+**Adım adım düzeltme.**
+
+1. L645: “yıllık artış hızı … yaklaşık yüzde 11,7 yükselmiştir” ifadesini “yıllık artış hızı … yaklaşık 11,7 yüzde puan daha yüksektir” diye düzeltin.
+2. L161: “En yüksek yoğunluk Danimarka, Almanya, Finlandiya ve İsveç'te” cümlesine “ETS döneminde” kaydını ekleyin; ETS öncesinde en yüksek değer Lüksemburg'da (0,52).
+3. L179: “ortalama yıllık büyüme oranı (0,0691)” ifadesini “ortalama yıllık logaritmik büyüme (0,0691)” diye düzeltin.
+4. Tablo 5.3: başlığın altına “Kontrol değişkenleri ve stok cari dönem (t) değerleriyle verilmiştir; modelde bir dönem gecikmeli girmektedir” notunu ekleyin.
+5. L173: “altı kontrol değişkeni” ile Tablo 5.5'teki “stok ve beş kontrol değişkeni” ifadesini tutarlı hâle getirin.
+6. Tablo 5.13: Poisson birinci faz ortak testinin p değerini 0,001 yerine 0,000 yapın.
+7. L375: “(Tablo 5.5)” atfını “(Tablo 5.6)” olarak düzeltin.
+8. 5.5: tahmin döneminin neden 1997'de başladığını açıkça yazın: reel GSYİH 1995'ten, büyüme oranı 1996'dan itibaren bütün ülkeler için mevcut; bir yıllık gecikmeyle ilk kullanılabilir yıl 1997.
+9. 5.4.4 (L179): eskime oranı (0,15) ve başlangıç stoku formülü için metin içi atıf ekleyin: Noailly ve Smeets (2015), Hall ve Mairesse (1995), Popp (2002).
+10. L13: “bağımlı değişkenin yalnızca pozitif değerler alabildiği” ifadesini “negatif olmayan” yapın. L49: modelin NB2 biçimi olduğunu adlandırın. L57: “daha etkin tahminler üretmektedir” cümlesine “varyans fonksiyonu doğru tanımlandığında” kaydını ekleyin.
 
 ### 5.5 Biçim
 
@@ -502,6 +851,18 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Öneri.** Word başlık stillerini tutarlı uygulayın; denklem numaralarını tamamlayın; sembolleri ayırın (sabit etki için c_i gibi).
 
+**Adım adım düzeltme.**
+
+1. 5.2'nin son paragrafı (“Birinci model, AB ETS'nin her bir fazda…”) yanlışlıkla “Başlık 2” stilinde; paragrafı seçip “Normal” stiline alın. Aksi hâlde içindekiler tablosunda görünür.
+2. İki boş başlık paragrafını silin: Tablo 5.5'ten hemen sonra ve 5.10 başlığından hemen önce.
+3. “5.8 Sağlamlık Testleri” satırına başlık stili uygulayın.
+4. Bütün alt başlıkları Word başlık stillerine çevirin; şu an bir kısmı yalnızca kalın yazılmış paragraf (5.1.1–5.1.5, 5.2, 5.4.2 gibi).
+5. Denklemleri baştan sona numaralandırın; (13)'ten sonrakiler numarasız.
+6. Sarı vurguları kaldırın: 5.6.3, 5.6.4'ün ilk cümlesi ve VIF paragrafının son cümlesi.
+7. Tablo 5.11 ve 5.13'teki alt indisleri (t−1) denklem nesnesi yerine düz metin alt indisi olarak yazın (Ctrl ve = tuşları). Küçük boş kareler bundan kaynaklanıyor.
+8. α sembolünü ayırın: ülke sabit etkisi için c ya da η, aşırı yayılım için α, güven düzeyi için başka bir harf kullanın.
+9. Aynı değişkene tek ad verin: “dış ticaret hacmi”, “dış ticaret açıklığı” ve “ticaret açıklığı” arasında birini seçin; “Enerji İthalat bağımlılığı” yazımını da tekleştirin.
+
 ### 5.6 Kaynakça
 
 #### B2 · Atıf yazımı ve kaynakça biçimi
@@ -513,6 +874,16 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 **Kanıt.** • Boşluk/bağlaç hataları: “Allison&Waterman”, “Allison andWaterman”, “Efron&Tibshirani”, “Bel&Joseph”, “Pakes&Griliches(1984)”, “Hausman ve diğ.(1984)”, “(OECD,2026)”, “Haščič ve Migotto 2015”. • Dechezleprêtre ve diğ. (2011) kaydı “&” ve tırnaklı başlıkla, OECD veri seti kaydı farklı bir atıf stiliyle yazılmış; OECD veri seti iki kez, iki farklı yılla (2024 / 2026) listelenmiş. • Wooldridge (1999) listede var, metinde kullanılmamış. • Stata 19 için kaynak kaydı yok. • L193'te 1990 başlangıcı için gösterilen kaynakların “veriler 1990'dan itibaren güvenilir” dediği kontrol edilmeli.
 
 **Öneri.** Tez yazım kılavuzuna göre tek biçime getirin.
+
+**Adım adım düzeltme.**
+
+1. Metinde “&” ve “and” kullanılan atıfları “ve” ile yazın ve boşlukları düzeltin: “Allison&Waterman”, “Allison andWaterman”, “Efron&Tibshirani”, “Bel&Joseph”, “Pakes&Griliches(1984)”.
+2. Parantez ve virgül boşluklarını düzeltin: “Hausman ve diğ.(1984)”, “(OECD,2026)”, “sağlamaktadır(Bel ve Joseph,2018)”, “Haščič ve Migotto 2015”.
+3. Kaynakçada Dechezleprêtre ve diğ. (2011) kaydını diğerleriyle aynı biçime getirin (“&” yerine “ve”, başlıktaki tırnakları kaldırın).
+4. OECD veri seti kaydını teke indirin; şu an iki yerde, iki farklı yılla (2024 ve 2026) geçiyor. Metindeki “(OECD, 2026)” atfı ile aynı yılı kullanın.
+5. Stata için kaynakça kaydı ekleyin.
+6. Wooldridge (1999) kaynakçada var; 5.1.5'te atıf yapın ya da listeden çıkarın.
+7. Önerilen yeni kaynakları (T5, C1, C3, M4) ekleyin; liste sitede Kaynakça sayfasında.
 
 ### 5.7 Doğrulanan (sorun bulunmayan) noktalar
 
@@ -895,6 +1266,7 @@ Bölümdeki bütün metin içi atıflar programla çıkarılıp kaynakçayla eş
 | `veri/AB14_nihai_veri.xlsx` | Ham panel, stok sayfası, kaynaklar |
 | `dokumanlar/` | Tez bölümü (docx + metin), şekiller, iki jüri raporu, bağımsız hakem raporu |
 | `analiz/Juri2_Raporu_Degerlendirmesi.md` | İkinci jüri raporunun madde madde değerlendirmesi |
+| `analiz/Sade_Anlatim_ve_Duzeltme_Rehberi.md` | Bulguların teknik olmayan okur için sade anlatımı ve adım adım düzeltme rehberi (`analiz/py/sade.py`) |
 | `analiz/py/juri2.py` | İkinci jürinin önerdiği sınamalar → `analiz/cikti/juri2.json` |
 | `analiz/py/tezlib.py` | Veri hazırlama, Poisson IRLS, NB2 en çok olabilirlik, kümelenmiş kovaryanslar, bootstrap yardımcıları |
 | `analiz/py/yeniden_inceleme.py` | Tüm tabloların yeniden üretimi ve ek analizler → `analiz/cikti/sonuclar.json` |

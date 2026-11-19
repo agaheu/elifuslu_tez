@@ -129,6 +129,17 @@ svg .mark:hover .dot, svg .mark:focus .dot { filter: brightness(1.15); } svg .ma
 .finding[open] summary { border-bottom: 1px solid var(--grid); }
 .finding .body { padding: 12px 16px 14px; } .finding .body h4 { margin: 10px 0 3px; color: var(--ink-2); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
 .finding .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+:root[data-anlatim="sade"] .v-teknik, :root[data-anlatim="teknik"] .v-sade { display: none; }
+.anlbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 12px; }
+.finding .body ol.adim { margin: 4px 0 0; padding-left: 1.4em; } .finding .body ol.adim li { margin-bottom: 7px; } .finding .body ol.adim li::marker { color: var(--accent); font-weight: 700; }
+.ornek { margin-top: 14px; padding: 4px 14px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 10px 10px 0; }
+.ornek p { margin: 0 0 8px; font-family: Georgia, "Times New Roman", serif; font-size: .96rem; line-height: 1.55; }
+.kopya { font-size: .78rem; padding: 3px 10px; }
+.sozluk { margin: 0 0 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.sozluk summary { cursor: pointer; padding: 10px 14px; font-weight: 600; font-size: .9rem; }
+.sozluk dl { margin: 0; padding: 2px 16px 12px; display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr); gap: 6px 16px; font-size: .9rem; }
+.sozluk dt { font-weight: 600; } .sozluk dd { margin: 0; color: var(--ink-2); }
+@media (max-width: 640px) { .sozluk dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .sozluk dd { margin-bottom: 8px; } }
 .hyp { display: grid; grid-template-columns: 56px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--grid); align-items: start; }
 .hyp:last-child { border-bottom: 0; } .hyp .hid { font-weight: 700; font-size: 1.1rem; }
 .todo { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--grid); } .todo input { margin-top: 4px; width: 17px; height: 17px; accent-color: var(--accent); }

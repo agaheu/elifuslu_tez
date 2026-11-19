@@ -10,6 +10,7 @@ Elif Uslu'nun doktora tezinin (AB ETS'nin yeşil inovasyon üzerindeki etkisi) 5
 |---|---|
 | `analiz/Kapsamli_Yeniden_Inceleme.md` | Ana rapor: bölümün ve verinin sıfırdan, bağımsız yeniden incelemesi (36 bulgu, yeniden üretim, Monte Carlo, iki jüri raporunun analizi, tez bölümlerine göre harita, yapılacaklar) |
 | `analiz/Juri2_Raporu_Degerlendirmesi.md` | İkinci jüri ekibinin raporunun madde madde, veriyle sınanmış değerlendirmesi |
+| `analiz/Sade_Anlatim_ve_Duzeltme_Rehberi.md` | 36 bulgunun teknik olmayan okur için sade anlatımı: sorun ne, neden önemli, adım adım düzeltme, teze yazılabilecek örnek metinler, terimler sözlüğü |
 | `analiz/py/` | Bütün hesapları yeniden üreten Python kodu |
 | `analiz/cikti/` | Hesap çıktıları (JSON) ve çalışma günlükleri |
 | `analiz/arsiv/` | İlk inceleme raporu ve ilk replikasyon betiği |
@@ -51,7 +52,7 @@ python analiz/py/juri2.py
 python analiz/py/rapor_uret.py
 ```
 
-Son komut iki raporu (`analiz/Kapsamli_Yeniden_Inceleme.md`, `analiz/Juri2_Raporu_Degerlendirmesi.md`) ve site verisini (`docs/data/`) hesap çıktılarından üretir; rapordaki ve sitedeki sayılar elle yazılmaz.
+Son komut üç belgeyi (`analiz/Kapsamli_Yeniden_Inceleme.md`, `analiz/Juri2_Raporu_Degerlendirmesi.md`, `analiz/Sade_Anlatim_ve_Duzeltme_Rehberi.md`) ve site verisini (`docs/data/`) hesap çıktılarından üretir; rapordaki ve sitedeki sayılar elle yazılmaz.
 
 ## Siteyi yerelde açmak
 
