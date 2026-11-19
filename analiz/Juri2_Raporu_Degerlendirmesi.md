@@ -192,7 +192,7 @@ Okuma: (A) ve (B) tanımlarında stok katsayısı bire yaklaşıyor ve faz farkl
 | Faz 3 eğim | 0,046 (0,014) | 0,044 (0,002) | 0,013 |
 | Stok | 1,012 (<0,001) | 1,096 (<0,001) | 0,657 |
 
-Faz 1 eğimi ve Faz 2 düzeyi iki tahmincide de sabit etkili tahminlere çok yakın ve anlamlı. Bu, tezin en dayanıklı bulgusunun Model 2'de olduğunu bir kez daha gösteriyor.
+Faz 1 eğimi ve Faz 2 düzeyi iki tahmincide de sabit etkili tahminlere çok yakın ve anlamlı. Bu, tezin en dayanıklı bulgusunun Model 2'de olduğunu bir kez daha gösteriyor. Kayıt: bu tanımda stok katsayısı biri aşıyor, ETS öncesi eğilim negatif ve Faz 3 eğimi pozitif çıkıyor; stok ile eğilim arasındaki paylaşım burada da kararsız olduğundan bu üç katsayıya ağırlık verilmemeli.
 
 ### 3.2 Sıfır-kesikli model (E5)
 

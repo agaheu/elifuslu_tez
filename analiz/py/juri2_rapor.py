@@ -56,7 +56,7 @@ def uret(tarih):
     w("**Model 2 (kesintili zaman serisi), ön-örneklem ortalamalı (A tanımı):**"); w("")
     AD2 = {"tstar": "ETS öncesi eğilim", "F1": "Faz 1 düzey", "S1": "Faz 1 eğim", "F2": "Faz 2 düzey", "S2": "Faz 2 eğim", "F3": "Faz 3 düzey", "S3": "Faz 3 eğim", "lnK1": "Stok"}
     tablo(["Katsayı", "Negatif binom", "Poisson QML", "Tezin sabit etkili tahmini (NB)"], [[AD2[k], f(J["psm_m2"][N], k), f(J["psm_m2"][P], k), tr(R["m2"][N]["coef"][k]["b"], 3)] for k in AD2])
-    w("Faz 1 eğimi ve Faz 2 düzeyi iki tahmincide de sabit etkili tahminlere çok yakın ve anlamlı. Bu, tezin en dayanıklı bulgusunun Model 2'de olduğunu bir kez daha gösteriyor.")
+    w("Faz 1 eğimi ve Faz 2 düzeyi iki tahmincide de sabit etkili tahminlere çok yakın ve anlamlı. Bu, tezin en dayanıklı bulgusunun Model 2'de olduğunu bir kez daha gösteriyor. Kayıt: bu tanımda stok katsayısı biri aşıyor, ETS öncesi eğilim negatif ve Faz 3 eğimi pozitif çıkıyor; stok ile eğilim arasındaki paylaşım burada da kararsız olduğundan bu üç katsayıya ağırlık verilmemeli.")
     w("")
     w("### 3.2 Sıfır-kesikli model (E5)"); w("")
     Z = J["sifir"]
