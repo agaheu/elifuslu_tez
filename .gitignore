@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+
+analiz/cikti/.pandoc_cache.json

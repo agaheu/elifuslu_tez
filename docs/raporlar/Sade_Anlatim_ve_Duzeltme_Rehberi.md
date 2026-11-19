@@ -120,7 +120,7 @@ Tezdeki hesaplar doğru: karşılaştırılan 164 sayının 164'ü yeniden üret
 
 **Teze yazılabilecek örnek metin:**
 
-> Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde 5,0 düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı her iki tanımda da anlamlıdır.
+> Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde 5,0 düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı stoksuz modelde de ortaya çıkmaktadır (negatif binom tahmincisinde ikisi de anlamlı; Poisson tahmincisinde eğim artışı yüzde 10 düzeyinde anlamlı).
 
 ### T3 · H1 için gösterilen “toplam etki” rakamları (%44, %101, %89) olduğundan büyük
 
@@ -258,7 +258,7 @@ Tezdeki hesaplar doğru: karşılaştırılan 164 sayının 164'ü yeniden üret
 
 **Teze yazılabilecek örnek metin:**
 
-> Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, ikinci faz farkı anlamlı kalmakta, birinci faz farkı ise küçülmektedir.
+> Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, negatif binom modelinde ikinci faz farkı anlamlı kalmakta, birinci faz farkı küçülmektedir; Poisson modelinde ise iki fark da bootstrap standart hatalarıyla anlamlılığını yitirmektedir.
 
 ### T10 · “Kurallar tümüyle AB düzeyinde belirlendi” ifadesi ilk iki faz için eksik
 
@@ -403,9 +403,9 @@ Tezdeki hesaplar doğru: karşılaştırılan 164 sayının 164'ü yeniden üret
 
 **Ne yapılmalı?**
 
-1. Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), negatif binom ticaret açıklığı (** → *). İkinci faz ve stok katsayıları değişmiyor.
+1. Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), Poisson ikinci faz (*** → **), negatif binom ticaret açıklığı (** → *, iki tabloda), stoksuz negatif binom modelinde üçüncü faz (*** → **). Negatif binom faz katsayıları ve stok katsayıları değişmiyor.
 2. Tablo notlarına ekleyin: “Anlamlılık düzeyleri 13 serbestlik dereceli t dağılımına göre belirlenmiştir.”
-3. 5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde” deyin.
+3. 5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde”, ikinci faz için “yüzde 5 düzeyinde” deyin.
 
 ### C7 · Yıl etkileri grafiği ve plasebo tablosu, tezin kendisinin “güvenilmez” dediği hesapla yapılmış
 
@@ -480,7 +480,7 @@ Tezdeki hesaplar doğru: karşılaştırılan 164 sayının 164'ü yeniden üret
 
 **Teze yazılabilecek örnek metin:**
 
-> Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti ve anlamlılığı iki tanımda aynıdır.
+> Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti iki tanımda aynıdır; birinci ve ikinci faz farkları serbest esneklik tanımında da anlamlıdır.
 
 ### M2 · Gecikme karşılaştırması anlatıldığı gibi yapılmamış
 

@@ -46,7 +46,7 @@ SADE = {
             "5.7.3'teki (L663) “ETS'nin başlangıcından önce yeşil patent yoğunluğu istikrarlı bir seyir izlemiştir” cümlesini düzeltin: ETS öncesi yıl katsayılarının yedisi de pozitif ve 2004'e doğru azalıyor; bu “istikrarlı” değil, “stok kontrol edildiğinde hafif azalan” bir seyir.",
             f"Tablo 5.6'ya Model 2'nin çoklu bağlantı ölçülerini (VIF) de ekleyin: eğilim {tr(vif2['tstar'], 1)}, Faz 3 düzeyi {tr(vif2['F3'], 1)}, stok {tr(vif2['lnK1'], 1)}. Bu değerler, modelin eğilim ile stoku birbirinden ayırmakta zorlandığını gösterir.",
         ],
-        ornek=f"Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde {pct(ek('m2_stoksuz', N, 'tstar'))} düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı her iki tanımda da anlamlıdır."),
+        ornek=f"Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde {pct(ek('m2_stoksuz', N, 'tstar'))} düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı stoksuz modelde de ortaya çıkmaktadır (negatif binom tahmincisinde ikisi de anlamlı; Poisson tahmincisinde eğim artışı yüzde 10 düzeyinde anlamlı)."),
     "T3": dict(
         baslik="H1 için gösterilen “toplam etki” rakamları (%44, %101, %89) olduğundan büyük",
         sorun=f"Tezin ana hipotezi (H1: ETS yoğunluğu artırdı) için gösterilen kanıt bu üç yüzde. Rakamlar stoksuz modelden geliyor ve o modelde zaman eğilimi yok; yani ETS'den önce de süren artış bu rakamların içinde. Yalnızca ETS öncesi eğilim aynen sürseydi bile fazlar için sırasıyla yaklaşık {tr(eg['nb']['F1']['egilimden'], 2)}, {tr(eg['nb']['F2']['egilimden'], 2)} ve {tr(eg['nb']['F3']['egilimden'], 2)} birimlik “artış” görünürdü; tezin raporladığı değerler {tr(eg['nb']['F1']['stoksuz_faz_katsayisi'], 2)}, {tr(eg['nb']['F2']['stoksuz_faz_katsayisi'], 2)} ve {tr(eg['nb']['F3']['stoksuz_faz_katsayisi'], 2)}. Faz 3'ün değeri, eğilimin tek başına öngördüğünden bile düşük.",
@@ -128,7 +128,7 @@ SADE = {
             "5.2'de karşılaştırma döneminin neden 1997–2004 seçildiğini bir cümleyle gerekçelendirin ve Direktif'in 2003'te kabul edildiğini belirtin.",
             "5.7.1'de birinci faz sonucunu yorumlarken bu duyarlılığı bir cümleyle yazın.",
         ],
-        ornek="Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, ikinci faz farkı anlamlı kalmakta, birinci faz farkı ise küçülmektedir."),
+        ornek="Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, negatif binom modelinde ikinci faz farkı anlamlı kalmakta, birinci faz farkı küçülmektedir; Poisson modelinde ise iki fark da bootstrap standart hatalarıyla anlamlılığını yitirmektedir."),
     "T10": dict(
         baslik="“Kurallar tümüyle AB düzeyinde belirlendi” ifadesi ilk iki faz için eksik",
         sorun="Tez, fazların kurallarının AB düzeyinde ve ülkelerden bağımsız belirlendiğini söylüyor. Takvim için bu doğru. Ancak birinci ve ikinci fazda her ülke kendi Ulusal Tahsis Planını hazırladı (Komisyon onayladı); AB çapında tek üst sınır üçüncü fazda geldi. Yani ilk iki fazda sistemin ne kadar sıkı olacağı kısmen ülkelerin kendi kararıydı. Ayrıca “2020 yılına kadar geçerli olacak doğrusal indirim faktörü” ifadesi yanlış anlaşılmaya açık; faktörün 2020'de biten bir süresi yoktu.",
@@ -218,9 +218,9 @@ SADE = {
         sorun=f"Tablolardaki *, ** ve *** işaretleri, sonucun tesadüf olma olasılığının ne kadar düşük olduğunu gösterir. Bu işaretler hesaplanırken çok sayıda bağımsız gözlem varmış gibi davranılmış. Yalnızca 14 ülke olduğunda daha temkinli bir ölçü kullanılması önerilir. Bu ölçüyle sınırdaki sonuçlar bir kademe düşüyor: Poisson birinci faz p = {pv(bo('m1', P, 'F1', 'p'))} yerine {pv(pt13(c('m1', P, 'F1'), bo('m1', P, 'F1')))}; negatif binom ticaret açıklığı {pv(bo('m1', N, 'trade_l1', 'p'))} yerine {pv(pt13(c('m1', N, 'trade_l1'), bo('m1', N, 'trade_l1')))}.",
         neden="Küçük bir düzeltme, ama iki sonucun yıldızı ** yerine * oluyor ve metindeki “yüzde 5 düzeyinde anlamlıdır” cümleleri değişiyor.",
         adimlar=[
-            "Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), negatif binom ticaret açıklığı (** → *). İkinci faz ve stok katsayıları değişmiyor.",
+            "Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), Poisson ikinci faz (*** → **), negatif binom ticaret açıklığı (** → *, iki tabloda), stoksuz negatif binom modelinde üçüncü faz (*** → **). Negatif binom faz katsayıları ve stok katsayıları değişmiyor.",
             "Tablo notlarına ekleyin: “Anlamlılık düzeyleri 13 serbestlik dereceli t dağılımına göre belirlenmiştir.”",
-            "5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde” deyin.",
+            "5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde”, ikinci faz için “yüzde 5 düzeyinde” deyin.",
         ],
         ornek=None),
     "C7": dict(
@@ -268,7 +268,7 @@ SADE = {
             "Hipotezlerin her iki tanımda da aynı sonucu verdiğini Tablo 5.17'nin notunda belirtin.",
             f"İrlanda için bir dipnot ekleyin: 2015'teki yüzde 24,6'lık GSYİH artışı nedeniyle İrlanda çıkarılarak yapılan tahminde sonuçlar değişmemektedir ({tr(jp('irlanda', 'haric', N, 'F1'), 3)} ve {tr(jp('irlanda', 'haric', N, 'F2'), 3)}).",
         ],
-        ornek="Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti ve anlamlılığı iki tanımda aynıdır."),
+        ornek="Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti iki tanımda aynıdır; birinci ve ikinci faz farkları serbest esneklik tanımında da anlamlıdır."),
     "M2": dict(
         baslik="Gecikme karşılaştırması anlatıldığı gibi yapılmamış",
         sorun=f"Tez, kontrol değişkenlerinin modele bir yıl mı yoksa iki yıl gecikmeyle mi girmesi gerektiğini iki modeli karşılaştırarak belirliyor ve bir yılı seçiyor. Ancak raporlanan iki yıllık model yalnızca kontrol değişkenlerini değil, patent stokunu da iki yıl geciktiriyor. Yalnızca kontroller iki yıl geciktirildiğinde iki model arasındaki fark çok daha küçük: uyum ölçüsü (AIC; küçük olan daha iyi) {tr(R['gecikme'][N]['lag2_yalniz_kontrol'], 2)}; tezde verilen değer {tr(R['gecikme'][N]['lag2_hepsi'], 2)}, bir yıllık modelin değeri {tr(R['gecikme'][N]['lag1'], 2)}. Sonuç değişmiyor; bir yıllık gecikme yine daha iyi.",

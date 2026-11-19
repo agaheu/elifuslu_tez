@@ -18,9 +18,9 @@
   const pctEff = (b) => tr(100 * (Math.exp(b) - 1), 1);
   const load = (f) => fetch("data/" + f).then((r) => { if (!r.ok) throw new Error(f); return r.json(); });
 
-  let R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP, J2D;
+  let R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP, J2D, TD;
   try {
-    [R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP, J2D] = await Promise.all(["sonuclar.json", "icerik.json", "panel.json", "spec_egrisi.json", "bootstrap_m1.json", "birim_kok.json", "ek_dogrulama.json", "simulasyon.json", "simulasyon_p.json", "juri2.json"].map(load));
+    [R, IC, PANEL, SPEC, BOOT, UR, EKD, SIM, SIMP, J2D, TD] = await Promise.all(["sonuclar.json", "icerik.json", "panel.json", "spec_egrisi.json", "bootstrap_m1.json", "birim_kok.json", "ek_dogrulama.json", "simulasyon.json", "simulasyon_p.json", "juri2.json", "tez_degisiklik.json"].map(load));
   } catch (e) {
     $("#yukleniyor").textContent = "Veri dosyaları yüklenemedi (" + e.message + "). Sayfayı bir web sunucusu üzerinden açın.";
     return;
@@ -53,7 +53,7 @@
 
   const say = (o) => IC.bulgular.filter((b) => b.onem === o).length;
   const PAGES = [
-    ["ozet", "◎", "Özet"], ["rapor", "❡", "Rapor (tam metin)"], ["bolumler", "☰", "Tez bölümleri"], ["veri", "▤", "Veri"], ["replikasyon", "⟳", "Yeniden üretim"], ["modeller", "ƒ", "Modeller"], ["cikarsama", "±", "Çıkarsama"],
+    ["ozet", "◎", "Özet"], ["tez", "✎", "Güncellenmiş tez", TD.degisiklikler.length], ["rapor", "❡", "Rapor (tam metin)"], ["bolumler", "☰", "Tez bölümleri"], ["veri", "▤", "Veri"], ["replikasyon", "⟳", "Yeniden üretim"], ["modeller", "ƒ", "Modeller"], ["cikarsama", "±", "Çıkarsama"],
     ["saglamlik", "≋", "Sağlamlık"], ["bulgular", "⚑", "Bulgular", IC.bulgular.length], ["kaynakca", "❞", "Kaynakça"], ["juri", "§", "Jüri raporları"], ["yapilacak", "☑", "Yapılacaklar", IC.yapilacak.length], ["belgeler", "▣", "Belgeler"]];
   const para = (t) => { const parts = t.split(" • "); if (parts.length < 3) return h("p", null, t.replace(/^• /, "")); return h("ul", null, parts.map((x) => h("li", null, x.replace(/^• /, "")))); };
   const durumCls = (d) => (d.startsWith("yeni") ? "b-info" : d.includes("doğrulanamadı") || d.includes("kısmen") ? "b-orta" : "b-ok");
@@ -67,13 +67,17 @@
   const anlatimBar = () => h("div", { class: "anlbar" }, h("span", { class: "small" }, "Bulguların anlatımı:"), anlatimSeg(), h("span", { class: "small v-sade" }, "Günlük dille: sorun ne, neden önemli, ne yapılmalı."), h("span", { class: "small v-teknik" }, "Ekonometri diliyle: tespit, sayısal kanıt, öneri."));
   const kopyala = (t) => h("button", { type: "button", class: "kopya", onclick: (e) => { const b = e.currentTarget; const ok = () => { b.textContent = "Kopyalandı"; setTimeout(() => (b.textContent = "Metni kopyala"), 1600); };
     try { navigator.clipboard.writeText(t).then(ok, () => (b.textContent = "Kopyalanamadı")); } catch (x) { b.textContent = "Kopyalanamadı"; } } }, "Metni kopyala");
+  const TDB = {}; TD.degisiklikler.forEach((d) => d.bulgu.forEach((x) => (TDB[x] = (TDB[x] || 0) + 1)));
+  let tezFiltre = null, tezIstek = null;
+  const tezBag = (id) => h("p", { class: "tezbag" }, TDB[id] ? h("a", { class: "btn", href: "#tez", onclick: () => { tezIstek = id; if (tezFiltre) setTimeout(() => tezFiltre(id), 60); } }, "Güncellenmiş tezde bu bulguya ait " + TDB[id] + " değişikliği göster →") : h("span", { class: "small" }, "Bu bulgu için tez metninde değişiklik yapılmadı; ayrıntı “Güncellenmiş tez” sayfasındaki uygulanmayan öneriler tablosunda."));
   const findingEl = (b, pre) => { const s = b.sade;
     return h("details", { class: "finding", id: (pre || "b-") + b.id }, h("summary", null, badge(b.onem, ONEM[b.onem]), h("span", null, h("span", { class: "id" }, b.id + " · " + b.kat), h("br"), h("span", { class: "ttl v-sade" }, s.baslik), h("span", { class: "ttl v-teknik" }, b.baslik)), h("span", { class: "small" }, b.yer)),
       h("div", { class: "body" }, h("div", { class: "meta" }, b.kaynak.map((k) => badge(k)), badge(b.durum, durumCls(b.durum))),
         h("div", { class: "v-sade" }, h("h4", null, "Sorun ne?"), para(s.sorun), h("h4", null, "Neden önemli?"), para(s.neden)),
         h("div", { class: "v-teknik" }, h("h4", null, "Tespit"), para(b.tespit), h("h4", null, "Kanıt"), para(b.kanit), h("h4", null, "Öneri"), para(b.oneri)),
         h("h4", null, "Ne yapılmalı? Adım adım düzeltme"), h("ol", { class: "adim" }, s.adimlar.map((x) => h("li", null, x))),
-        s.ornek ? h("div", { class: "ornek" }, h("h4", null, "Teze yazılabilecek örnek metin"), h("p", null, s.ornek), kopyala(s.ornek)) : null)); };
+        s.ornek ? h("div", { class: "ornek" }, h("h4", null, "Teze yazılabilecek örnek metin"), h("p", null, s.ornek), kopyala(s.ornek)) : null,
+        tezBag(b.id))); };
   const bulguLink = (id) => h("a", { href: "#bulgular", class: "small", style: "margin-right:8px", onclick: () => setTimeout(() => { const d = document.getElementById("b-" + id); if (d) { d.open = true; d.scrollIntoView({ block: "center" }); } }, 80) }, id);
   const mdView = async (view, f) => { view.textContent = "Yükleniyor…"; try { const t = await fetch("raporlar/" + f).then((r) => { if (!r.ok) throw 0; return r.text(); }); view.innerHTML = marked.parse(t); view.querySelectorAll("table").forEach((t_) => { const w = h("div", { class: "tw" }); t_.replaceWith(w); w.append(t_); }); } catch (e) { view.textContent = "Belge yüklenemedi."; } };
   const main = $("#main"); main.replaceChildren();
@@ -104,7 +108,7 @@
     el.append(h("div", { class: "hero" },
       h("div", { class: "verdict" }, h("h3", null, "Sonuç: hesaplar doğru, yorumlar fazla iddialı"),
         h("p", null, "Tezde raporlanan sayılar yeniden üretilebiliyor; hesaplama hatası yok. Sorunlar, tasarımın neyi tanımlayabildiğinde ve hipotez tablosunun kanıttan ileri gitmesinde. “AB ETS yeşil inovasyonu artırmıştır” nedensel iddiası bu tasarımla taşınamıyor; “ilk iki faza denk gelen dönemde, önceki eğilimin ve bilgi stokunun açıklayamadığı bir yükseliş vardır ve üçüncü fazda sürmemiştir” betimleyici bulgusu ise güçlü."),
-        h("p", { class: "small", style: "margin:0" }, "Birinci jüri raporundaki “önemli düzeltme gerekli” yargısıyla örtüşüyor; ikinci jüri raporunun “düzeltmelerle yayına hazır” yargısı fazla iyimser. Düzeltmelerin çoğu yeni veri değil, yeniden yazım ve birkaç ek tablo gerektiriyor.")),
+        h("p", null, h("a", { class: "btn", href: "#tez" }, "Bulgulara göre güncellenmiş tez metnini aç →")), h("p", { class: "small", style: "margin:0" }, "Birinci jüri raporundaki “önemli düzeltme gerekli” yargısıyla örtüşüyor; ikinci jüri raporunun “düzeltmelerle yayına hazır” yargısı fazla iyimser. Düzeltmelerin çoğu yeni veri değil, yeniden yazım ve birkaç ek tablo gerektiriyor.")),
       h("div", { class: "grid g2" },
         h("div", { class: "tile" }, h("div", { class: "lab" }, "Birebir yeniden üretilen değer"), h("div", { class: "val" }, u[0] + " / " + u[1]), h("div", { class: "note" }, "katsayı, istatistik, VIF, korelasyon")),
         h("div", { class: "tile" }, h("div", { class: "lab" }, "Bulgu"), h("div", { class: "val" }, IC.bulgular.length), h("div", { class: "chips", style: "margin-top:4px" }, badge(say("kritik") + " kritik", "b-kritik"), badge(say("önemli") + " önemli", "b-onemli"), badge(say("orta") + " orta", "b-orta"), badge(say("küçük") + " küçük", "b-kucuk"))),
@@ -492,7 +496,7 @@
   // ================================================================ BELGELER
   function belgeler(el) {
     el.append(h("h1", null, "Belgeler"), h("p", { class: "lede" }, "Raporların tam metinleri, tez bölümü, veri seti ve bütün hesapları yeniden üreten kod."));
-    const DOCS = [["Kapsamli_Yeniden_Inceleme.md", "Kapsamlı yeniden inceleme raporu (ana rapor)"], ["Sade_Anlatim_ve_Duzeltme_Rehberi.md", "Sade anlatım ve adım adım düzeltme rehberi"], ["Juri2_Raporu_Degerlendirmesi.md", "İkinci jüri raporunun değerlendirmesi"], ["Juri2_Degerlendirme_Raporu.md", "İkinci jüri ekibinin raporu (dış değerlendirme)"], ["Juri1_Degerlendirme_Raporu.md", "Birinci jüri değerlendirme raporu (dış değerlendirme)"], ["Bagimsiz_Hakem_Raporu.md", "Bağımsız hakem raporu (kör ikinci okuma, İngilizce)"], ["01_Ilk_Inceleme_ve_Juri_Analizi.md", "İlk inceleme ve birinci jüri analizi (arşiv; bazı değerlendirmeleri güncellendi)"], ["Tez_Bolum5_metin.md", "Tez 5. bölüm, düz metin (satır numaraları buna göre)"]];
+    const DOCS = [["Kapsamli_Yeniden_Inceleme.md", "Kapsamlı yeniden inceleme raporu (ana rapor)"], ["Sade_Anlatim_ve_Duzeltme_Rehberi.md", "Sade anlatım ve adım adım düzeltme rehberi"], ["Tez_Guncelleme_Degisiklik_Listesi.md", "Tez güncellemesi: değişiklik listesi"], ["Juri2_Raporu_Degerlendirmesi.md", "İkinci jüri raporunun değerlendirmesi"], ["Juri2_Degerlendirme_Raporu.md", "İkinci jüri ekibinin raporu (dış değerlendirme)"], ["Juri1_Degerlendirme_Raporu.md", "Birinci jüri değerlendirme raporu (dış değerlendirme)"], ["Bagimsiz_Hakem_Raporu.md", "Bağımsız hakem raporu (kör ikinci okuma, İngilizce)"], ["01_Ilk_Inceleme_ve_Juri_Analizi.md", "İlk inceleme ve birinci jüri analizi (arşiv; bazı değerlendirmeleri güncellendi)"], ["Tez_Bolum5_metin.md", "Tez 5. bölüm, düz metin (satır numaraları buna göre)"]];
     const view = h("div", { class: "md" });
     const show = (f) => mdView(view, f);
     el.append(h("div", { class: "grid g2" },
@@ -506,7 +510,81 @@
     el.append(h("div", { class: "filters" }, h("label", null, "Belge", sel(DOCS, DOCS[0][0], show))), h("div", { class: "card" }, view)); show(DOCS[0][0]);
   }
 
-  const BUILD = { ozet, rapor, bolumler, veri, replikasyon, modeller, cikarsama, saglamlik, bulgular, kaynakca, juri, yapilacak, belgeler };
+  // ================================================================ GÜNCELLENMİŞ TEZ
+  function tez(el) {
+    const DM = Object.fromEntries(TD.degisiklikler.map((d) => [d.no, d]));
+    const TUR = { "değişiklik": "Değiştirilen", "ekleme": "Eklenen", "çıkarma": "Çıkarılan", "tablo": "Tablo", "biçim": "Biçim", "kontrol": "Yazar kontrolü", "şekil": "Şekil" };
+    const nk = TD.sayim["kontrol"] || 0;
+    el.append(h("h1", null, "Güncellenmiş tez metni (5. bölüm)"),
+      h("p", { class: "lede" }, "Tezin beşinci bölümü, bu incelemedeki bulgulara ve çözüm önerilerine göre güncellendi. Yalnızca bulgularda sorun olarak işaretlenen yerlere dokunuldu; sorunsuz bulunan kısımlar aynen duruyor. Her değişiklik bir bulgu numarasına bağlı: işaretli bir yere tıklayınca gerekçesi açılır."));
+    el.append(h("div", { class: "grid g4" },
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Değişiklik kaydı"), h("div", { class: "val" }, TD.degisiklikler.length), h("div", { class: "note" }, "metinde " + TD.nokta + " nokta")),
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Değişiklik uygulanan bulgu"), h("div", { class: "val" }, TD.bulgu_sayisi + " / " + IC.bulgular.length), h("div", { class: "note" }, "her bulgu için en az bir değişiklik")),
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Yazarın doğrulaması gereken yer"), h("div", { class: "val" }, nk), h("div", { class: "note" }, "metin değiştirilmedi, işaretlendi")),
+      h("div", { class: "tile" }, h("div", { class: "lab" }, "Uygulanmayan / yazara bırakılan öneri"), h("div", { class: "val" }, TD.uygulanmayan.length), h("div", { class: "note" }, "yeni veri ya da yazar kararı gerekir"))));
+    el.append(h("div", { class: "card tezokuma" }, h("h3", null, "Nasıl okunur?"),
+      h("div", { class: "tezlej" }, h("span", null, h("ins", { class: "orn" }, "eklenen metin")), h("span", null, h("del", { class: "orn" }, "çıkarılan metin")), h("span", null, h("span", { class: "kontrol orn" }, "yazarın doğrulaması gereken ifade")), h("span", null, h("span", { class: "bicim orn" }, "biçim düzeltmesi"))),
+      h("ul", { class: "small", style: "margin:10px 0 0;padding-left:1.2em" }, TD.genel_not.map((x) => h("li", null, x))),
+      h("p", { class: "small", style: "margin:10px 0 0" }, "İndir: ", h("a", { href: REPO + "dokumanlar/Nihai_Model_guncel.docx" }, "güncel metin (Word)"), " · ", h("a", { href: REPO + "dokumanlar/Nihai_Model_guncel_metin.md" }, "güncel metin (düz metin)"), " · ", h("a", { href: REPO + "analiz/Tez_Guncelleme_Degisiklik_Listesi.md" }, "değişiklik listesi"), " · ", h("a", { href: REPO + "dokumanlar/Nihai_Model_19112026.docx" }, "özgün Word dosyası"))));
+    el.append(h("details", { class: "sozluk" }, h("summary", null, "Uygulanmayan ya da yazara bırakılan öneriler (" + TD.uygulanmayan.length + ")"),
+      h("div", { style: "padding:0 14px 14px" }, table(["Bulgu", "Öneri", "Neden uygulanmadı", "Ne yapıldı"], TD.uygulanmayan.map((u) => [h("td", null, bulguLink(u[0])), u[1], u[2], u[3]])))));
+
+    const st = { gor: "fark", b: tezIstek || "", i: -1 };
+    const metin = h("div", { class: "tezmetin", "data-gor": "fark" }, "Tez metni yükleniyor…");
+    const sayac = h("span", { class: "small tezsayac" }), bsel = h("select", { "aria-label": "Bulguya göre süz" }), ssel = h("select", { "aria-label": "Bölüme git" });
+    const kart = h("div", { class: "dkart", hidden: "" });
+    const gorSeg = seg([["fark", "Değişiklikler görünür"], ["guncel", "Güncel metin"], ["ozgun", "Özgün metin"]], "fark", (v) => { st.gor = v; metin.setAttribute("data-gor", v); kapat(); guncelle(); });
+    const kapat = () => { kart.hidden = true; metin.querySelectorAll(".secili").forEach((x) => x.classList.remove("secili")); };
+    let liste = [];
+    const gorunur = (e) => e.offsetParent !== null;
+    const guncelle = () => {
+      metin.classList.toggle("filtre", !!st.b);
+      metin.querySelectorAll("[data-d]").forEach((e) => e.classList.toggle("f-on", !!st.b && e.dataset.b.split(" ").includes(st.b)));
+      liste = st.gor === "fark" ? [...metin.querySelectorAll("[data-d]")].filter((e) => (!st.b || e.classList.contains("f-on")) && gorunur(e) && !(e.tagName === "DEL" && e.nextElementSibling && e.nextElementSibling.dataset.d === e.dataset.d)) : [];
+      st.i = -1; sayac.textContent = st.gor !== "fark" ? "" : (liste.length + " değişiklik noktası" + (st.b ? " (" + st.b + ")" : ""));
+      [...ltab.querySelectorAll("tbody tr")].forEach((r) => (r.style.display = !st.b || r.dataset.b.split(" ").includes(st.b) ? "" : "none"));
+    };
+    const goster = (e, kaydir) => {
+      kapat(); const d = DM[e.dataset.d]; if (!d) return;
+      metin.querySelectorAll('[data-d="' + d.no + '"]').forEach((x) => x.classList.add("secili"));
+      if (kaydir) e.scrollIntoView({ block: "center", behavior: "instant" });
+      kart.replaceChildren(...[h("button", { type: "button", class: "kapat", "aria-label": "Kapat", onclick: kapat }, "×"),
+        h("div", { class: "meta" }, h("span", { class: "id" }, d.no), badge(TUR[d.tur] || d.tur, d.tur === "kontrol" ? "b-orta" : "b-info"), h("span", { class: "small" }, "Bölüm " + d.bolum)),
+        h("div", { class: "chips", style: "margin:6px 0" }, d.bulgu.map((b) => { const f = IC.bulgular.find((x) => x.id === b); return h("a", { class: "badge " + ONEM[f.onem], href: "#bulgular", title: f.sade.baslik, onclick: () => setTimeout(() => { const t = document.getElementById("b-" + b); if (t) { t.open = true; t.scrollIntoView({ block: "center" }); } }, 80) }, b + " · " + f.sade.baslik); })),
+        d.ozet ? h("p", null, d.ozet) : null,
+        d.tur === "kontrol" ? h("p", { class: "small" }, h("b", null, "Yazar için not: "), d.yeni) : null].filter(Boolean));
+      kart.hidden = false;
+    };
+    const git = (yon) => { if (!liste.length) return; st.i = (st.i + yon + liste.length) % liste.length; goster(liste[st.i], true); sayac.textContent = (st.i + 1) + " / " + liste.length + (st.b ? " (" + st.b + ")" : ""); };
+    const bar = h("div", { class: "tezbar" }, gorSeg,
+      h("label", { class: "small" }, "Bulgu ", bsel), h("label", { class: "small" }, "Bölüm ", ssel),
+      h("span", { class: "tezgez" }, h("button", { type: "button", onclick: () => git(-1), "aria-label": "Önceki değişiklik" }, "◀ Önceki"), h("button", { type: "button", onclick: () => git(1), "aria-label": "Sonraki değişiklik" }, "Sonraki ▶"), sayac));
+    bsel.append(h("option", { value: "" }, "bütün bulgular"), ...IC.bulgular.filter((b) => TDB[b.id]).map((b) => h("option", { value: b.id }, b.id + " · " + b.sade.baslik.slice(0, 58) + (b.sade.baslik.length > 58 ? "…" : "") + " (" + TDB[b.id] + ")")));
+    bsel.addEventListener("change", () => { st.b = bsel.value; kapat(); guncelle(); if (st.b && st.gor === "fark") git(1); });
+    ssel.addEventListener("change", () => { const t = document.getElementById(ssel.value); if (t) t.scrollIntoView({ block: "start", behavior: "instant" }); ssel.selectedIndex = 0; });
+    const ltab = table(["No", "Bölüm", "Bulgu", "Tür", "Gerekçe"], []);
+    const lbody = ltab.querySelector("tbody");
+    el.append(bar, metin, kart, h("details", { class: "sozluk", style: "margin-top:18px" }, h("summary", null, "Değişiklik listesi (" + TD.degisiklikler.length + " kayıt)"), h("div", { class: "tezliste" }, ltab)));
+    tezFiltre = (id) => { gorSeg.querySelector("button").click(); bsel.value = id; bsel.dispatchEvent(new Event("change")); };
+    fetch("tez/guncel.html").then((r) => { if (!r.ok) throw 0; return r.text(); }).then((t) => {
+      metin.innerHTML = t;
+      metin.querySelectorAll("table").forEach((x) => { if (x.closest(".tw")) return; const w = h("div", { class: "tw" }); x.replaceWith(w); w.append(x); });
+      metin.querySelectorAll('math[display="block"]').forEach((x) => { if (x.closest(".tw")) return; const w = h("span", { class: "mscroll" }); x.replaceWith(w); w.append(x); });
+      let n = 0; ssel.append(h("option", { value: "" }, "git…"));
+      metin.querySelectorAll("h1, h2, h3, h4, p").forEach((e) => {
+        if (e.tagName === "P" && !(e.children.length === 1 && e.firstElementChild.tagName === "STRONG" && /^5\.\d/.test(e.textContent.trim()) && e.textContent.trim() === e.firstElementChild.textContent.trim())) return;
+        const c = e.cloneNode(true); c.querySelectorAll("del").forEach((x) => x.remove()); const tx = c.textContent.trim(); if (!tx || tx.length > 90) return;
+        e.id = "tz-" + (n++); if (e.tagName === "P") e.classList.add("altbaslik"); ssel.append(h("option", { value: e.id }, tx));
+      });
+      const sira = {}; [...metin.querySelectorAll("[data-d]")].forEach((e, i) => { if (!(e.dataset.d in sira)) sira[e.dataset.d] = i; });
+      TD.degisiklikler.slice().sort((a, b) => (sira[a.no] ?? 1e9) - (sira[b.no] ?? 1e9)).forEach((d) => lbody.append(h("tr", { "data-b": d.bulgu.join(" "), class: "tik", onclick: () => { if (st.gor !== "fark") gorSeg.querySelector("button").click(); const e = [...metin.querySelectorAll('[data-d="' + d.no + '"]')].find(gorunur); if (e) goster(e, true); } },
+        h("td", { class: "id" }, d.no), h("td", null, d.bolum), h("td", null, d.bulgu.join(", ")), h("td", null, TUR[d.tur] || d.tur), h("td", null, d.ozet || (d.yeni || d.eski).slice(0, 160)))));
+      metin.addEventListener("click", (ev) => { if (st.gor !== "fark") return; const e = ev.target.closest("[data-d]"); if (e && metin.contains(e)) { goster(e, false); st.i = liste.indexOf(e); } });
+      if (st.b) { bsel.value = st.b; } guncelle(); if (st.b) git(1);
+    }).catch(() => { metin.textContent = "Tez metni yüklenemedi."; });
+  }
+
+  const BUILD = { ozet, tez, rapor, bolumler, veri, replikasyon, modeller, cikarsama, saglamlik, bulgular, kaynakca, juri, yapilacak, belgeler };
   function go() {
     let id = (location.hash || "#ozet").slice(1); if (!BUILD[id]) id = "ozet";
     for (const k in pages) pages[k].classList.toggle("on", k === id);

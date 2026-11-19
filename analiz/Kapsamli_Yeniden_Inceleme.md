@@ -173,7 +173,7 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Tespit.** Model 2'de ETS öncesi eğilim katsayısının sıfırdan farksız çıkması, yeşil patent yoğunluğunda eğilim olmadığını göstermiyor; eğilimin gecikmeli stok tarafından emildiğini gösteriyor. Stok, geçmiş patentlerin birikimi olduğundan zamanla neredeyse eşdoğrusal. Eğilim katsayısının işareti tanıma göre değişiyor.
 
-**Kanıt.** Ülke-içi korelasyon: ln(1+K₍t−1₎) ile zaman 0,95. Model 2'nin (tezde raporlanmayan) ülke-içi VIF değerleri: eğilim 42,8, Faz 3 düzey 25,4, stok 12,0. Eğilim katsayısı: stoklu Model 2'de −0,0225 (Poisson) / −0,0068 (NB); stoksuz Model 2'de 0,0354 / 0,0486 (bootstrap p = 0,007 / <0,001); yalnız 1997–2004 örnekleminde stoklu 0,057 / 0,059, stoksuz 0,077 / 0,073. Stoksuz yıl etkilerinde 1997 katsayısı −0,28 olup 2004'e kadar düzenli yükseliyor. Şekil 5.5'te ETS öncesi yedi katsayının tamamı pozitif ve sıfıra doğru azalıyor; bu “istikrarlı seyir” (L663) değil.
+**Kanıt.** Ülke-içi korelasyon: ln(1+K₍t−1₎) ile zaman 0,95. Model 2'nin (tezde raporlanmayan) ülke-içi VIF değerleri: eğilim 42,8, Faz 3 düzey 25,4, stok 12,0. Eğilim katsayısı: stoklu Model 2'de −0,0225 (Poisson) / −0,0068 (NB); stoksuz Model 2'de 0,0354 / 0,0486 (bootstrap p = 0,007 / <0,001); yalnız 1997–2004 örnekleminde stoklu 0,057 / 0,059, stoksuz 0,077 / 0,073. Stoksuz yıl etkilerinde 1997 katsayısı −0,28 olup 2004'e kadar düzenli yükseliyor. Şekil 5.5'te ETS öncesi yedi katsayının tamamı pozitif ve sıfıra doğru azalıyor; bu “istikrarlı seyir” (L663) değil. Stoksuz Model 2, bootstrap standart hatası ve t(13) ile: eğilim p = 0,018 / 0,001; Faz 1 eğimi p = 0,056 / 0,008; Faz 2 düzeyi p = 0,005 / 0,004 (Poisson / NB).
 
 **Öneri.** Stoksuz Model 2'yi tabloya ekleyin. H5'i “stok kontrol edildiğinde” diye sınırlayın ya da kaldırın; eğilimden bağımsızlık iddiasını stoksuz ITS'deki Faz 1 eğim ve Faz 2 düzey katsayılarına dayandırın (bunlar stoksuz da anlamlı). Model 2 için de VIF raporlayın.
 
@@ -187,7 +187,7 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Teze yazılabilecek örnek metin.**
 
-> Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde 5,0 düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı her iki tanımda da anlamlıdır.
+> Yeşil patent stoku kontrol edildiğinde ETS öncesi dönemde anlamlı bir eğilim saptanmamıştır. Ancak stok, geçmiş başvuruların birikimi olduğundan zamanla yüksek düzeyde eşdoğrusaldır; stok modelden çıkarıldığında yılda yaklaşık yüzde 5,0 düzeyinde anlamlı bir artış eğilimi görülmektedir. Birinci fazdaki eğim artışı ve ikinci fazın başındaki düzey farkı stoksuz modelde de ortaya çıkmaktadır (negatif binom tahmincisinde ikisi de anlamlı; Poisson tahmincisinde eğim artışı yüzde 10 düzeyinde anlamlı).
 
 #### T3 · H1'in kanıtı (“toplam etki %43,8 / %101,2 / %88,8”) eğilimle kirlenmiş
 
@@ -327,7 +327,7 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Tespit.** Direktif 2003/87/AT Ekim 2003'te kabul edildi (Yeşil Kitap 2000, Komisyon önerisi 2001). Referans dönemin son yılları beklenti etkisi taşıyabilir. İlk incelemede bunun etkileri aşağı yanlı yapacağını (tez lehine) varsaymıştım; veri tersini gösteriyor: 2003–2004 eğilimin altında kalıyor ve referans dönemi aşağı çekerek Faz 1 katsayısını büyütüyor.
 
-**Kanıt.** 2003–2004 için ayrı kukla eklendiğinde (referans 1997–2002): kukla −0,070 / −0,030; Faz 1 0,044 (p = 0,267) Poisson, 0,121 (p = 0,067) NB; Faz 2 0,147 / 0,251 (p = 0,028 / 0,012).
+**Kanıt.** 2003–2004 için ayrı kukla eklendiğinde (referans 1997–2002): kukla −0,070 / −0,030; Faz 1 0,044 (p = 0,267) Poisson, 0,121 (p = 0,067) NB; Faz 2 0,147 / 0,251 (p = 0,028 / 0,012). Bootstrap standart hatalarıyla (tez güncellemesi için hesaplandı, B = 1999, t(13)): NB Faz 1 p = 0,083, Faz 2 p = 0,023; Poisson Faz 1 p = 0,498, Faz 2 p = 0,142. Yani Poisson'da Faz 2 de bu tanımda anlamlılığını yitiriyor.
 
 **Öneri.** Referans dönem seçimine duyarlılığı raporlayın; Faz 1 bulgusunu buna göre ihtiyatla yorumlayın.
 
@@ -339,7 +339,7 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Teze yazılabilecek örnek metin.**
 
-> Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, ikinci faz farkı anlamlı kalmakta, birinci faz farkı ise küçülmektedir.
+> Direktif'in kabul edildiği 2003 yılından itibaren beklenti etkilerinin oluşmuş olabileceği dikkate alınarak karşılaştırma dönemi 1997–2002 ile sınırlandırıldığında, negatif binom modelinde ikinci faz farkı anlamlı kalmakta, birinci faz farkı küçülmektedir; Poisson modelinde ise iki fark da bootstrap standart hatalarıyla anlamlılığını yitirmektedir.
 
 #### T10 · “Faz kuralları AB düzeyinde, ülkelerden bağımsız belirlendi” ifadesi Faz 1–2 için tam doğru değil
 
@@ -494,15 +494,15 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Tespit.** Az kümede küme sayısı − 1 serbestlik dereceli t dağılımı standart öneridir. Sınırdaki sonuçların yıldızı değişiyor.
 
-**Kanıt.** Bootstrap SH ile t(13): Poisson Faz 1 p = 0,062 (normal: 0,041); NB ticaret açıklığı p = 0,072 (normal: 0,049); NB Faz 1 p = 0,035.
+**Kanıt.** Bootstrap SH ile t(13): Poisson Faz 1 p = 0,062 (normal: 0,041); NB ticaret açıklığı p = 0,072 (normal: 0,049); NB Faz 1 p = 0,035. Tezin kendi standart hatalarıyla yeniden hesaplandığında bir kademe düşen katsayılar: Poisson Faz 1 (** → *), Poisson Faz 2 (*** → **; p = 0,010), NB ticaret açıklığı (** → *; Tablo 5.11 ve 5.13), stoksuz NB Faz 3 (*** → **; Tablo 5.14).
 
 **Öneri.** Yıldızları t(13) ile verin ya da tablo notunda kritik değer seçimini belirtin.
 
 **Adım adım düzeltme.**
 
-1. Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), negatif binom ticaret açıklığı (** → *). İkinci faz ve stok katsayıları değişmiyor.
+1. Tablo 5.11, 5.13 ve 5.14'teki yıldızları 13 serbestlik dereceli t dağılımına göre yeniden belirleyin. Değişecek olanlar: Poisson birinci faz (** → *), Poisson ikinci faz (*** → **), negatif binom ticaret açıklığı (** → *, iki tabloda), stoksuz negatif binom modelinde üçüncü faz (*** → **). Negatif binom faz katsayıları ve stok katsayıları değişmiyor.
 2. Tablo notlarına ekleyin: “Anlamlılık düzeyleri 13 serbestlik dereceli t dağılımına göre belirlenmiştir.”
-3. 5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde” deyin.
+3. 5.7.1'deki “Poisson QML modeli de aynı sonucu vermektedir … her iki katsayı da istatistiksel olarak anlamlıdır” cümlesinde birinci faz için “yüzde 10 düzeyinde”, ikinci faz için “yüzde 5 düzeyinde” deyin.
 
 #### C7 · Yıl etkileri ve plasebo testlerinde, tezin kendisinin güvenilmez dediği asimptotik SH kullanılmış
 
@@ -585,7 +585,7 @@ Her bulgu için: önem derecesi, tezdeki yeri (satır numaraları `dokumanlar/Ni
 
 **Teze yazılabilecek örnek metin.**
 
-> Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti ve anlamlılığı iki tanımda aynıdır.
+> Reel GSYİH'nin maruziyet değişkeni olarak kullanılması, bağımlı büyüklüğü yeşil patent yoğunluğu olarak tanımlayan bir tercihtir. GSYİH esnekliği serbest bırakıldığında birim esneklik kısıtı reddedilmektedir; bu nedenle sonuçlar her iki tanımla birlikte sunulmuştur. Faz farklarının işareti iki tanımda aynıdır; birinci ve ikinci faz farkları serbest esneklik tanımında da anlamlıdır.
 
 #### M2 · Gecikme seçimi karşılaştırması stoku da iki dönem geciktiriyor
 
@@ -1153,6 +1153,8 @@ Hiçbir ön bilgi verilmeden yaptırılan ikinci okuma (`dokumanlar/Bagimsiz_Hak
 | “Stata nbreg kesirli bağımlı değişken kabul etmez” imasında bulunmuştum | Doğrulanmadı; rapordan çıkarıldı. |
 | “2007 İklim-Enerji Paketi” yazmıştım | Düzeltildi: hedefler Mart 2007 zirvesinde benimsendi; paket 2008'de önerildi, 2009'da kabul edildi. |
 | NB bootstrap'ında ilk yeniden yazımda tekrarların ~%20'si yakınsamadı | Tahminci IRLS + profil olabilirlik algoritmasıyla yeniden yazıldı; 1.999 tekrarın tamamı yakınsıyor, katsayılar Stata sonuçlarıyla dört ondalıkta aynı. |
+| C6'da “ikinci faz ve stok katsayılarının yıldızı değişmiyor” demiştim | Eksikti. Tezin kendi standart hatalarıyla t(13) uygulandığında Poisson Faz 2 (p = 0,010) ve stoksuz negatif binom Faz 3 de bir kademe düşüyor. Güncellenmiş tez metninde beş hücre düzeltildi. |
+| T9'da referans dönem 1997–2002 ile sınırlandığında “ikinci faz farkı anlamlı kalıyor” demiştim | Yalnızca negatif binom için doğru (bootstrap p = 0,023). Poisson'da kümelenmiş standart hatayla anlamlı görünen Faz 2 farkı, bootstrap standart hatasıyla anlamlı değil (p = 0,142). Güncellenmiş tez metni buna göre yazıldı. |
 | Ön-örneklem ortalaması için tek bir tanım raporlayıp “faz etkisi kayboluyor” demiştim | Ayrıntılandırıldı. Altı varyantın sonucu ön-örneklem bilgisinin biçimine çok duyarlı (Model 1 Faz 2: 0,02 ile 0,40 arasında); Model 2'nin Faz 1 eğimi ve Faz 2 düzeyi ise bu tahmincide de anlamlı (T5). |
 
 ## 12. Yapılacaklar
@@ -1267,6 +1269,9 @@ Bölümdeki bütün metin içi atıflar programla çıkarılıp kaynakçayla eş
 | `dokumanlar/` | Tez bölümü (docx + metin), şekiller, iki jüri raporu, bağımsız hakem raporu |
 | `analiz/Juri2_Raporu_Degerlendirmesi.md` | İkinci jüri raporunun madde madde değerlendirmesi |
 | `analiz/Sade_Anlatim_ve_Duzeltme_Rehberi.md` | Bulguların teknik olmayan okur için sade anlatımı ve adım adım düzeltme rehberi (`analiz/py/sade.py`) |
+| `dokumanlar/Nihai_Model_guncel_metin.md`, `Nihai_Model_guncel.docx` | Bulgulara göre güncellenmiş tez metni (5. bölüm); yalnızca bulgularda işaretlenen yerler değiştirildi |
+| `analiz/Tez_Guncelleme_Degisiklik_Listesi.md` | Güncellenmiş tezdeki bütün değişiklikler: gerekçe, önceki ve yeni metin, bulgu numarası; uygulanmayan öneriler |
+| `analiz/py/tez_guncel_hesap.py`, `tezarac.py`, `tez_d1.py`, `tez_d2.py`, `tez_guncelle.py` | Güncellenmiş tezi üreten kod: yeni tablo satırları için bootstrap ve jackknife; izlenebilir değişiklik altyapısı; değişiklik tanımları |
 | `analiz/py/juri2.py` | İkinci jürinin önerdiği sınamalar → `analiz/cikti/juri2.json` |
 | `analiz/py/tezlib.py` | Veri hazırlama, Poisson IRLS, NB2 en çok olabilirlik, kümelenmiş kovaryanslar, bootstrap yardımcıları |
 | `analiz/py/yeniden_inceleme.py` | Tüm tabloların yeniden üretimi ve ek analizler → `analiz/cikti/sonuclar.json` |

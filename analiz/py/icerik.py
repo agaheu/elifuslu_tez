@@ -322,6 +322,16 @@ _KS = ["Tanımlama", "Çıkarsama", "Model", "Yorum", "Biçim", "Kaynakça"]
 BULGULAR.sort(key=lambda b: (_KS.index(b["kat"]), b["id"][0], int(b["id"][1:])))
 B_ = {b["id"]: b for b in BULGULAR}
 
+import json as _json
+try: _TG = _json.load(open(CK / "tez_guncel.json"))
+except Exception: _TG = None
+if _TG:
+    _r = _TG["referans_1997_2002"]; _m = _TG["m2_stoksuz"]
+    B_["T9"]["kanit"] += f" Bootstrap standart hatalarıyla (tez güncellemesi için hesaplandı, B = {_TG['meta']['B']}, t(13)): NB Faz 1 p = {pv(_r['nb']['F1']['p_boot_t'])}, Faz 2 p = {pv(_r['nb']['F2']['p_boot_t'])}; Poisson Faz 1 p = {pv(_r['poisson']['F1']['p_boot_t'])}, Faz 2 p = {pv(_r['poisson']['F2']['p_boot_t'])}. Yani Poisson'da Faz 2 de bu tanımda anlamlılığını yitiriyor."
+    B_["T2"]["kanit"] += f" Stoksuz Model 2, bootstrap standart hatası ve t(13) ile: eğilim p = {pv(_m['poisson']['tstar']['p_boot_t'])} / {pv(_m['nb']['tstar']['p_boot_t'])}; Faz 1 eğimi p = {pv(_m['poisson']['S1']['p_boot_t'])} / {pv(_m['nb']['S1']['p_boot_t'])}; Faz 2 düzeyi p = {pv(_m['poisson']['F2']['p_boot_t'])} / {pv(_m['nb']['F2']['p_boot_t'])} (Poisson / NB)."
+    B_["C6"]["kanit"] += " Tezin kendi standart hatalarıyla yeniden hesaplandığında bir kademe düşen katsayılar: Poisson Faz 1 (** → *), Poisson Faz 2 (*** → **; p = 0,010), NB ticaret açıklığı (** → *; Tablo 5.11 ve 5.13), stoksuz NB Faz 3 (*** → **; Tablo 5.14)."
+    DUZELTMELER.append(("C6'da “ikinci faz ve stok katsayılarının yıldızı değişmiyor” demiştim", "Eksikti. Tezin kendi standart hatalarıyla t(13) uygulandığında Poisson Faz 2 (p = 0,010) ve stoksuz negatif binom Faz 3 de bir kademe düşüyor. Güncellenmiş tez metninde beş hücre düzeltildi."))
+    DUZELTMELER.append(("T9'da referans dönem 1997–2002 ile sınırlandığında “ikinci faz farkı anlamlı kalıyor” demiştim", f"Yalnızca negatif binom için doğru (bootstrap p = {pv(_r['nb']['F2']['p_boot_t'])}). Poisson'da kümelenmiş standart hatayla anlamlı görünen Faz 2 farkı, bootstrap standart hatasıyla anlamlı değil (p = {pv(_r['poisson']['F2']['p_boot_t'])}). Güncellenmiş tez metni buna göre yazıldı."))
 DUZELTMELER.append(("Ön-örneklem ortalaması için tek bir tanım raporlayıp “faz etkisi kayboluyor” demiştim",
                     f"Ayrıntılandırıldı. Altı varyantın sonucu ön-örneklem bilgisinin biçimine çok duyarlı (Model 1 Faz 2: {tr(jp('psm', PSA, N, 'F2'), 2)} ile {tr(jp('psm', PSC, N, 'F2'), 2)} arasında); Model 2'nin Faz 1 eğimi ve Faz 2 düzeyi ise bu tahmincide de anlamlı (T5)."))
 
